@@ -61,6 +61,7 @@ contract RideHailingContract is CarOwnerContract {
             int driverDistance = EuclideanDistanceSquare(driverOracle.getLocation(driversAddress[i]), pickupLocation);
             if (online && reputation > minReputation && (lastTask.status == Status.Completed || taskIds.length == 0) && driverDistance < minDistance) {
                 candidateDriverAddress = driversAddress[i];
+                minDistance = driverDistance;
             }
         }
         require(candidateDriverAddress != address(0), "No suitable driver found.");
