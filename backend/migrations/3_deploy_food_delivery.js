@@ -1,4 +1,4 @@
-var FoodDelivery = artifacts.require("FoodDelivery");
+var FoodDelivery = artifacts.require("../contracts/FoodDelivery");
 
 module.exports = function(deployer) {
   deployer.deploy(FoodDelivery);

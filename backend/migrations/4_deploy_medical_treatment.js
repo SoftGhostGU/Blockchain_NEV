@@ -1,4 +1,4 @@
-var MedicalTreatment = artifacts.require("MedicalTreatment");
+var MedicalTreatment = artifacts.require("../contracts/MedicalTreatment");
 
 module.exports = function(deployer) {
   deployer.deploy(MedicalTreatment);
