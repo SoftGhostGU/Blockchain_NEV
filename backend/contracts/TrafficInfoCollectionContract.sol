@@ -120,7 +120,7 @@ contract TrafficInfoCollectionContract is CarOwnerContract {
     }
 
     function getTaskInfo(uint taskId) public view returns (
-        uint, uint, uint, uint, uint, uint, address, Status, uint, uint
+        uint, uint, uint, uint, uint, uint, uint, address, Status, uint, uint
     ) {
         Task memory task = taskList[taskId];
         return (
@@ -133,7 +133,8 @@ contract TrafficInfoCollectionContract is CarOwnerContract {
             task.reward,
             task.driver,
             task.status,
-            task.farePerMile
+            task.farePerMile,
+            task.evaluationToDriver
         );
     }
 }
