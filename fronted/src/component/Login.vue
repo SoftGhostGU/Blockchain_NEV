@@ -91,8 +91,13 @@ const handleLogin = async () => {
     const expires = new Date(Date.now() + 3600 * 1000).toUTCString()
     document.cookie = `authToken=yourAuthToken; path=/; expires=${expires}`
 
-    // 跳转到主页
-    router.push('/user')
+    if (safeUsername === 'admin' && safePassword === 'driver') {
+      // 跳转到driver主页
+      router.push('/driver')
+    } else {
+      // 跳转到user主页
+      router.push('/user')
+    }
   } catch (error) {
     errorMessage('登录失败，请稍后重试')
   }
