@@ -3,7 +3,7 @@ import Login from '../component/Login.vue';
 import Register from '../component/Register.vue';
 // import NotFound from '../component/NotFound.vue';
 import DriverHomePage from '../component/DriverHomePage.vue';
-import UserHomePage from '../component/UserHomePage.vue';
+import UserHomePage from '../component/UserHomePage/UserHomePage.vue';
 
 const routes = [
   {
