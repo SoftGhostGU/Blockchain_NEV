@@ -36,7 +36,11 @@
 <script>
 </script>
 
-<style>
+<style scoped>
+.get-service-box {
+  width: 100%;
+}
+
 .user-box {
   width: 250px;
   /* height: 80px; */
@@ -44,17 +48,17 @@
   margin: 10px;
   padding: 30px 25px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-  /* display: flex; */
   float: left;
   text-align: center;
   align-items: center;
   display: flex;
   flex-direction: column;
   background: none;
+  transition: all 0.3s ease-in-out;
 }
 
-.get-service-box {
-  width: 100%;
+.user-box:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
 .get-service-box > :first-child {
