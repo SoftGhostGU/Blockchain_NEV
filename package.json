@@ -1,0 +1,27 @@
+{
+  "name": "Blockchain_NEV",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+
+    "dev:user:h5": "pnpm -F @Blockchain_NEV/user run dev:h5",
+    "dev:user:weapp": "pnpm -F @Blockchain_NEV/user run dev:weapp",
+    "dev:owner": "pnpm -F @Blockchain_NEV/owner run dev",
+
+    "build:user:h5": "pnpm -F @Blockchain_NEV/user run build:h5",
+    "build:user:weapp": "pnpm -F @Blockchain_NEV/user run build:weapp",
+    "build:owner": "pnpm -F @Blockchain_NEV/owner run build",
+
+    "lint:user": "pnpm -F @Blockchain_NEV/user run lint",
+    "lint:owner": "pnpm -F @Blockchain_NEV/owner run lint",
+
+    "format:user": "pnpm -F @Blockchain_NEV/user run format",
+    "format:owner": "pnpm -F @Blockchain_NEV/owner run format"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0"
+}
