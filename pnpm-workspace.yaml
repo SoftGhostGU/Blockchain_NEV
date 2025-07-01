@@ -2,7 +2,7 @@ packages:
   # 指定根目录直接子目录中的包
   - 'my-app'
   # packages/ 直接子目录中的所有包
-  - 'apps/*'
+  - 'packages/*'
   # components/ 子目录中的所有包
   - 'components/**'
   # api/ 公共的方法 - axios
