@@ -15,7 +15,7 @@
     "build:owner": "pnpm -F @Blockchain_NEV/owner run build",
 
     "lint:user": "pnpm -F @Blockchain_NEV/user run lint",
-    "lint:owner": "pnpm -F @Blockchain_NEV/owner run lint",
+    "lint:owner": "pnpm -F @Blockchain_NEV/owner run lint", 
 
     "format:user": "pnpm -F @Blockchain_NEV/user run format",
     "format:owner": "pnpm -F @Blockchain_NEV/owner run format"
