@@ -1,0 +1,11 @@
+#
+# SPDX-License-Identifier: 
+#
+
+/.classpath
+/.git/
+/.gradle/
+/.project
+/.settings/
+/bin/
+/build/
