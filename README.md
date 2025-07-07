@@ -50,3 +50,23 @@
 		- 在 Java 应用中通过 [Fabric Gateway SDK](https://hyperledger.github.io/fabric-gateway/) 直接与链码交互
 		- 参考下方代码片段
 
+```java
+@Test
+public void testSetAndGet() {
+    MyChaincode chaincode = new MyChaincode();
+    ChaincodeStub stub = mock(ChaincodeStub.class);
+
+    // 测试 set 方法
+    when(stub.getFunction()).thenReturn("set");
+    when(stub.getParameters()).thenReturn(Arrays.asList("key1", "value1"));
+    Response setResponse = chaincode.invoke(stub);
+    assertEquals("OK", setResponse.getMessage());
+
+    // 测试 get 方法
+    when(stub.getFunction()).thenReturn("get");
+    when(stub.getParameters()).thenReturn(Arrays.asList("key1"));
+    when(stub.getStringState("key1")).thenReturn("value1");
+    Response getResponse = chaincode.invoke(stub);
+    assertEquals("value1", getResponse.getMessage());
+}
+```
