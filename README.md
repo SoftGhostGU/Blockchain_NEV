@@ -70,3 +70,19 @@ public void testSetAndGet() {
     assertEquals("value1", getResponse.getMessage());
 }
 ```
+
+```java
+// 使用 Fabric Gateway SDK 测试
+
+// 初始化 Gateway 连接
+Gateway gateway = Gateway.newBuilder()
+    .identity(wallet, "user1")
+    .networkConfig(Paths.get("connection.yaml"))
+    .connect();
+
+// 调用链码
+Contract contract = gateway.getNetwork("mychannel").getContract("myjavacc");
+contract.submitTransaction("set", "key1", "value1");
+byte[] result = contract.evaluateTransaction("get", "key1");
+System.out.println(new String(result));
+```
