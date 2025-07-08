@@ -12,6 +12,7 @@ dependencies {
     implementation 'org.hyperledger.fabric-chaincode-java:fabric-chaincode-shim:2.4.+'
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.+'
+    implementation 'com.owlike:genson:1.5'
 }
 
 repositories {
