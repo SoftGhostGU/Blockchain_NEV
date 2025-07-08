@@ -86,3 +86,10 @@ contract.submitTransaction("set", "key1", "value1");
 byte[] result = contract.evaluateTransaction("get", "key1");
 System.out.println(new String(result));
 ```
+
+## 其他备忘录
+
+### 服务器
+
+- 打开安全组，开放所有端口-1/-1，优先级1
+- 环境配置
