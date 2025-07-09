@@ -92,4 +92,29 @@ public class Chaincode extends ChaincodeBase {
         }
         return ChaincodeBase.newSuccessResponse(value);
     }
+
+    // 从账本中找到所有的键值对
+    private Response getAllData(ChaincodeStub stub) {
+        String startKey = "";
+        String endKey = "";
+
+        try {
+            // 创建一个迭代器来遍历
+            java.util.Iterator<KeyValue> iterator = stub.getStateByRange(startKey, endKey);
+            // 构建键值对
+            java.lang.StringBuilder allData = new java.lang.StringBuilder();
+            // 遍历迭代器
+            while (iterator.hasNext()) {
+                KeyValue keyValue = iterator.next();
+                String key = keyValue.getKey();
+                String value = keyValue.getStringValue();
+                // 添加键值对到 StringBuilder 中
+                allData.append("Key: ").append(key).append(", Value: ").append(value).append("\n");
+            }
+            // 返回键值对
+            return ChaincodeBase.newSuccessResponse(allData.toString());
+        } catch (Exception e) {
+            return ChaincodeBase.newErrorResponse("获取所有数据时发生错误：" + e.getMessage());
+        }
+    }
 }
