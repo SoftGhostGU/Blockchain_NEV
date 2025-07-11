@@ -17,9 +17,7 @@ export class Chaincode implements ChaincodeInterface {
         console.info('Invoke()', fcn, params);
 
         try {
-            if (fcn === 'acceptOrder') {
-                return await this.acceptOrder(stub, params);
-            } 
+            return await this[fcn](stub, params);
         } catch (err) {
             return Shim.error(err.toString());
         }
