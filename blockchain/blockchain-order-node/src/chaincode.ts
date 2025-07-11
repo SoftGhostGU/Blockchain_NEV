@@ -18,4 +18,19 @@ export class Chaincode implements ChaincodeInterface {
         return Shim.success();
     }
 
+    // query order by id
+    public async Query(stub: ChaincodeStub, args: string[]): Promise<any> {
+        if (args.length !== 1) {
+            throw new Error('Incorrect number of arguments. Expecting 1');
+        }
+
+        let id = args[0];
+        let order = await stub.getState(id);
+        if (!order) {
+            throw new Error(`Order ${id} does not exist`);
+        } else {
+            return Shim.success(order);
+        }
+    }
+
 }
