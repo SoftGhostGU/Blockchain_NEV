@@ -18,27 +18,7 @@ export class Chaincode implements ChaincodeInterface {
 
         try {
             if (fcn === 'acceptOrder') {
-                // `ownerId` accept the `order(id)` from `userId` with `price`
-                const ownerId = params[0];
-                const orderId = params[1];
-                const userId = params[2];
-                const price = parseFloat(params[3]);
-
-                const ownerBalanceBytes = await stub.getState(ownerId);
-                const userBalanceBytes = await stub.getState(userId);
-                let ownerBalance = parseFloat(ownerBalanceBytes.toString());
-                let userBalance = parseFloat(userBalanceBytes.toString());
-
-                if (userBalance < price) {
-                    throw new Error(`User ${userId} does not have enough balance to purchase order ${orderId}`);
-                } else {
-                    ownerBalance += price;
-                    userBalance -= price;
-                    await stub.putState(ownerId, new Uint8Array(Buffer.from(ownerBalance.toString())));
-                    await stub.putState(userId, new Uint8Array(Buffer.from(userBalance.toString())));
-                }
-
-                return Shim.success(new Uint8Array(Buffer.from('Order purchased successfully')));
+                return await this.acceptOrder(stub, params);
             } 
         } catch (err) {
             return Shim.error(err.toString());
@@ -58,6 +38,31 @@ export class Chaincode implements ChaincodeInterface {
         } else {
             return Shim.success(order);
         }
+    }
+
+    // owner accept order from user
+    public async acceptOrder(stub: ChaincodeStub, args: string[]) {
+        // `ownerId` accept the `order(id)` from `userId` with `price`
+        const ownerId = args[0];
+        const orderId = args[1];
+        const userId = args[2];
+        const price = parseFloat(args[3]);
+
+        const ownerBalanceBytes = await stub.getState(ownerId);
+        const userBalanceBytes = await stub.getState(userId);
+        let ownerBalance = parseFloat(ownerBalanceBytes.toString());
+        let userBalance = parseFloat(userBalanceBytes.toString());
+
+        if (userBalance < price) {
+            throw new Error(`User ${userId} does not have enough balance to purchase order ${orderId}`);
+        } else {
+            ownerBalance += price;
+            userBalance -= price;
+            await stub.putState(ownerId, new Uint8Array(Buffer.from(ownerBalance.toString())));
+            await stub.putState(userId, new Uint8Array(Buffer.from(userBalance.toString())));
+        }
+
+        return Shim.success(new Uint8Array(Buffer.from('Order purchased successfully')));
     }
 
 }
