@@ -1,0 +1,114 @@
+.benefit-container {
+  display: flex;
+  flex-direction: column;
+  margin-top: 3px;
+  margin-right: 3px;
+
+  .row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    .row-item {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      margin: 10px;
+      background-color: #fff;
+      border-radius: 15px;
+      padding: 20px;
+      position: relative;
+
+      .item-title {
+        font-size: 18px;
+        // font-weight: bold;
+        color: #555;
+        margin: 0;
+        margin-bottom: 5px;
+      }
+
+      .item-number {
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .change-rate {
+        font-size: 14px;
+        font-weight: bold;
+        position: absolute;
+        top: 10px;
+        right: 30px;
+
+        .change-number {
+          margin-left: 3px;
+        }
+
+        .green {
+          color: #70c774;
+        }
+
+        .red {
+          color: #f5222d;
+        }
+      }
+
+      .withdraw-btn {
+        margin: 20px 0px;
+      }
+
+      .reputation-star {
+        margin: 25px 5px;
+        margin-bottom: 0;
+      }
+
+      .change-reputation {
+        margin-left: 5px;
+
+        .change-number {
+          margin-left: 5px;
+          font-weight: bold;
+        }
+
+        .green {
+          color: #70c774;
+        }
+
+        .red {
+          color: #f5222d;
+        }
+      }
+
+      .table-title {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+
+        .table-title-item {
+          font-size: 18px;
+          font-weight: bold;
+          color: #555;
+          margin: 0;
+          margin-bottom: 15px;
+        }
+
+        .table-search-item {
+          display: flex;
+          margin-right: 30px;
+          flex-direction: row;
+
+          .search-icon {
+            margin: 0 10px;
+            line-height: 40px;
+            // text-align: center;
+            align-items: center;
+            justify-content: center;
+          }
+        }
+      }
+    }
+  }
+
+  .first-row {
+    height: 230px;
+  }
+}
