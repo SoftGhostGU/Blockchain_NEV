@@ -8,8 +8,7 @@
 
 .app-container {
   max-width: 100%;
-  padding: 12px 6px;
-  padding-right: 12px;
+  padding: 25px;
   display: flex;
   flex-direction: row;
 
@@ -23,11 +22,14 @@
   .block_three {
     width: 100%;
     background-color: #fff;
-    padding: 20px;
-    margin-bottom: 15px;
+    padding: 15px;
+    // margin-bottom: 25px;
     border-radius: 15px;
     display: flex;
     flex-direction: column;
+    // border: #c5c5c5 1px solid;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
 
     .block_title {
       font-size: 18px;
@@ -49,6 +51,11 @@
     .small {
       font-size: 12px;
     }
+  }
+
+  .block_three:hover {
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
   }
 
   .car-info {
@@ -195,12 +202,15 @@
 
   .map-container {
     width: 82%;
-    height: calc(100vh - 140px);
+    height: calc(100vh - 165px);
     margin-left: 55px;
     padding: 20px;
     border-radius: 15px;
     background-color: #fff;
     position: relative;
+    // border: #c5c5c5 1px solid;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
 
     .button {
       line-height: 25px;
@@ -238,7 +248,7 @@
       border-radius: 15px;
       border: #c5c5c5 1px solid;
     }
-    
+
     .info-detail {
       width: 180px;
       height: 130px;
@@ -256,5 +266,10 @@
         justify-content: space-between;
       }
     }
+  }
+
+  .map-container:hover {
+    transform: scale(1.02);
+    transition: all 0.3s ease-in-out;
   }
 }
