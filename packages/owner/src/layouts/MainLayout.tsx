@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import CarInfo from '../pages/carInfo/carInfo';
 import Benefit from '../pages/benefit/benefit';
 import OrderManage from '../pages/orderManage/orderManage';
+import NotFound from '../pages/notFound/notFound'
 
 export default function MainLayout() {
   const [activePage, setActivePage] = useState('1');
@@ -12,7 +13,7 @@ export default function MainLayout() {
       case '1': return <CarInfo />;
       case '2': return <Benefit />;
       case '3': return <OrderManage />;
-      default: return <div>Not Found</div>;
+      default: return <NotFound />;
     }
   };
 

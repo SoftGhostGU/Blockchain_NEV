@@ -14,7 +14,8 @@ body {
   top: 0;
   left: 0;
   background-color: #fff;
-  border-bottom: #e3e3e3 1px solid;
+  // border-bottom: #e3e3e3 1px solid;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
 
   .left-bar {
     // width: 80%;
@@ -70,6 +71,7 @@ body {
   padding-left: 10px;
   position: absolute;
   float: left;
+      box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
 
   .button {
     margin: 7px 0;

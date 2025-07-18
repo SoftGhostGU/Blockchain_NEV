@@ -22,6 +22,7 @@ import {
   Modal,
   Space,
   InputNumber,
+  message
 } from 'antd';
 import type {
   // GetProps,
@@ -53,9 +54,15 @@ const useStyle = createStyles(({ token }) => ({
   },
 }));
 
-const onChange: InputNumberProps['onChange'] = (value) => {
-  console.log('changed', value);
-};
+interface DataType {
+  key: string;
+  orderId: string;
+  orderTime: string;
+  orderType: string;
+  balance: string;
+  status: string;
+  operate: string;
+}
 
 export default function benefit() {
 
@@ -94,9 +101,111 @@ export default function benefit() {
   //   { month: '2025-7', value: 96 },
   // ];
 
-  const balance_to_withdraw = 5370;
+  const [balance_to_withdraw, set_balance_to_withdraw] = useState(5370);
   const bank_card_number = '6222026000000000001';
 
+  const [tableData, setTableData] = useState<DataType[]>([
+    {
+      key: '1',
+      orderId: 'ORD001',
+      orderTime: '2025-07-12 14:30:00',
+      orderType: "订单收入",
+      balance: '+￥38',
+      status: '已完成',
+      operate: '· · ·',
+    },
+    {
+      key: '2',
+      orderId: 'ORD002',
+      orderTime: '2025-07-13 16:15:00',
+      orderType: "订单收入",
+      balance: '+￥25',
+      status: '已完成',
+      operate: '· · ·',
+    },
+    {
+      key: '3',
+      orderId: 'ORD003',
+      orderTime: '2025-07-13 19:23:00',
+      orderType: "提现",
+      balance: '-￥1000',
+      status: '处理中',
+      operate: '· · ·',
+    },
+    {
+      key: '4',
+      orderId: 'ORD004',
+      orderTime: '2025-07-14 10:52:00',
+      orderType: "订单收入",
+      balance: '+￥84',
+      status: '已完成',
+      operate: '· · ·',
+    },
+
+    {
+      key: '5',
+      orderId: 'ORD005',
+      orderTime: '2025-07-14 10:52:00',
+      orderType: "订单收入",
+      balance: '+￥84',
+      status: '已完成',
+      operate: '· · ·',
+    },
+    {
+      key: '6',
+      orderId: 'ORD006',
+      orderTime: '2025-07-14 10:52:00',
+      orderType: "订单收入",
+      balance: '+￥84',
+      status: '已完成',
+      operate: '· · ·',
+    },
+    {
+      key: '7',
+      orderId: 'ORD007',
+      orderTime: '2025-07-14 10:52:00',
+      orderType: "订单收入",
+      balance: '+￥84',
+      status: '已完成',
+      operate: '· · ·',
+    },
+    {
+      key: '8',
+      orderId: 'ORD008',
+      orderTime: '2025-07-14 10:52:00',
+      orderType: "订单收入",
+      balance: '+￥84',
+      status: '已完成',
+      operate: '· · ·',
+    },
+    {
+      key: '9',
+      orderId: 'ORD009',
+      orderTime: '2025-07-14 10:52:00',
+      orderType: "订单收入",
+      balance: '+￥84',
+      status: '已完成',
+      operate: '· · ·',
+    },
+    {
+      key: '10',
+      orderId: 'ORD010',
+      orderTime: '2025-07-14 10:52:00',
+      orderType: "订单收入",
+      balance: '+￥84',
+      status: '已完成',
+      operate: '· · ·',
+    },
+    {
+      key: '11',
+      orderId: 'ORD011',
+      orderTime: '2025-07-14 10:52:00',
+      orderType: "订单收入",
+      balance: '+￥84',
+      status: '已完成',
+      operate: '· · ·',
+    },
+  ]);
 
   const turnover_yesterday = current_turnover[5].value;
   const turnover_today = current_turnover[6].value;
@@ -152,6 +261,79 @@ export default function benefit() {
     },
   };
 
+  const [value_to_withdraw, set_value_to_withdraw] = useState(1000);
+  const [balance_has_withdrawn, set_balance_has_withdrawn] = useState(0);
+
+  const onChange: InputNumberProps['onChange'] = (value) => {
+    console.log('changed', value);
+    set_value_to_withdraw(parseInt(value?.toString() ?? '0') as number);
+  };
+
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const handleWithdraw = () => {
+    if (value_to_withdraw > balance_to_withdraw) {
+      alert('提现金额不能大于可提现余额');
+      return;
+    }
+
+    set_balance_to_withdraw(balance_to_withdraw - value_to_withdraw);
+    set_balance_has_withdrawn(balance_has_withdrawn + value_to_withdraw);
+
+    // orderKey是需要改的！！！！
+    const orderKey = (tableData.length + 1).toString();
+    const now = new Date();
+    const formattedDate = now.toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    }).replace(/\//g, '-');
+
+    const newOrder = {
+      key: orderKey,
+      orderId: 'ORD00' + orderKey,
+      orderTime: formattedDate,
+      orderType: "提现",
+      balance: '-￥' + value_to_withdraw.toString(),
+      status: '处理中', // 初始状态
+      operate: '· · ·',
+    };
+
+    setTableData(prevData => [...prevData, newOrder]);
+
+    messageApi
+      .open({
+        type: 'loading',
+        content: '正在处理提现...',
+        duration: 2.5,
+      })
+      .then(() => {
+        setTableData(prevData => {
+          const updatedData = [...prevData];
+          const lastIndex = updatedData.length - 1;
+          updatedData[lastIndex] = {
+            ...updatedData[lastIndex],
+            status: '已完成',
+          };
+          return updatedData;
+        });
+
+        return messageApi.open({
+          type: 'success',
+          content: '提现成功！',
+          duration: 2.5,
+        });
+      });
+
+    toggleModal(0, false);
+  };
+
+
+
   return (
     <div className="benefit-container">
       <div className="row first-row">
@@ -189,45 +371,6 @@ export default function benefit() {
           // height={120}
           />
         </div>
-        {/* <div className="row-item">
-          <p className="item-title">可提现余额</p>
-          <span className="item-number">￥{ balance_to_withdraw.toFixed(2) }</span>
-          <Button
-            color="primary"
-            variant="solid"
-            className="withdraw-btn"
-          >立即提现</Button>
-        </div>
-        <div className="row-item">
-          <p className="item-title">信誉分</p>
-          <span className="item-number">{ reputation_this_month }</span>
-          <Rate
-            disabled
-            allowHalf
-            // character="hcy" 
-            defaultValue={reputation_calculate}
-            className="reputation-star"
-          />
-          {reputation_change > 0 ? (
-            <p className="change-reputation">
-              <UpOutlined
-                style={{
-                  color: '#70c774'
-                }}
-              />
-              <span className="change-number green">较上月提升了{Math.abs(reputation_change)}分</span>
-            </p>
-          ) : (
-            <p className="change-reputation">
-              <DownOutlined
-                style={{
-                  color: '#f5222d'
-                }}
-              />
-              <span className="change-number red">较上月下降了{Math.abs(reputation_change)}分</span>
-            </p>
-          )}
-        </div> */}
         <div className="row-item">
           <p className="item-title">
             <MoneyCollectOutlined style={{ marginRight: '5px' }} />
@@ -275,7 +418,7 @@ export default function benefit() {
               fontSize: '14px',
               marginTop: '10px',
             }}
-          >本月已提现：￥0.00</span>
+          >本月已提现：￥{balance_has_withdrawn}</span>
           <Button
             // type="primary"
             onClick={clickButton}
@@ -307,7 +450,7 @@ export default function benefit() {
               />
             </div>
           </div>
-          <Table />
+          <Table data={tableData} />
         </div>
       </div>
 
@@ -320,6 +463,7 @@ export default function benefit() {
         classNames={classNames}
         styles={modalStyles}
       >
+        {contextHolder}
         <Space>
           <InputNumber<number>
             defaultValue={balance_to_withdraw > 1000 ? 1000 : balance_to_withdraw}
@@ -360,12 +504,14 @@ export default function benefit() {
         <Button
           color="danger"
           variant="solid"
+          onClick={handleWithdraw}
         >立即提现</Button>
         <Button
           color="danger"
           variant="dashed"
           style={{ marginLeft: '20px' }}
-        >立即提现</Button>
+          onClick={() => toggleModal(0, false)}
+        >取消提现</Button>
       </Modal>
       <ConfigProvider
         modal={{
@@ -425,7 +571,8 @@ export default function benefit() {
             color="danger"
             variant="dashed"
             style={{ marginLeft: '20px' }}
-          >立即提现</Button>
+            onClick={() => toggleModal(1, false)}
+          >取消提现</Button>
         </Modal>
       </ConfigProvider>
     </div>
