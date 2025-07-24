@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.autocrowd.backend.repository.OrderRepository">
+    <!-- 订单相关SQL语句映射将在这里定义 -->
+    <!-- 示例: 查询订单 -->
+    <select id="findById" resultType="com.autocrowd.backend.entity.Order">
+        SELECT * FROM orders WHERE order_id = #{orderId}
+    </select>
+
+    <!-- 示例: 保存订单 -->
+    <insert id="save" parameterType="com.autocrowd.backend.entity.Order">
+        INSERT INTO orders (user_id, driver_id, start_location, destination, status, estimated_price, actual_price, review_id, created_at, updated_at)
+        VALUES (#{user.id}, #{driver.id}, #{startLocation}, #{destination}, #{status}, #{estimatedPrice}, #{actualPrice}, #{reviewId}, #{createdAt}, #{updatedAt})
+    </insert>
+</mapper>

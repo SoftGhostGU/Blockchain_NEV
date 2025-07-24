@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.autocrowd.backend.repository.UserRepository">
+    <resultMap id="UserResultMap" type="com.autocrowd.backend.entity.User">
+        <id column="user_id" property="userId"/>
+        <result column="username" property="username"/>
+        <result column="phone" property="phone"/>
+        <result column="password" property="password"/>
+        <result column="credit_score" property="creditScore"/>
+        <result column="balance" property="balance"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 根据手机号查询用户 -->
+    <select id="findByPhone" resultMap="UserResultMap">
+        SELECT * FROM users WHERE phone = #{phone}
+    </select>
+
+    <!-- 检查手机号是否存在 -->
+    <select id="existsByPhone" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM users WHERE phone = #{phone}
+    </select>
+
+    <!-- 根据用户名查询用户 -->
+    <select id="findByUsername" resultMap="UserResultMap">
+        SELECT * FROM users WHERE username = #{username}
+    </select>
+
+    <!-- 检查用户名是否存在 -->
+    <select id="existsByUsername" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM users WHERE username = #{username}
+    </select>
+
+    <!-- 创建新用户 -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO users (username, phone, password, credit_score, balance, created_at, updated_at)
+        VALUES (#{username}, #{phone}, #{password}, #{creditScore}, #{balance}, #{createdAt}, #{updatedAt})
+    </insert>
+
+    <!-- 更新用户信息 -->
+    <update id="update">
+        UPDATE users
+        <set>
+            <if test="username != null">username = #{username},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="creditScore != null">credit_score = #{creditScore},</if>
+            <if test="balance != null">balance = #{balance},</if>
+            updated_at = #{updatedAt}
+        </set>
+        WHERE user_id = #{userId}
+    </update>
+
+    <!-- 删除用户 -->
+    <delete id="deleteById">
+        DELETE FROM users WHERE user_id = #{userId}
+    </delete>
+
+    <!-- 根据ID查询用户 -->
+    <select id="findById" resultMap="UserResultMap">
+        SELECT * FROM users WHERE user_id = #{userId}
+    </select>
+
+    <!-- 查询所有用户 -->
+    <select id="findAll" resultMap="UserResultMap">
+        SELECT * FROM users
+    </select>
+</mapper>
