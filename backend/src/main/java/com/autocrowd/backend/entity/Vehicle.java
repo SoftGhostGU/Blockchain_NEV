@@ -3,8 +3,6 @@ package com.autocrowd.backend.entity;
 import jakarta.persistence.Entity;
 import lombok.Data;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -20,10 +18,9 @@ public class Vehicle {
     
     @Column(name = "license_plate", nullable = false, unique = true)
     private String licensePlate;
-    
-    @ManyToOne
-    @JoinColumn(name = "driver_id")
-    private Driver driver;
+
+    @Column(name = "driver_id")
+    private Integer driverId;
     
     @Column(name = "fuel_level")
     private BigDecimal fuelLevel;

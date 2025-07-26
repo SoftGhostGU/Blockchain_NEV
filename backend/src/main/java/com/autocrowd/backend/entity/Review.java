@@ -16,14 +16,12 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "review_id")
     private Integer reviewId;
-    
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
-    
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+
+    @Column(name = "order_id")
+    private Integer order;
+
+    @Column(name = "user_id")
+    private Integer user;
     
     @ManyToOne
     @JoinColumn(name = "driver_id")

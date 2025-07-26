@@ -74,12 +74,13 @@ public class JwtUtil {
     }
 
     /**
-     * 生成包含userId和username的token
+     * 生成包含userId、username和role的token
      */
-    public String generateToken(String userId, String username) {
+    public String generateToken(String userId, String username, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("username", username);
+        claims.put("role", role);
         return createToken(claims, username);
     }
 

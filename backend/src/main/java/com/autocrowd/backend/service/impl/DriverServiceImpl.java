@@ -18,6 +18,13 @@ public class DriverServiceImpl implements DriverService {
 
     private final DriverRepository driverRepository;
 
+    /**
+     * 司机登录业务逻辑实现
+     * 根据手机号和密码查询司机，验证身份并返回司机基本信息
+     * @param loginRequest 登录请求DTO，包含手机号和密码
+     * @return 包含司机基本信息的DTO
+     * @throws BusinessException 当司机不存在或密码错误时抛出
+     */
     @Override
     public DriverProfileDTO login(DriverLoginRequest loginRequest) {
         System.out.println("[DriverServiceImpl] 处理车主登录请求: " + loginRequest);
@@ -39,6 +46,13 @@ public class DriverServiceImpl implements DriverService {
         }
     }
 
+    /**
+     * 获取司机资料业务逻辑实现
+     * 根据司机ID查询司机完整信息，并转换为DTO返回
+     * @param driverId 司机ID
+     * @return 包含司机详细资料的DTO
+     * @throws BusinessException 当司机不存在时抛出
+     */
     @Override
     public DriverProfileDTO getDriverProfile(Integer driverId) {
         System.out.println("[DriverServiceImpl] 获取司机资料: driverId=" + driverId);
@@ -62,6 +76,14 @@ public class DriverServiceImpl implements DriverService {
         }
     }
 
+    /**
+     * 更新司机资料业务逻辑实现
+     * 根据司机ID查询司机，更新指定的司机信息字段，保存并返回更新结果
+     * @param driverId 司机ID
+     * @param profileUpdateRequest 资料更新请求DTO，包含需要更新的字段
+     * @return 包含更新后司机资料的DTO
+     * @throws BusinessException 当司机不存在或手机号已被注册时抛出
+     */
     @Override
     public DriverProfileDTO updateDriverProfile(Integer driverId, DriverProfileUpdateRequest profileUpdateRequest) {
         System.out.println("[DriverServiceImpl] 更新司机资料: driverId=" + driverId + ", request=" + profileUpdateRequest);
@@ -100,6 +122,13 @@ public class DriverServiceImpl implements DriverService {
         }
     }
 
+    /**
+     * 司机注册业务逻辑实现
+     * 验证司机注册信息，检查用户名和手机号唯一性，创建新司机账户
+     * @param registerRequest 注册请求DTO，包含司机注册所需信息
+     * @return 包含新创建司机基本信息的DTO
+     * @throws BusinessException 当用户名或手机号已存在时抛出
+     */
     @Override
     public DriverProfileDTO register(DriverRegisterRequest registerRequest) {
         System.out.println("[DriverServiceImpl] 处理司机注册请求: " + registerRequest);

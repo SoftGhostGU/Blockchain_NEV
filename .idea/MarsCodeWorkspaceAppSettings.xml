@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="com.codeverse.userSettings.MarscodeWorkspaceAppSettingsState">
-    <option name="chatAppRouterInfo" value="builder/687e3d3e3a178dc5c6b4c70d" />
+    <option name="CKGUserStarteByUser" value="true" />
+    <option name="chatAppRouterInfo" value="builder/68839e6cbc851fdfb99dca26" />
     <option name="ckgOperationStatus" value="SUCCESS" />
-    <option name="progress" value="0.9574468" />
+    <option name="lastCKGNotifyTime" value="1753515283576" />
+    <option name="progress" value="0.8920863" />
   </component>
 </project>

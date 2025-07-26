@@ -10,6 +10,6 @@
     <!-- 示例: 保存订单 -->
     <insert id="save" parameterType="com.autocrowd.backend.entity.Order">
         INSERT INTO orders (user_id, driver_id, start_location, destination, status, estimated_price, actual_price, review_id, created_at, updated_at)
-        VALUES (#{user.id}, #{driver.id}, #{startLocation}, #{destination}, #{status}, #{estimatedPrice}, #{actualPrice}, #{reviewId}, #{createdAt}, #{updatedAt})
+        VALUES (#{userId}, #{driverId}, #{startLocation}, #{destination}, #{status}, #{estimatedPrice}, #{actualPrice}, #{reviewId}, #{createdAt}, #{updatedAt})
     </insert>
 </mapper>
