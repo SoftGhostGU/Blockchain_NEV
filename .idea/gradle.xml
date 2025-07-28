@@ -5,6 +5,12 @@
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
         <option name="externalProjectPath" value="$PROJECT_DIR$/blockchain/blockchain-order" />
+        <option name="gradleJvm" value="1.8" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$/blockchain/blockchain-order" />
+          </set>
+        </option>
       </GradleProjectSettings>
     </option>
   </component>

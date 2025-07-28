@@ -17,14 +17,15 @@ public class Order {
     @Column(name = "order_id")
     private Integer orderId;
     
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @Column(name = "user_id")
+    private Integer user;
     
-    @ManyToOne
-    @JoinColumn(name = "driver_id")
-    private Driver driver;
-    
+    @Column(name = "driver_id")
+    private Integer driver;
+
+    @Column(name = "vehicle_id")
+    private Integer vehicleId;
+
     @Column(name = "start_location", nullable = false)
     private String startLocation;
     
@@ -32,7 +33,7 @@ public class Order {
     private String destination;
     
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", length = 20)
     private OrderStatus status;
     
     @Column(name = "estimated_price")

@@ -13,6 +13,7 @@ public enum ExceptionCodeEnum {
     INVALID_TOKEN(10003, "无效的令牌"),
     TOKEN_EXPIRED(10004, "令牌已过期"),
     PARAM_ERROR(10005, "参数错误"),
+    PARAM_NULL_ERROR(10007, "参数不能为空"),
     // 用户相关异常 from enums
     USERNAME_ALREADY_EXISTS(10011, "用户名已存在"),
     PHONE_ALREADY_EXISTS(10014, "手机号已存在"),
@@ -35,10 +36,16 @@ public enum ExceptionCodeEnum {
     ORDER_NOT_FOUND(20001, "订单不存在"),
     PRICE_ESTIMATION_FAILED(20002, "价格预估失败"),
     ORDER_CREATE_FAILED(20003, "订单创建失败"),
-    
+    ORDER_GET_FAILED(20004, "获取订单失败"),
+    ORDER_UPDATE_FAILED(20005, "更新订单状态失败"),
+    ORDER_STATUS_ERROR(20007, "订单状态错误"),
+    ORDER_ACCEPT_FAILED(20009,"订单接收失败"),
     // 车辆相关异常
-    VEHICLE_NOT_FOUND(20004, "车辆不存在"),
-    VEHICLE_TYPE_ERROR(20005, "车辆类型错误");
+    VEHICLE_NOT_FOUND(20006, "车辆不存在"),
+    VEHICLE_TYPE_ERROR(20005, "车辆类型错误"),
+    VEHICLE_NOT_BELONG_TO_DRIVER(20008, "车辆不属于该司机"),
+    PERMISSION_DENIED(20009, "权限拒绝");
+
 
     private final int code;
     private final String message;
