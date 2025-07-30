@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class AcceptOrderRequest {
-    private Integer order_id;
+    private String order_id;
     private Integer vehicle_id;
 }

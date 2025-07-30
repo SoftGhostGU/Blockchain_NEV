@@ -10,4 +10,5 @@ public class DriverProfileDTO {
     private Integer creditScore;
     private BigDecimal walletBalance;
     private String phone;
+    private String bankCard;
 }

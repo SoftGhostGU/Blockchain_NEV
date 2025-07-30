@@ -29,25 +29,41 @@ public interface OrderService {
     List<CurrentOrderResponse> getAllCurrentOrder();
 
     /**
-     * 按状态获取当前订单
-     * @param status 订单状态
-     * @return 指定状态的订单信息
-     */
-    List<Order> getCurrentOrderByStatus(String status);
-
-    /**
-     * 车主接单
+     * 根据订单ID获取订单详情
      * @param orderId 订单ID
-     * @param driverId 车主ID
-     * @return 更新后的订单
+     * @return 订单详情
      */
-    Order acceptOrder(Integer orderId, String driverId, Integer vehicleId);
+    Order getOrderById(String orderId);
 
     /**
      * 更新订单状态
      * @param orderId 订单ID
-     * @param status 新订单状态
+     * @param status 新状态
      * @return 更新后的订单
      */
-    Order updateOrderStatus(Integer orderId, String status);
+    Order updateOrderStatus(String orderId, byte status);
+
+    /**
+     * 司机接单
+     * @param orderId 订单ID
+     * @param driverId 司机ID
+     * @param vehicleId 车辆ID
+     * @return 接单结果
+     */
+    Order acceptOrder(String orderId, Integer driverId, Integer vehicleId);
+    
+    /**
+     * 根据状态获取订单列表
+     * @param status 订单状态
+     * @return 订单列表
+     */
+    List<Order> getCurrentOrderByStatus(String status);
+
+    /**
+     * 结算订单
+     * @param orderId 订单ID
+     * @param actualPrice 实际价格
+     * @return 结算后的订单
+     */
+    Order completeOrder(String orderId, BigDecimal actualPrice);
 }

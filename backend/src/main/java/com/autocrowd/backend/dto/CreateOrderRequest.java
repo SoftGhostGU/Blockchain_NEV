@@ -3,6 +3,7 @@ package com.autocrowd.backend.dto;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import java.math.BigDecimal;
 
 @Data
 @Getter
@@ -11,4 +12,7 @@ public class CreateOrderRequest {
     private String startLocation;
     private String destination;
     private String vehicleType;
+    private Integer driverId;
+    private Integer vehicleId;
+    private BigDecimal estimatedPrice;
 }

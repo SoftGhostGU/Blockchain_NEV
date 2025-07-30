@@ -13,15 +13,14 @@ import java.time.LocalDateTime;
 @Table(name = "orders")
 public class Order {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
-    private Integer orderId;
+    private String orderId;
     
     @Column(name = "user_id")
-    private Integer user;
+    private Integer userId;
     
     @Column(name = "driver_id")
-    private Integer driver;
+    private Integer driverId;
 
     @Column(name = "vehicle_id")
     private Integer vehicleId;
@@ -32,9 +31,8 @@ public class Order {
     @Column(name = "destination", nullable = false)
     private String destination;
     
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 20)
-    private OrderStatus status;
+    @Column(name = "status")
+    private Byte status;
     
     @Column(name = "estimated_price")
     private BigDecimal estimatedPrice;
@@ -42,27 +40,13 @@ public class Order {
     @Column(name = "actual_price")
     private BigDecimal actualPrice;
     
-    @Column(name = "review_id")
-    private Integer reviewId;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
+    @Column(name = "type")
+    private String type;
+    
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-    
-    public enum OrderStatus {
-        @Enumerated(EnumType.STRING)
-        @Column(name = "Waiting")
-        Waiting,
-        @Enumerated(EnumType.STRING)
-        @Column(name = "On the way")
-        On_the_way,
-        @Enumerated(EnumType.STRING)
-        @Column(name = "In progress")
-        In_progress,
-        @Enumerated(EnumType.STRING)
-        @Column(name = "Completed")
-        Completed
-    }
 }

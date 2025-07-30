@@ -2,7 +2,7 @@
 <project version="4">
   <component name="com.codeverse.userSettings.MarscodeWorkspaceAppSettingsState">
     <option name="CKGUserStarteByUser" value="true" />
-    <option name="chatAppRouterInfo" value="builder/68839e6cbc851fdfb99dca26" />
+    <option name="chatAppRouterInfo" value="chat" />
     <option name="ckgOperationStatus" value="SUCCESS" />
     <option name="lastCKGNotifyTime" value="1753515283576" />
     <option name="progress" value="0.8920863" />

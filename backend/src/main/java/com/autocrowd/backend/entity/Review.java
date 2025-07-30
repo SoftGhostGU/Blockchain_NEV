@@ -1,11 +1,9 @@
 package com.autocrowd.backend.entity;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -18,20 +16,19 @@ public class Review {
     private Integer reviewId;
 
     @Column(name = "order_id")
-    private Integer order;
+    private String orderId;
 
     @Column(name = "user_id")
-    private Integer user;
+    private Integer userId;
     
-    @ManyToOne
-    @JoinColumn(name = "driver_id")
-    private Driver driver;
+    @Column(name = "driver_id")
+    private Integer driverId;
     
     @Column(name = "content")
     private String content;
     
-    @Column(name = "rating")
-    private Integer rating;
+    @Column(name = "comment_star")
+    private BigDecimal commentStar;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;

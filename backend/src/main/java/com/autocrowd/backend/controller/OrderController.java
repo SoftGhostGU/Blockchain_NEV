@@ -60,15 +60,15 @@ public class OrderController {
      */
     @PutMapping
     public ResponseEntity<Map<String, Object>> updateOrderStatus(
-            @RequestParam Integer orderId,
-            @RequestParam String status) {
+            @RequestParam String orderId,
+            @RequestParam Byte status) {
         System.out.println("[OrderController] 收到更新订单状态请求: 订单ID=" + orderId + ", 状态=" + status);
         try {
             Order updatedOrder = orderService.updateOrderStatus(orderId, status);
             Map<String, Object> result = new HashMap<>();
             Map<String, Object> orderData = new HashMap<>();
             orderData.put("order_id", updatedOrder.getOrderId());
-            orderData.put("status", updatedOrder.getStatus().name().replace('_', ' '));
+            orderData.put("status", status);
             result.put("data", orderData);
             System.out.println("[OrderController] 返回更新订单状态结果: " + updatedOrder);
             return ResponseEntity.ok(result);
@@ -111,50 +111,6 @@ public class OrderController {
     }
 
     /**
-     * 司机接单接口
-     */
-    @PostMapping("/accept")
-    public ResponseEntity<Map<String, Object>> acceptOrder(
-            @RequestParam Integer orderId,
-            @RequestParam String driverId,
-            @RequestParam Integer vehicleId,
-            HttpServletRequest httpRequest) {
-        System.out.println("[OrderController] 收到接单请求: 订单ID=" + orderId + ", 司机ID=" + driverId + ", 车辆ID=" + vehicleId);
-        try {
-            // 从Authorization头获取token并解析用户ID
-            String authHeader = httpRequest.getHeader("Authorization");
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
-            }
-            String token = authHeader.substring(7);
-            Claims claims = jwtUtil.parseToken(token);
-            String userId = claims.getSubject();
-            if (userId == null || !userId.equals(driverId)) {
-                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
-            }
-            
-            Order order = orderService.acceptOrder(orderId, driverId, vehicleId);
-            Map<String, Object> result = new HashMap<>();
-            Map<String, Object> orderData = new HashMap<>();
-            orderData.put("order_id", order.getOrderId());
-            orderData.put("status", order.getStatus().name().replace('_', ' '));
-            result.put("data", orderData);
-            System.out.println("[OrderController] 返回接单结果: " + order);
-            return ResponseEntity.ok(result);
-        } catch (BusinessException e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("code", e.getCode());
-            errorResponse.put("message", e.getMessage());
-            return ResponseEntity.ok(errorResponse);
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("code", 500);
-            errorResponse.put("message", "服务器内部错误");
-            return ResponseEntity.ok(errorResponse);
-        }
-    }
-
-    /**
      * 创建订单接口
      */
     @PostMapping("/create")
@@ -179,11 +135,56 @@ public class OrderController {
             Order order = orderService.createOrder(request, userId);
             Map<String, Object> orderData = new HashMap<>();
             orderData.put("order_id", order.getOrderId());
-            orderData.put("estimated_price", "PLACEHOLDER_PRICE");
-            orderData.put("distance_km", "PLACEHOLDER_DISTANCE");
-            orderData.put("duration_min", "PLACEHOLDER_DURATION");
+            orderData.put("estimated_price", order.getEstimatedPrice());
+            // 使用实际的距离和时间占位符
+            orderData.put("distance_km", "5.50公里"); // 占位符，实际应通过算法计算
+            orderData.put("duration_min", "15分钟"); // 占位符，实际应通过算法计算
             result.put("data", orderData);
             System.out.println("[OrderController] 返回创建订单结果: " + order);
+            return ResponseEntity.ok(result);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误");
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+    
+    /**
+     * 更新订单状态从1到2（On the way -> In progress）
+     * 此接口不需要JWT验证
+     */
+    @PostMapping("/start")
+    public ResponseEntity<Map<String, Object>> startOrder(@RequestParam String orderId) {
+        System.out.println("[OrderController] 收到开始订单请求: 订单ID=" + orderId);
+        try {
+            // 验证订单ID
+            if (orderId == null || orderId.isEmpty()) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "订单ID不能为空");
+            }
+            
+            // 获取订单详情
+            Order order = orderService.getOrderById(orderId);
+            
+            // 检查订单状态是否为1（On the way）
+            if (order.getStatus() != 1) {
+                throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法开始服务");
+            }
+            
+            // 更新订单状态为2（In progress）
+            Order updatedOrder = orderService.updateOrderStatus(orderId, (byte) 2);
+            
+            Map<String, Object> result = new HashMap<>();
+            Map<String, Object> orderData = new HashMap<>();
+            orderData.put("order_id", updatedOrder.getOrderId());
+            orderData.put("status", updatedOrder.getStatus());
+            result.put("data", orderData);
+            System.out.println("[OrderController] 返回开始订单结果: " + updatedOrder);
             return ResponseEntity.ok(result);
         } catch (BusinessException e) {
             Map<String, Object> errorResponse = new HashMap<>();

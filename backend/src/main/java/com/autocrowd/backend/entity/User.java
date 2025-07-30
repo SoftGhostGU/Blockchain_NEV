@@ -36,4 +36,6 @@ public class User {
     
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    // Constructors, getters and setters are handled by Lombok @Data annotation
 }

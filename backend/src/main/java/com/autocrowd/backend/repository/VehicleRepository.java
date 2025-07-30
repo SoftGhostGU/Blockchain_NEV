@@ -13,6 +13,14 @@ import java.util.List;
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
     List<Vehicle> findByDriverId(Integer driverId);
+    
+    /**
+     * 检查特定车牌号是否存在
+     * @param licensePlate 车牌号
+     * @return 如果车牌号存在则返回true，否则返回false
+     */
+    boolean existsByLicensePlate(String licensePlate);
+    
     /**
      * 检查特定车辆是否属于特定司机
      * @param vehicleId 车辆ID

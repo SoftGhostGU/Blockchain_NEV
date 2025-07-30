@@ -1,4 +1,3 @@
-
 package com.autocrowd.backend.dto;
 
 import lombok.Data;
@@ -23,6 +22,8 @@ public class DriverRegisterRequest {
     @NotBlank(message = "手机号不能为空")
     @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
     private String phone;
+
+    private String bankCard;
 
     @NotBlank(message = "车辆类型不能为空")
     private String vehicleType;

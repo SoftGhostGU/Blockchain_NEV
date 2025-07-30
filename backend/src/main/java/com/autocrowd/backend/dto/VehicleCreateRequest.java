@@ -21,10 +21,10 @@ public class VehicleCreateRequest {
      */
     private BigDecimal fuelLevel;
     /**
-     * 车辆状况
-     * 描述车辆的当前状态，如"良好"、"需要维修"等
+     * 车辆状况ID
+     * 关联车辆状况表的ID
      */
-    private String condition;
+    private Integer conditionId;
 
     public String getLicensePlate() {
         return licensePlate;
@@ -42,11 +42,11 @@ public class VehicleCreateRequest {
         this.fuelLevel = fuelLevel;
     }
 
-    public String getCondition() {
-        return condition;
+    public Integer getConditionId() {
+        return conditionId;
     }
 
-    public void setCondition(String condition) {
-        this.condition = condition;
+    public void setConditionId(Integer conditionId) {
+        this.conditionId = conditionId;
     }
 }

@@ -3,20 +3,12 @@ package com.autocrowd.backend.service.impl;
 import com.autocrowd.backend.dto.RegisterRequest;
 import java.math.BigDecimal;
 import com.autocrowd.backend.dto.LoginRequest;
-
-
 import com.autocrowd.backend.dto.UserProfileUpdateRequest;
-
 import lombok.AllArgsConstructor;
-
-
 import org.springframework.stereotype.Service;
 import com.autocrowd.backend.service.UserService;
-
-
 import com.autocrowd.backend.entity.User;
 import com.autocrowd.backend.repository.UserRepository;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
@@ -49,122 +41,178 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(ExceptionCodeEnum.USERNAME_ALREADY_EXISTS);
         }
 
+        // Check if phone already exists
         System.out.println("[Service] 检查手机号是否存在: " + registerRequest.getPhone());
-        // Check if phone number already exists
         if (userRepository.existsByPhone(registerRequest.getPhone())) {
             throw new BusinessException(ExceptionCodeEnum.PHONE_ALREADY_EXISTS);
         }
 
         // Create new user
-        System.out.println("[Service] 开始创建新用户对象");
+        System.out.println("[Service] 创建新用户");
         User user = new User();
         user.setUsername(registerRequest.getUsername());
-        user.setPassword(registerRequest.getPassword());
         user.setPhone(registerRequest.getPhone());
-        user.setCreditScore(100); // Default credit score
-        user.setBalance(BigDecimal.valueOf(0.00));    // Default balance
+        user.setPassword(registerRequest.getPassword()); // 注意：实际项目中应该加密密码
+        user.setCreditScore(100); // 默认信用分
+        user.setBalance(BigDecimal.ZERO); // 默认余额为0
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
-        // Save user to database
-        System.out.println("[Service] 保存用户到数据库: " + user);
         User savedUser = userRepository.save(user);
-        System.out.println("[Service] 用户保存成功，生成的用户ID: " + savedUser.getUserId());
-        System.out.println("[Service] 用户保存成功: " + savedUser);
+        System.out.println("[Service] 用户注册成功: " + savedUser.getUsername());
 
-        return new UserProfileDTO(savedUser.getUserId(), savedUser.getUsername(), savedUser.getPhone(), savedUser.getBalance(), savedUser.getCreditScore());
+        UserProfileDTO profileDTO = new UserProfileDTO();
+        profileDTO.setUserId(savedUser.getUserId());
+        profileDTO.setUsername(savedUser.getUsername());
+        profileDTO.setPhone(savedUser.getPhone());
+        profileDTO.setCreditScore(savedUser.getCreditScore());
+        profileDTO.setBalance(savedUser.getBalance());
+        return profileDTO;
     }
 
     /**
      * 用户登录业务逻辑实现
-     * 根据手机号查询用户，验证密码，返回用户基本信息
-     * @param loginRequest 登录请求DTO，包含手机号和密码
+     * 根据用户名/手机号和密码查询用户，验证身份并返回用户基本信息
+     * @param loginRequest 登录请求DTO，包含用户名/手机号和密码
      * @return 包含用户基本信息的DTO
      * @throws BusinessException 当用户不存在或密码错误时抛出
      */
     @Override
     public UserProfileDTO login(LoginRequest loginRequest) {
-        System.out.println("[Service] 处理用户登录请求: " + loginRequest);
-        // Find user by phone
-        System.out.println("[Service] 根据手机号查询用户: " + loginRequest.getPhone());
-        User user = userRepository.findByPhone(loginRequest.getPhone())
-            .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND));
+        System.out.println("[UserServiceImpl] 处理用户登录请求: " + loginRequest);
+        try {
+            // 尝试使用用户名登录
+            if (loginRequest.getUsername() != null && !loginRequest.getUsername().trim().isEmpty()) {
+                System.out.println("[UserServiceImpl] 尝试使用用户名登录: " + loginRequest.getUsername());
+                return userRepository.findByUsernameAndPassword(loginRequest.getUsername(), loginRequest.getPassword())
+                        .map(user -> {
+                            System.out.println("[UserServiceImpl] 用户名登录成功: " + user.getUsername());
+                            UserProfileDTO profileDTO = new UserProfileDTO();
+                            profileDTO.setUserId(user.getUserId());
+                            profileDTO.setUsername(user.getUsername());
+                            profileDTO.setPhone(user.getPhone());
+                            profileDTO.setCreditScore(user.getCreditScore());
+                            profileDTO.setBalance(user.getBalance());
+                            return profileDTO;
+                        })
+                        .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.INVALID_PASSWORD, "用户名或密码错误"));
+            }
 
-        // Verify password (Note: In a real application, you should use password hashing and comparison)
-        if (!user.getPassword().equals(loginRequest.getPassword())) {
-            throw new BusinessException(ExceptionCodeEnum.INVALID_PASSWORD);
+            // 尝试使用手机号登录
+            if (loginRequest.getPhone() != null && !loginRequest.getPhone().trim().isEmpty()) {
+                System.out.println("[UserServiceImpl] 尝试使用手机号登录: " + loginRequest.getPhone());
+                return userRepository.findByPhoneAndPassword(loginRequest.getPhone(), loginRequest.getPassword())
+                        .map(user -> {
+                            System.out.println("[UserServiceImpl] 手机号登录成功: " + user.getUsername());
+                            UserProfileDTO profileDTO = new UserProfileDTO();
+                            profileDTO.setUserId(user.getUserId());
+                            profileDTO.setUsername(user.getUsername());
+                            profileDTO.setPhone(user.getPhone());
+                            profileDTO.setCreditScore(user.getCreditScore());
+                            profileDTO.setBalance(user.getBalance());
+                            return profileDTO;
+                        })
+                        .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.INVALID_PASSWORD, "手机号或密码错误"));
+            }
+
+            throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "用户名或手机号不能为空");
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BusinessException(ExceptionCodeEnum.LOGIN_FAILED, "用户登录异常: " + e.getMessage());
         }
-
-        UserProfileDTO result = new UserProfileDTO(user.getUserId(), user.getUsername(), user.getPhone(), user.getBalance(), user.getCreditScore());
-        System.out.println("[Service] 登录成功，返回结果: " + result);
-        return result;
     }
 
     /**
-     * 获取用户资料业务逻辑实现
+     * 获取用户个人资料业务逻辑实现
      * 根据用户ID查询用户完整信息，并转换为DTO返回
      * @param userId 用户ID
-     * @return 包含用户详细资料的DTO
+     * @return 包含用户完整信息的DTO
      * @throws BusinessException 当用户不存在时抛出
      */
     @Override
     public UserProfileDTO getUserProfile(Integer userId) {
-        System.out.println("[Service] 获取用户资料，用户ID: " + userId);
-        System.out.println("[Service] 根据ID查询用户: " + userId);
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND));
-        
-        UserProfileDTO profileDTO = new UserProfileDTO(user.getUserId(), user.getUsername(), user.getPhone(), user.getBalance(), user.getCreditScore());
-        
-        System.out.println("[Service] 返回用户资料: " + profileDTO);
-        return profileDTO;
+        System.out.println("[UserServiceImpl] 处理获取用户资料请求: userId = " + userId);
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "用户不存在"));
+
+            UserProfileDTO profileDTO = new UserProfileDTO();
+            profileDTO.setUserId(user.getUserId());
+            profileDTO.setUsername(user.getUsername());
+            profileDTO.setPhone(user.getPhone());
+            profileDTO.setCreditScore(user.getCreditScore());
+            profileDTO.setBalance(user.getBalance());
+            System.out.println("[UserServiceImpl] 获取用户资料成功: " + user.getUsername());
+            return profileDTO;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "获取用户资料异常: " + e.getMessage());
+        }
     }
 
     /**
-     * 更新用户资料业务逻辑实现
-     * 根据用户ID查询用户，更新指定的用户信息字段，保存并返回更新结果
+     * 更新用户个人资料业务逻辑实现
+     * 根据用户ID更新用户信息，并返回更新后的资料
      * @param userId 用户ID
-     * @param profileUpdateRequest 资料更新请求DTO，包含需要更新的字段
-     * @return 包含更新后用户资料的DTO
-     * @throws BusinessException 当用户不存在时抛出
+     * @param profileUpdateRequest 个人资料更新请求DTO
+     * @return 更新后的用户个人资料响应DTO
+     * @throws BusinessException 当用户不存在或更新失败时抛出
      */
     @Override
     public UserProfileDTO updateUserProfile(Integer userId, UserProfileUpdateRequest profileUpdateRequest) {
-        System.out.println("[Service] 更新用户资料，用户ID: " + userId + ", 请求数据: " + profileUpdateRequest);
-        System.out.println("[Service] 根据ID查询用户: " + userId);
-        User user = userRepository.findById(userId)
-            .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND));
-        
-        if (profileUpdateRequest.getUsername() != null) {
-            user.setUsername(profileUpdateRequest.getUsername());
+        System.out.println("[UserServiceImpl] 处理更新用户资料请求: userId = " + userId + ", request = " + profileUpdateRequest);
+        try {
+            // 获取用户实体
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "用户不存在"));
+
+            // 更新用户信息
+            if (profileUpdateRequest.getUsername() != null && !profileUpdateRequest.getUsername().trim().isEmpty()) {
+                // 检查用户名是否已存在
+                if (!profileUpdateRequest.getUsername().equals(user.getUsername()) && 
+                    userRepository.existsByUsername(profileUpdateRequest.getUsername())) {
+                    throw new BusinessException(ExceptionCodeEnum.USERNAME_ALREADY_EXISTS, "用户名已存在");
+                }
+                user.setUsername(profileUpdateRequest.getUsername().trim());
+            }
+            
+            if (profileUpdateRequest.getPhone() != null && !profileUpdateRequest.getPhone().trim().isEmpty()) {
+                // 检查手机号是否已存在
+                if (!profileUpdateRequest.getPhone().equals(user.getPhone()) && 
+                    userRepository.existsByPhone(profileUpdateRequest.getPhone())) {
+                    throw new BusinessException(ExceptionCodeEnum.PHONE_ALREADY_EXISTS, "手机号已存在");
+                }
+                user.setPhone(profileUpdateRequest.getPhone().trim());
+            }
+            
+            if (profileUpdateRequest.getCreditScore() != null) {
+                user.setCreditScore(profileUpdateRequest.getCreditScore());
+            }
+            
+            if (profileUpdateRequest.getBalance() != null) {
+                user.setBalance(profileUpdateRequest.getBalance());
+            }
+            
+            user.setUpdatedAt(LocalDateTime.now());
+
+            // 保存到数据库
+            User updatedUser = userRepository.save(user);
+            System.out.println("[UserServiceImpl] 更新用户资料成功: " + updatedUser.getUsername());
+
+            // 转换为DTO并返回
+            UserProfileDTO profileDTO = new UserProfileDTO();
+            profileDTO.setUserId(updatedUser.getUserId());
+            profileDTO.setUsername(updatedUser.getUsername());
+            profileDTO.setPhone(updatedUser.getPhone());
+            profileDTO.setCreditScore(updatedUser.getCreditScore());
+            profileDTO.setBalance(updatedUser.getBalance());
+            return profileDTO;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new BusinessException(ExceptionCodeEnum.PROFILE_UPDATE_FAILED, "更新用户资料异常: " + e.getMessage());
         }
-        if (profileUpdateRequest.getPhone() != null) {
-            user.setPhone(profileUpdateRequest.getPhone());
-        }
-        if (profileUpdateRequest.getCreditScore() != null) {
-            user.setCreditScore(profileUpdateRequest.getCreditScore());
-        }
-        if (profileUpdateRequest.getBalance() != null) {
-            user.setBalance(profileUpdateRequest.getBalance());
-        }
-        
-        user.setUpdatedAt(LocalDateTime.now());
-        System.out.println("[Service] 更新用户信息: " + user);
-        User updatedUser = userRepository.save(user);
-        System.out.println("[Service] 用户资料更新成功，用户ID: " + updatedUser.getUserId());
-        System.out.println("[Service] 用户更新成功: " + updatedUser);
-        
-        UserProfileDTO responseDTO = new UserProfileDTO(
-            updatedUser.getUserId(),
-            updatedUser.getUsername(),
-            updatedUser.getPhone(),
-            updatedUser.getBalance(),
-            updatedUser.getCreditScore()
-        );
-        
-        System.out.println("[Service] 用户资料更新成功，返回结果: " + responseDTO);
-        return responseDTO;
     }
-
-
 }
