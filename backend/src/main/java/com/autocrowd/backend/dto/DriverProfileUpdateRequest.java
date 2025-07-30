@@ -13,5 +13,6 @@ public class DriverProfileUpdateRequest {
     private String phone;
     private Integer creditScore;
     private BigDecimal walletBalance;
+    private String bankCard;
 
 }

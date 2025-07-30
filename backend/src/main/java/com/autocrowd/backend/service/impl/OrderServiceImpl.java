@@ -2,8 +2,8 @@ package com.autocrowd.backend.service.impl;
 
 import com.autocrowd.backend.dto.CreateOrderRequest;
 import com.autocrowd.backend.dto.EstimatePriceRequest;
-import com.autocrowd.backend.entity.Order;
 import com.autocrowd.backend.entity.Driver;
+import com.autocrowd.backend.entity.Order;
 import com.autocrowd.backend.entity.Vehicle;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.exception.BusinessException;
@@ -11,22 +11,29 @@ import com.autocrowd.backend.repository.DriverRepository;
 import com.autocrowd.backend.repository.OrderRepository;
 import com.autocrowd.backend.repository.VehicleRepository;
 import com.autocrowd.backend.service.OrderService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.autocrowd.backend.dto.CurrentOrderResponse;
 
 @Service
-@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
-    
+
     private final OrderRepository orderRepository;
     private final DriverRepository driverRepository;
     private final VehicleRepository vehicleRepository;
+
+    public OrderServiceImpl(OrderRepository orderRepository, DriverRepository driverRepository, VehicleRepository vehicleRepository) {
+        this.orderRepository = orderRepository;
+        this.driverRepository = driverRepository;
+        this.vehicleRepository = vehicleRepository;
+    }
+    
     /**
      * 创建新订单
      * @param request 创建订单请求DTO
@@ -49,216 +56,258 @@ public class OrderServiceImpl implements OrderService {
             }
 
             System.out.println("[OrderService] 收到创建订单请求: 起点=" + request.getStartLocation() + ", 终点=" + request.getDestination() + ", 车辆类型=" + request.getVehicleType());
+
+            // 生成订单ID (形如 ORD20250717001)
+            String orderId = "ORD" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + 
+                            String.format("%03d", (new Random()).nextInt(1000));
+
+            // 创建订单实体
             Order order = new Order();
+            order.setOrderId(orderId);
+            order.setUserId(Integer.valueOf(userId));
+            order.setDriverId(request.getDriverId());
+            order.setVehicleId(request.getVehicleId());
             order.setStartLocation(request.getStartLocation());
             order.setDestination(request.getDestination());
-            order.setStatus(Order.OrderStatus.Waiting);
-            //将预估价格设定为占位字符串
-            order.setEstimatedPrice(new BigDecimal("0"));
+            order.setStatus((byte) 0); // 0=Waiting
+            // 设置预估价格占位符
+            order.setEstimatedPrice(BigDecimal.valueOf(0.0)); // 占位符价格，实际应通过算法计算
+            order.setType(request.getVehicleType());
             order.setCreatedAt(LocalDateTime.now());
             order.setUpdatedAt(LocalDateTime.now());
-            order.setUser(Integer.parseInt(userId));
+
+            // 保存订单
             Order savedOrder = orderRepository.save(order);
-            System.out.println("[OrderService] 订单创建成功: ID=" + savedOrder.getOrderId());
+            System.out.println("[OrderService] 订单创建成功: " + savedOrder.getOrderId());
+
             return savedOrder;
+        } catch (BusinessException e) {
+            throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 订单创建失败: " + e.getMessage());
-            throw new BusinessException(ExceptionCodeEnum.ORDER_CREATE_FAILED, e);
+            System.err.println("[OrderService] 创建订单异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.ORDER_CREATE_FAILED, "创建订单失败: " + e.getMessage());
         }
     }
 
     /**
-     * 获取当前进行中的订单
-     * @return 当前订单响应DTO，包含订单详情、司机信息和车辆信息
-     * @throws BusinessException 当获取订单失败时抛出
+     * 价格预估
+     * @param request 预估请求参数
+     * @return 预估结果包含价格、距离和时间
+     */
+    @Override
+    public Map<String, Object> estimatePrice(EstimatePriceRequest request) {
+        System.out.println("[OrderService] 处理价格预估请求: " + request);
+        
+        Map<String, Object> result = new HashMap<>();
+        
+        // 简单的价格计算逻辑（实际项目中应该基于距离、时间等因素计算）
+        double distance = Math.random() * 50 + 5; // 模拟距离 5-55 公里
+        double time = distance / 30 * 60; // 模拟时间，假设平均速度30公里/小时
+        BigDecimal price = BigDecimal.valueOf(distance * 2.5).setScale(2, RoundingMode.HALF_UP); // 每公里2.5元
+        
+        result.put("distance", String.format("%.2f公里", distance));
+        result.put("time", String.format("%.0f分钟", time));
+        result.put("price", price);
+        
+        System.out.println("[OrderService] 价格预估完成: " + result);
+        return result;
+    }
+
+    /**
+     * 获取所有当前进行中的订单
+     * @return 进行中的订单信息列表
      */
     @Override
     public List<CurrentOrderResponse> getAllCurrentOrder() {
+        System.out.println("[OrderService] 获取所有进行中的订单");
+        
         try {
-            // 查询状态为Waiting、In progress和On the way的订单
-            List<Order> activeOrders = orderRepository.findByStatusIn(
-                Arrays.asList(Order.OrderStatus.Waiting, Order.OrderStatus.In_progress, Order.OrderStatus.On_the_way)
-            );
-
+            // 查询状态为 1=On the way 或 2=In progress 的订单
+            List<Byte> statuses = Arrays.asList((byte) 1, (byte) 2);
+            
+            List<Order> orders = orderRepository.findByStatusIn(statuses);
+            System.out.println("[OrderService] 查询到进行中的订单数量: " + orders.size());
+            
+            // 转换为响应DTO
             List<CurrentOrderResponse> responses = new ArrayList<>();
-            for (Order order : activeOrders) {
-                // 转换为响应DTO
+            for (Order order : orders) {
                 CurrentOrderResponse response = new CurrentOrderResponse();
-                response.setOrder_id(order.getOrderId());
-                response.setStatus(order.getStatus().name().replace('_', ' '));
-                response.setStart_location(order.getStartLocation());
+                response.setOrderId(order.getOrderId());
+                response.setStartLocation(order.getStartLocation());
                 response.setDestination(order.getDestination());
-                response.setCreated_at(order.getCreatedAt());
-
-                // 设置司机信息（如果有）
-                if (order.getDriver() != null) {
-                    Driver driver = driverRepository.findById(order.getDriver())
-                        .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "司机不存在"));
-                    
-                    CurrentOrderResponse.DriverInfoDTO driverDTO = new CurrentOrderResponse.DriverInfoDTO();
-                    driverDTO.setDriver_id(driver.getDriverId());
-                    driverDTO.setUsername(driver.getUsername());
-                    driverDTO.setPhone(driver.getPhone());
-                    driverDTO.setLocation("LOCATION_PLACEHOLDER");
-
-                    // 设置车辆信息（如果有）
-                    if (order.getVehicleId() != null) {
-                        Vehicle vehicle = vehicleRepository.findById(order.getVehicleId())
-                            .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆不存在"));
+                response.setStatus(order.getStatus());
+                response.setEstimatedPrice(order.getEstimatedPrice());
+                response.setCreatedAt(order.getCreatedAt());
+                
+                // 如果订单有司机ID，获取司机和车辆信息
+                if (order.getDriverId() != null) {
+                    Optional<Driver> driverOpt = driverRepository.findById(order.getDriverId());
+                    if (driverOpt.isPresent()) {
+                        Driver driver = driverOpt.get();
+                        CurrentOrderResponse.DriverInfoDTO driverInfo = new CurrentOrderResponse.DriverInfoDTO();
+                        driverInfo.setDriverId(driver.getDriverId());
+                        driverInfo.setUsername(driver.getUsername());
+                        driverInfo.setPhone(driver.getPhone());
                         
-                        CurrentOrderResponse.VehicleInfoDTO vehicleDTO = new CurrentOrderResponse.VehicleInfoDTO();
-                        vehicleDTO.setLicense_plate(vehicle.getLicensePlate());
-                        vehicleDTO.setFuel_level(vehicle.getFuelLevel().doubleValue());
-                        driverDTO.setVehicle(vehicleDTO);
+                        // 如果订单有车辆ID，获取车辆信息
+                        if (order.getVehicleId() != null) {
+                            Optional<Vehicle> vehicleOpt = vehicleRepository.findById(order.getVehicleId());
+                            if (vehicleOpt.isPresent()) {
+                                Vehicle vehicle = vehicleOpt.get();
+                                CurrentOrderResponse.VehicleInfoDTO vehicleInfo = new CurrentOrderResponse.VehicleInfoDTO();
+                                vehicleInfo.setLicensePlate(vehicle.getLicensePlate());
+                                vehicleInfo.setFuelLevel(vehicle.getFuelLevel());
+                                driverInfo.setVehicle(vehicleInfo);
+                            }
+                        }
+                        
+                        response.setDriver(driverInfo);
                     }
-
-                    response.setDriver(driverDTO);
                 }
+                
                 responses.add(response);
             }
+                
+            System.out.println("[OrderService] 转换订单列表完成");
             return responses;
         } catch (Exception e) {
-            System.err.println("[OrderService] 获取当前订单失败: " + e.getMessage());
-            throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "获取当前订单失败");
+            System.err.println("[OrderService] 获取进行中的订单异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询订单失败: " + e.getMessage());
         }
     }
 
+    /**
+     * 根据订单ID获取订单详情
+     * @param orderId 订单ID
+     * @return 订单详情
+     */
     @Override
-    public List<Order> getCurrentOrderByStatus(String status) {
+    public Order getOrderById(String orderId) {
+        System.out.println("[OrderService] 根据ID获取订单详情: " + orderId);
+        
         try {
-            Order.OrderStatus orderStatus = Order.OrderStatus.valueOf(status.replace(" ", "_"));
-            return orderRepository.findByStatus(orderStatus);
-        } catch (IllegalArgumentException e) {
-            throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "无效的订单状态: " + status);
-        }
-    }
-
-    @Override
-    public Order acceptOrder(Integer orderId, String driverId, Integer vehicleId) {
-        try {
-            // 验证参数
-            if (orderId == null) {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "订单ID不能为空");
-            }
-            if (driverId == null || driverId.trim().isEmpty()) {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "车主ID不能为空");
-            }
-            if (vehicleId == null) {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "车辆ID不能为空");
-            }
-
-            // 查询订单
-            Order order = orderRepository.findById(orderId)
+            return orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
-
-            // 验证订单状态是否为Waiting
-            if (order.getStatus() != Order.OrderStatus.Waiting) {
-                throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "只有等待中的订单可以被接单");
-            }
-
-            // 验证车主是否存在
-            Driver driver = driverRepository.findById(Integer.parseInt(driverId))
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "车主不存在"));
-
-            // 验证车辆是否属于该车主
-            boolean vehicleBelongsToDriver = vehicleRepository.existsByVehicleIdAndDriverId(vehicleId, Integer.parseInt(driverId));
-            if (!vehicleBelongsToDriver) {
-                throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_BELONG_TO_DRIVER, "车辆不属于该车主");
-            }
-
-            // 更新订单信息
-            order.setDriver(driver.getDriverId());
-            order.setVehicleId(vehicleId);
-            order.setStatus(Order.OrderStatus.On_the_way);
-            order.setUpdatedAt(LocalDateTime.now());
-
-            Order updatedOrder = orderRepository.save(order);
-            System.out.println("[OrderService] 车主接单成功: 订单ID=" + orderId + ", 车主ID=" + driverId);
-            return updatedOrder;
         } catch (BusinessException e) {
-            System.err.println("[OrderService] 车主接单失败: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 车主接单系统异常: " + e.getMessage());
-            throw new BusinessException(ExceptionCodeEnum.ORDER_ACCEPT_FAILED, "接单失败");
+            System.err.println("[OrderService] 获取订单详情异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询订单失败: " + e.getMessage());
         }
     }
 
     /**
      * 更新订单状态
      * @param orderId 订单ID
-     * @param status 新订单状态
-     * @return 更新后的订单实体
-     * @throws BusinessException 当订单不存在或状态无效时抛出
+     * @param status 新状态
+     * @return 更新后的订单
      */
     @Override
-    public Order updateOrderStatus(Integer orderId, String status) {
+    public Order updateOrderStatus(String orderId, byte status) {
+        System.out.println("[OrderService] 更新订单状态: orderId=" + orderId + ", status=" + status);
+        
         try {
-            // 验证参数
-            if (orderId == null) {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "订单ID不能为空");
-            }
-            if (status == null || status.trim().isEmpty()) {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "订单状态不能为空");
-            }
-
-            // 查询订单
+            // 获取订单
             Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
-
-            // 验证并转换状态
-            Order.OrderStatus newStatus;
-            try {
-                newStatus = Order.OrderStatus.valueOf(status.replace(" ", "_"));
-            } catch (IllegalArgumentException e) {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "无效的订单状态: " + status);
-            }
-
-            // 更新订单状态
-            order.setStatus(newStatus);
+            
+            // 更新状态
+            order.setStatus(status);
             order.setUpdatedAt(LocalDateTime.now());
-            return orderRepository.save(order);
+            
+            // 保存更新
+            Order updatedOrder = orderRepository.save(order);
+            System.out.println("[OrderService] 订单状态更新成功: " + updatedOrder.getOrderId());
+            
+            return updatedOrder;
         } catch (BusinessException e) {
-            System.err.println("[OrderService] 更新订单状态失败: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 更新订单状态系统异常: " + e.getMessage());
-            throw new BusinessException(ExceptionCodeEnum.ORDER_UPDATE_FAILED, "更新订单状态失败");
+            System.err.println("[OrderService] 更新订单状态异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.ORDER_UPDATE_FAILED, "更新订单状态失败: " + e.getMessage());
         }
     }
 
     /**
-     * 预估订单价格
-     * @param request 价格预估请求DTO
-     * @return 包含预估价格、距离和时长的Map
-     * @throws BusinessException 当参数无效时抛出
+     * 司机接单
+     * @param orderId 订单ID
+     * @param driverId 司机ID
+     * @param vehicleId 车辆ID
+     * @return 接单结果
      */
     @Override
-    public Map<String, Object> estimatePrice(EstimatePriceRequest request) {
+    public Order acceptOrder(String orderId, Integer driverId, Integer vehicleId) {
+        System.out.println("[OrderService] 司机接单: orderId=" + orderId + ", driverId=" + driverId + ", vehicleId=" + vehicleId);
+        
         try {
-            // 验证请求参数
-            if (request.getStartLocation() == null || request.getStartLocation().trim().isEmpty()) {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "起始位置不能为空");
+            // 获取订单
+            Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+            
+            // 检查订单状态是否为等待中
+            if (order.getStatus() != 0) {
+                throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法接单");
             }
-            if (request.getDestination() == null || request.getDestination().trim().isEmpty()) {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "目的地不能为空");
-            }
-
-            System.out.println("[OrderService] 收到价格预估请求: 起点=" + request.getStartLocation() + ", 终点=" + request.getDestination() + ", 车辆类型=" + request.getVehicle_type());
-
-            // 使用占位符返回预估结果
-            Map<String, Object> result = new HashMap<>();
-            result.put("estimated_price", "PLACEHOLDER_PRICE");
-            result.put("distance_km", "PLACEHOLDER_DISTANCE");
-            result.put("duration_min", "PLACEHOLDER_DURATION");
-
-            return result;
+            
+            // 设置司机ID、车辆ID和状态
+            order.setDriverId(driverId);
+            order.setVehicleId(vehicleId);
+            order.setStatus((byte) 1); // 1=On the way
+            order.setUpdatedAt(LocalDateTime.now());
+            
+            // 保存更新
+            Order updatedOrder = orderRepository.save(order);
+            System.out.println("[OrderService] 司机接单成功: " + updatedOrder.getOrderId());
+            
+            return updatedOrder;
         } catch (BusinessException e) {
-            System.err.println("[OrderService] 价格预估失败: " + e.getMessage());
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 价格预估系统异常: " + e.getMessage());
-            throw new BusinessException(ExceptionCodeEnum.PRICE_ESTIMATION_FAILED, "价格预估失败");
+            System.err.println("[OrderService] 司机接单异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.ORDER_ACCEPT_FAILED, "接单失败: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Order> getCurrentOrderByStatus(String status) {
+        return new ArrayList<>();
+    }
+
+    /**
+     * 结算订单
+     * @param orderId 订单ID
+     * @param actualPrice 实际价格
+     * @return 结算后的订单
+     */
+    @Override
+    public Order completeOrder(String orderId, BigDecimal actualPrice) {
+        System.out.println("[OrderService] 结算订单: orderId=" + orderId + ", actualPrice=" + actualPrice);
+        
+        try {
+            // 获取订单
+            Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+            
+            // 检查订单状态是否为进行中
+            if (order.getStatus() != 2) { // 2=In progress
+                throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法结算");
+            }
+            
+            // 设置实际价格和状态
+            order.setActualPrice(actualPrice);
+            order.setStatus((byte) 3); // 3=Completed
+            order.setUpdatedAt(LocalDateTime.now());
+            
+            // 保存更新
+            Order updatedOrder = orderRepository.save(order);
+            System.out.println("[OrderService] 订单结算成功: " + updatedOrder.getOrderId());
+            
+            return updatedOrder;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            System.err.println("[OrderService] 订单结算异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.ORDER_COMPLETE_FAILED, "订单结算失败: " + e.getMessage());
         }
     }
 }

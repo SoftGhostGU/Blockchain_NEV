@@ -1,3 +1,4 @@
+
 package com.autocrowd.backend.controller;
 
 import com.autocrowd.backend.dto.*;
@@ -13,13 +14,9 @@ import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -138,7 +135,7 @@ public class DriverController {
                         dto.setLicensePlate(vehicle.getLicensePlate());
                         dto.setDriverId(vehicle.getDriverId());
                         dto.setFuelLevel(vehicle.getFuelLevel());
-                        dto.setCondition(vehicle.getCondition());
+                        dto.setConditionId(vehicle.getConditionId());
                         dto.setCreatedAt(vehicle.getCreatedAt());
                         dto.setUpdatedAt(vehicle.getUpdatedAt());
                         return dto;
@@ -164,9 +161,6 @@ public class DriverController {
 
     /**
      * 车主接单接口
-     */
-    /**
-     * 车主接单接口
      * 接收车主接单请求，验证订单和车辆信息，更新订单状态为已接单
      * @param request 接单请求DTO，包含订单ID和车辆ID
      * @param httpRequest HTTP请求对象，包含用户身份信息
@@ -177,7 +171,7 @@ public class DriverController {
         System.out.println("[DriverController] 收到接单请求: 订单ID=" + request.getOrder_id());
         try {
             // 验证订单ID和车辆ID
-            if (request.getOrder_id() == null || request.getOrder_id() <= 0 || request.getVehicle_id() == null || request.getVehicle_id() <= 0) {
+            if (request.getOrder_id() == null || request.getOrder_id().isEmpty() || request.getVehicle_id() == null || request.getVehicle_id() <= 0) {
                 throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR);
             }
             
@@ -210,7 +204,7 @@ public class DriverController {
             }
 
             System.out.println("[DriverController] 调用OrderService.acceptOrder()方法，处理接单业务逻辑，订单ID: " + request.getOrder_id() + ", 车主ID: " + driverId + ", 车辆ID: " + request.getVehicle_id());
-            Order order = orderService.acceptOrder(request.getOrder_id(), String.valueOf(driverId), request.getVehicle_id());
+            Order order = orderService.acceptOrder(request.getOrder_id(), driverId, request.getVehicle_id());
             System.out.println("[DriverController] OrderService.acceptOrder()返回结果: " + order);
             Map<String, Object> response = new HashMap<>();
             Map<String, Object> data = new HashMap<>();
@@ -276,6 +270,88 @@ public class DriverController {
                 errorResponse.put("code", 500);
                 errorResponse.put("message", "服务器内部错误: " + e.getMessage());
                 return ResponseEntity.ok(errorResponse);
+        }
+    }
+
+    /**
+     * 结算订单接口
+     * 接收车主结算订单请求，更新订单状态为已完成并写入实际价格
+     *
+     * @param request     结算订单请求DTO，包含订单ID和实际价格
+     * @param httpRequest HTTP请求对象，包含用户身份信息
+     * @return 包含结算结果的响应实体
+     */
+    @PostMapping("/order/complete")
+    public ResponseEntity<Map<String, Object>> completeOrder(
+            @RequestBody CompleteOrderRequest request,
+            HttpServletRequest httpRequest) {
+        System.out.println("[DriverController] 收到结算订单请求: 订单ID=" + request.getOrderId() + ", 实际价格=" + request.getActualPrice());
+        try {
+            // 验证参数
+            if (request.getOrderId() == null || request.getOrderId().isEmpty()) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "订单ID不能为空");
+            }
+
+            if (request.getActualPrice() == null || request.getActualPrice().compareTo(BigDecimal.ZERO) < 0) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "实际价格必须大于等于0");
+            }
+
+            // 从请求头获取token
+            String token = httpRequest.getHeader("Authorization");
+            System.out.println("[DriverController] 获取到Authorization头: " + (token != null ? "Bearer ****" : "null"));
+            if (token == null || !token.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            token = token.substring(7);
+
+            // 解析token获取司机信息
+            System.out.println("[DriverController] 开始解析token");
+            Claims claims = jwtUtil.parseToken(token);
+            System.out.println("[DriverController] token解析成功，claims内容: " + claims);
+            String driverIdStr = claims.get("userId", String.class);
+            String username = claims.get("username", String.class);
+            System.out.println("[DriverController] 从token中解析到司机信息 - driverId: " + driverIdStr + ", username: " + username);
+            if (driverIdStr == null || driverIdStr.isEmpty()) {
+                System.out.println("[DriverController] token解析失败: 司机ID为空");
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含司机ID");
+            }
+            Integer driverId;
+            try {
+                driverId = Integer.valueOf(driverIdStr);
+                System.out.println("[DriverController] 司机ID字符串转换为整数成功: " + driverId);
+            } catch (NumberFormatException e) {
+                System.out.println("[DriverController] 司机ID格式错误，无法转换为整数: " + driverIdStr);
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "司机ID格式错误");
+            }
+
+            // 检查订单是否属于该车主
+            Order order = orderService.getOrderById(request.getOrderId());
+            if (!order.getDriverId().equals(driverId)) {
+                throw new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不属于当前车主");
+            }
+
+            System.out.println("[DriverController] 调用OrderService.completeOrder()方法，处理结算订单业务逻辑，订单ID: " + request.getOrderId() + ", 实际价格: " + request.getActualPrice());
+            Order completedOrder = orderService.completeOrder(request.getOrderId(), request.getActualPrice());
+            System.out.println("[DriverController] OrderService.completeOrder()返回结果: " + completedOrder);
+
+            Map<String, Object> response = new HashMap<>();
+            Map<String, Object> data = new HashMap<>();
+            data.put("order_id", completedOrder.getOrderId());
+            data.put("status", "Completed");
+            data.put("actual_price", request.getActualPrice());
+            response.put("data", data);
+            System.out.println("[DriverController] 返回结算订单结果: " + response);
+            return ResponseEntity.ok(response);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误: " + e.getMessage());
+            return ResponseEntity.ok(errorResponse);
         }
     }
 }

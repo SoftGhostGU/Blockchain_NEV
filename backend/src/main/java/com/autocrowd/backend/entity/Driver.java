@@ -32,9 +32,14 @@ public class Driver {
     @Column(name = "wallet_balance")
     private BigDecimal walletBalance;
     
+    @Column(name = "bank_card")
+    private String bankCard;
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    // Constructors, getters and setters are handled by Lombok @Data annotation
 }

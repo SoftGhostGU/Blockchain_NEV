@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, Integer> {
-    List<Order> findByStatusIn(List<Order.OrderStatus> statuses);
-    List<Order> findByStatus(Order.OrderStatus status);
+public interface OrderRepository extends JpaRepository<Order, String> {
+    List<Order> findByStatusIn(List<Byte> statuses);
+    List<Order> findByStatus(Byte status);
 }

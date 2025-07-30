@@ -9,7 +9,33 @@
 
     <!-- 示例: 保存订单 -->
     <insert id="save" parameterType="com.autocrowd.backend.entity.Order">
-        INSERT INTO orders (user_id, driver_id, start_location, destination, status, estimated_price, actual_price, review_id, created_at, updated_at)
-        VALUES (#{userId}, #{driverId}, #{startLocation}, #{destination}, #{status}, #{estimatedPrice}, #{actualPrice}, #{reviewId}, #{createdAt}, #{updatedAt})
+        INSERT INTO orders (order_id, user_id, driver_id, vehicle_id, start_location, destination, status, estimated_price, actual_price, type, created_at, updated_at)
+        VALUES (#{orderId}, #{userId}, #{driverId}, #{vehicleId}, #{startLocation}, #{destination}, #{status}, #{estimatedPrice}, #{actualPrice}, #{type}, #{createdAt}, #{updatedAt})
     </insert>
+    
+    <select id="findByStatusIn" resultMap="OrderResultMap">
+        SELECT * FROM orders WHERE status IN
+        <foreach item="item" index="index" collection="statuses" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    
+    <select id="findByStatus" resultMap="OrderResultMap">
+        SELECT * FROM orders WHERE status = #{status}
+    </select>
+    
+    <resultMap id="OrderResultMap" type="com.autocrowd.backend.entity.Order">
+        <id column="order_id" property="orderId"/>
+        <result column="user_id" property="userId"/>
+        <result column="driver_id" property="driverId"/>
+        <result column="vehicle_id" property="vehicleId"/>
+        <result column="start_location" property="startLocation"/>
+        <result column="destination" property="destination"/>
+        <result column="status" property="status"/>
+        <result column="estimated_price" property="estimatedPrice"/>
+        <result column="actual_price" property="actualPrice"/>
+        <result column="type" property="type"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
 </mapper>

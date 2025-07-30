@@ -36,4 +36,18 @@ boolean existsByUsername(String username);
  * @return 手机号存在返回true，否则返回false
  */
 boolean existsByPhone(String phone);
+    /**
+ * 根据用户名和密码查询用户
+ * @param username 用户名
+ * @param password 密码
+ * @return 包含用户实体的Optional对象
+ */
+Optional<User> findByUsernameAndPassword(String username, String password);
+    /**
+ * 根据手机号和密码查询用户
+ * @param phone 手机号
+ * @param password 密码
+ * @return 包含用户实体的Optional对象
+ */
+Optional<User> findByPhoneAndPassword(String phone, String password);
 }

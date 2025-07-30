@@ -20,4 +20,13 @@ public interface VehicleService {
     VehicleDTO createVehicle(Integer driverId, VehicleCreateRequest request);
     VehicleDTO updateVehicle(Integer driverId, VehicleUpdateRequest request);
     List<VehicleDTO> getVehiclesByDriverId(Integer driverId);
+    
+    /**
+     * 删除车辆
+     * 根据车辆ID删除指定车辆，需要验证司机权限
+     * @param driverId 司机ID
+     * @param vehicleId 车辆ID
+     * @return 删除结果
+     */
+    boolean deleteVehicle(Integer driverId, Integer vehicleId);
 }

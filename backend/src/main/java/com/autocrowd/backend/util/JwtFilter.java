@@ -29,7 +29,7 @@ public class JwtFilter implements Filter {
         String path = request.getRequestURI();
 
         // 放行登录和注册接口
-        if (path.contains("/api/user/login") || path.contains("/api/user/register") || path.contains("/api/driver/login") || path.contains("/api/driver/register")) {
+        if (path.contains("/api/user/login") || path.contains("/api/user/register") || path.contains("/api/driver/login") || path.contains("/api/driver/register") || path.contains("/api/order/start")) {
             filterChain.doFilter(request, response);
             return;
         }
