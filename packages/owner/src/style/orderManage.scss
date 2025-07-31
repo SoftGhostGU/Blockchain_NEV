@@ -20,6 +20,12 @@
       border-radius: 15px;
       box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
       transition: all 0.3s ease-in-out;
+
+      .colomn-title {
+        color: #555;
+        font-size: 18px;
+        height: 0;
+      }
     }
 
     .colomn-item:hover {
