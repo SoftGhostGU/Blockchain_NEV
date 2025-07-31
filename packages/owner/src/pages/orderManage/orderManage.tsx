@@ -249,6 +249,7 @@ export default function orderManage() {
     <div className="order-container">
       <div className='colomn-container'>
         <div className='colomn-item'>
+          <div className='colomn-title'>评分分布</div>
           <CirclePieChart data={starCount} />
         </div>
         <div className='colomn-item'>aaa</div>
