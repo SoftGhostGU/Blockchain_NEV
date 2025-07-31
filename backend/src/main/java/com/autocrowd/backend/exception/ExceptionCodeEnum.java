@@ -58,8 +58,19 @@ public enum ExceptionCodeEnum {
     VEHICLE_CREATE_ERROR(20014, "车辆创建失败"),
     VEHICLE_UPDATE_ERROR(20015, "车辆更新失败"),
     VEHICLE_DELETE_ERROR(20016, "车辆删除失败"),
-    VEHICLE_QUERY_ERROR(20017, "车辆查询失败");
+    VEHICLE_QUERY_ERROR(20017, "车辆查询失败"),
 
+    // 评价相关异常
+    REVIEW_NOT_FOUND(30001, "评价不存在"),
+    REVIEW_CREATE_FAILED(30002, "评价创建失败"),
+    REVIEW_UPDATE_FAILED(30003, "评价更新失败"),
+    REVIEW_DELETE_FAILED(30004, "评价删除失败"),
+    REVIEW_QUERY_FAILED(30005, "评价查询失败"),
+    REVIEW_PERMISSION_DENIED(30006, "没有评价权限"),
+    REVIEW_ALREADY_EXISTS(30007, "已存在评价"),
+    REVIEW_CONTENT_EMPTY(30008, "评价内容不能为空"),
+    REVIEW_RATING_INVALID(30009, "无效的评分"),
+    REVIEW_TARGET_NOT_FOUND(30010, "评价目标不存在");
 
     private final int code;
     private final String message;

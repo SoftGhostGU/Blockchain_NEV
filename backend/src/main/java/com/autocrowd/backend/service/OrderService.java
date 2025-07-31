@@ -4,10 +4,13 @@ import com.autocrowd.backend.dto.CreateOrderRequest;
 import com.autocrowd.backend.entity.Order;
 import java.math.BigDecimal;
 
-import com.autocrowd.backend.entity.Order;
+import com.autocrowd.backend.entity.Review;
 
 import com.autocrowd.backend.dto.EstimatePriceRequest;
 import com.autocrowd.backend.dto.CurrentOrderResponse;
+import com.autocrowd.backend.dto.AddReviewRequest;
+import com.autocrowd.backend.dto.UserOrderDetailResponse;
+import com.autocrowd.backend.dto.DriverOrderDetailResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -66,4 +69,26 @@ public interface OrderService {
      * @return 结算后的订单
      */
     Order completeOrder(String orderId, BigDecimal actualPrice);
+    
+    /**
+     * 添加订单评价
+     * @param request 评价请求
+     * @param userId 用户ID
+     * @return 评价结果
+     */
+    Review addReview(AddReviewRequest request, String userId);
+    
+    /**
+     * 获取用户的历史订单（已完成的订单）
+     * @param userId 用户ID
+     * @return 订单详情列表
+     */
+    List<UserOrderDetailResponse> getUserHistoryOrders(Integer userId);
+    
+    /**
+     * 获取司机的历史订单（已完成的订单）
+     * @param driverId 司机ID
+     * @return 订单详情列表
+     */
+    List<DriverOrderDetailResponse> getDriverHistoryOrders(Integer driverId);
 }
