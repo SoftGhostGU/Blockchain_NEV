@@ -2,14 +2,19 @@ package com.autocrowd.backend.service.impl;
 
 import com.autocrowd.backend.dto.CreateOrderRequest;
 import com.autocrowd.backend.dto.EstimatePriceRequest;
+import com.autocrowd.backend.dto.UserOrderDetailResponse;
+import com.autocrowd.backend.dto.DriverOrderDetailResponse;
 import com.autocrowd.backend.entity.Driver;
 import com.autocrowd.backend.entity.Order;
+import com.autocrowd.backend.entity.Review;
 import com.autocrowd.backend.entity.Vehicle;
+import com.autocrowd.backend.entity.User;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.repository.DriverRepository;
 import com.autocrowd.backend.repository.OrderRepository;
 import com.autocrowd.backend.repository.VehicleRepository;
+import com.autocrowd.backend.repository.UserRepository;
 import com.autocrowd.backend.service.OrderService;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +25,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import com.autocrowd.backend.dto.CurrentOrderResponse;
+import com.autocrowd.backend.dto.AddReviewRequest;
+import com.autocrowd.backend.repository.ReviewRepository;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -27,11 +34,15 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final DriverRepository driverRepository;
     private final VehicleRepository vehicleRepository;
+    private final ReviewRepository reviewRepository;
+    private final UserRepository userRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, DriverRepository driverRepository, VehicleRepository vehicleRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, DriverRepository driverRepository, VehicleRepository vehicleRepository, ReviewRepository reviewRepository, UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.driverRepository = driverRepository;
         this.vehicleRepository = vehicleRepository;
+        this.reviewRepository = reviewRepository;
+        this.userRepository = userRepository;
     }
     
     /**
@@ -310,4 +321,225 @@ public class OrderServiceImpl implements OrderService {
             throw new BusinessException(ExceptionCodeEnum.ORDER_COMPLETE_FAILED, "订单结算失败: " + e.getMessage());
         }
     }
+    
+    /**
+     * 添加订单评价
+     * @param request 评价请求
+     * @param userId 用户ID
+     * @return 评价结果
+     */
+    @Override
+    public Review addReview(AddReviewRequest request, String userId) {
+        System.out.println("[OrderService] 添加订单评价: orderId=" + request.getOrderId() + ", userId=" + userId);
+        
+        try {
+            // 获取订单
+            Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+            
+            // 检查订单状态是否为已完成
+            if (order.getStatus() != 3) { // 3=Completed
+                throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "只能对已完成的订单进行评价");
+            }
+            
+            // 检查是否已经评价过
+            List<Review> existingReviews = reviewRepository.findByOrderId(request.getOrderId());
+            if (!existingReviews.isEmpty()) {
+                throw new BusinessException(ExceptionCodeEnum.REVIEW_ALREADY_EXISTS, "该订单已评价");
+            }
+            
+            // 创建评价
+            Review review = new Review();
+            review.setOrderId(request.getOrderId());
+            review.setUserId(Integer.valueOf(userId));
+            review.setDriverId(order.getDriverId());
+            review.setContent(request.getContent());
+            review.setCommentStar(request.getCommentStar());
+            review.setCreatedAt(LocalDateTime.now());
+            review.setUpdatedAt(LocalDateTime.now());
+            
+            // 保存评价
+            Review savedReview = reviewRepository.save(review);
+            System.out.println("[OrderService] 订单评价添加成功: " + savedReview.getReviewId());
+            
+            return savedReview;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            System.err.println("[OrderService] 添加订单评价异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.REVIEW_CREATE_FAILED, "添加评价失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 获取用户的历史订单（已完成的订单）
+     * @param userId 用户ID
+     * @return 订单详情列表
+     */
+    @Override
+    public List<UserOrderDetailResponse> getUserHistoryOrders(Integer userId) {
+        System.out.println("[OrderService] 获取用户历史订单: userId=" + userId);
+        
+        try {
+            // 查询用户已完成的订单（状态为3）
+            List<Order> orders = orderRepository.findByUserIdAndStatus(userId, (byte) 3);
+            
+            // 转换为用户端专用的详细响应DTO
+            List<UserOrderDetailResponse> responses = new ArrayList<>();
+            for (Order order : orders) {
+                UserOrderDetailResponse response = convertToUserOrderDetailResponse(order);
+                responses.add(response);
+            }
+            
+            System.out.println("[OrderService] 获取用户历史订单完成，共找到 " + responses.size() + " 条记录");
+            return responses;
+        } catch (Exception e) {
+            System.err.println("[OrderService] 获取用户历史订单异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询历史订单失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 获取司机的历史订单（已完成的订单）
+     * @param driverId 司机ID
+     * @return 订单详情列表
+     */
+    @Override
+    public List<DriverOrderDetailResponse> getDriverHistoryOrders(Integer driverId) {
+        System.out.println("[OrderService] 获取司机历史订单: driverId=" + driverId);
+        
+        try {
+            // 查询司机已完成的订单（状态为3）
+            List<Order> orders = orderRepository.findByDriverIdAndStatus(driverId, (byte) 3);
+            
+            // 转换为车主端专用的详细响应DTO
+            List<DriverOrderDetailResponse> responses = new ArrayList<>();
+            for (Order order : orders) {
+                DriverOrderDetailResponse response = convertToDriverOrderDetailResponse(order);
+                responses.add(response);
+            }
+            
+            System.out.println("[OrderService] 获取司机历史订单完成，共找到 " + responses.size() + " 条记录");
+            return responses;
+        } catch (Exception e) {
+            System.err.println("[OrderService] 获取司机历史订单异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询历史订单失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 将Order实体转换为UserOrderDetailResponse DTO（用户端专用）
+     * @param order 订单实体
+     * @return 用户端订单详情响应DTO
+     */
+    private UserOrderDetailResponse convertToUserOrderDetailResponse(Order order) {
+        UserOrderDetailResponse response = new UserOrderDetailResponse();
+        response.setOrderId(order.getOrderId());
+        response.setStartLocation(order.getStartLocation());
+        response.setDestination(order.getDestination());
+        response.setStatus(order.getStatus());
+        response.setEstimatedPrice(order.getEstimatedPrice());
+        response.setActualPrice(order.getActualPrice());
+        response.setCreatedAt(order.getCreatedAt());
+        response.setUpdatedAt(order.getUpdatedAt());
+        response.setType(order.getType());
+        
+        // 获取司机信息（不包含手机号和钱包余额等敏感信息）
+        if (order.getDriverId() != null) {
+            Optional<Driver> driverOpt = driverRepository.findById(order.getDriverId());
+            if (driverOpt.isPresent()) {
+                Driver driver = driverOpt.get();
+                UserOrderDetailResponse.DriverInfoDTO driverInfo = new UserOrderDetailResponse.DriverInfoDTO();
+                driverInfo.setDriverId(driver.getDriverId());
+                driverInfo.setUsername(driver.getUsername());
+                driverInfo.setCreditScore(driver.getCreditScore());
+                response.setDriver(driverInfo);
+            }
+        }
+        
+        // 获取车辆信息
+        if (order.getVehicleId() != null) {
+            Optional<Vehicle> vehicleOpt = vehicleRepository.findById(order.getVehicleId());
+            if (vehicleOpt.isPresent()) {
+                Vehicle vehicle = vehicleOpt.get();
+                UserOrderDetailResponse.VehicleInfoDTO vehicleInfo = new UserOrderDetailResponse.VehicleInfoDTO();
+                vehicleInfo.setVehicleId(vehicle.getVehicleId());
+                vehicleInfo.setLicensePlate(vehicle.getLicensePlate());
+                response.setVehicle(vehicleInfo);
+            }
+        }
+        
+        // 获取评价信息
+        List<Review> reviews = reviewRepository.findByOrderId(order.getOrderId());
+        if (!reviews.isEmpty()) {
+            Review review = reviews.get(0); // 一个订单只应该有一个评价
+            UserOrderDetailResponse.ReviewInfoDTO reviewInfo = new UserOrderDetailResponse.ReviewInfoDTO();
+            reviewInfo.setReviewId(review.getReviewId());
+            reviewInfo.setContent(review.getContent());
+            reviewInfo.setCommentStar(review.getCommentStar());
+            reviewInfo.setCreatedAt(review.getCreatedAt());
+            reviewInfo.setUpdatedAt(review.getUpdatedAt());
+            response.setReview(reviewInfo);
+        }
+        
+        return response;
+    }
+    
+    /**
+     * 将Order实体转换为DriverOrderDetailResponse DTO（车主端专用）
+     * @param order 订单实体
+     * @return 车主端订单详情响应DTO
+     */
+    private DriverOrderDetailResponse convertToDriverOrderDetailResponse(Order order) {
+        DriverOrderDetailResponse response = new DriverOrderDetailResponse();
+        response.setOrderId(order.getOrderId());
+        response.setStartLocation(order.getStartLocation());
+        response.setDestination(order.getDestination());
+        response.setStatus(order.getStatus());
+        response.setEstimatedPrice(order.getEstimatedPrice());
+        response.setActualPrice(order.getActualPrice());
+        response.setCreatedAt(order.getCreatedAt());
+        response.setUpdatedAt(order.getUpdatedAt());
+        response.setType(order.getType());
+        
+        // 获取用户信息（不包含手机号等敏感信息）
+        if (order.getUserId() != null) {
+            Optional<User> userOpt = userRepository.findById(order.getUserId());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                DriverOrderDetailResponse.UserInfoDTO userInfo = new DriverOrderDetailResponse.UserInfoDTO();
+                userInfo.setUserId(user.getUserId());
+                userInfo.setUsername(user.getUsername());
+                response.setUser(userInfo);
+            }
+        }
+        
+        // 获取车辆信息
+        if (order.getVehicleId() != null) {
+            Optional<Vehicle> vehicleOpt = vehicleRepository.findById(order.getVehicleId());
+            if (vehicleOpt.isPresent()) {
+                Vehicle vehicle = vehicleOpt.get();
+                DriverOrderDetailResponse.VehicleInfoDTO vehicleInfo = new DriverOrderDetailResponse.VehicleInfoDTO();
+                vehicleInfo.setVehicleId(vehicle.getVehicleId());
+                vehicleInfo.setLicensePlate(vehicle.getLicensePlate());
+                response.setVehicle(vehicleInfo);
+            }
+        }
+        
+        // 获取评价信息
+        List<Review> reviews = reviewRepository.findByOrderId(order.getOrderId());
+        if (!reviews.isEmpty()) {
+            Review review = reviews.get(0); // 一个订单只应该有一个评价
+            DriverOrderDetailResponse.ReviewInfoDTO reviewInfo = new DriverOrderDetailResponse.ReviewInfoDTO();
+            reviewInfo.setReviewId(review.getReviewId());
+            reviewInfo.setContent(review.getContent());
+            reviewInfo.setCommentStar(review.getCommentStar());
+            reviewInfo.setCreatedAt(review.getCreatedAt());
+            reviewInfo.setUpdatedAt(review.getUpdatedAt());
+            response.setReview(reviewInfo);
+        }
+        
+        return response;
+    }
+
 }

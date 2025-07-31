@@ -3,17 +3,19 @@ package com.autocrowd.backend.controller;
 import com.autocrowd.backend.dto.CreateOrderRequest;
 import com.autocrowd.backend.dto.CurrentOrderResponse;
 import com.autocrowd.backend.dto.EstimatePriceRequest;
+import com.autocrowd.backend.dto.AddReviewRequest;
+import com.autocrowd.backend.dto.UserOrderDetailResponse;
 import com.autocrowd.backend.entity.Order;
+import com.autocrowd.backend.entity.Review;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.service.OrderService;
 import com.autocrowd.backend.util.JwtUtil;
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.servlet.http.HttpServletRequest;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -198,4 +200,50 @@ public class OrderController {
             return ResponseEntity.ok(errorResponse);
         }
     }
+    
+    /**
+     * 添加订单评价
+     */
+    @PostMapping("/review")
+    public ResponseEntity<Map<String, Object>> addReview(@RequestBody AddReviewRequest request, HttpServletRequest httpRequest) {
+        System.out.println("[OrderController] 收到添加订单评价请求: " + request);
+        try {
+            // 从Authorization头获取token并解析用户ID
+            String authHeader = httpRequest.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            String token = authHeader.substring(7);
+            Claims claims = jwtUtil.parseToken(token);
+            // 获取userId
+            String userId = claims.get("userId", String.class);
+
+            if (userId == null) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            
+            Review review = orderService.addReview(request, userId);
+            
+            Map<String, Object> result = new HashMap<>();
+            Map<String, Object> reviewData = new HashMap<>();
+            reviewData.put("review_id", review.getReviewId());
+            reviewData.put("order_id", review.getOrderId());
+            reviewData.put("content", review.getContent());
+            reviewData.put("comment_star", review.getCommentStar());
+            result.put("data", reviewData);
+            System.out.println("[OrderController] 返回添加订单评价结果: " + review);
+            return ResponseEntity.ok(result);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误");
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+    
 }

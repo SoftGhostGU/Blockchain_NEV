@@ -10,4 +10,6 @@ import java.util.List;
 public interface OrderRepository extends JpaRepository<Order, String> {
     List<Order> findByStatusIn(List<Byte> statuses);
     List<Order> findByStatus(Byte status);
+    List<Order> findByUserIdAndStatus(Integer userId, Byte status);
+    List<Order> findByDriverIdAndStatus(Integer driverId, Byte status);
 }

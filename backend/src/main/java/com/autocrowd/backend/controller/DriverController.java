@@ -4,9 +4,14 @@ package com.autocrowd.backend.controller;
 import com.autocrowd.backend.dto.*;
 import com.autocrowd.backend.entity.Driver;
 import com.autocrowd.backend.entity.Order;
+import com.autocrowd.backend.entity.Vehicle;
+import com.autocrowd.backend.entity.Review;
+import com.autocrowd.backend.entity.User;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.DriverRepository;
+import com.autocrowd.backend.repository.VehicleRepository;
+import com.autocrowd.backend.repository.UserRepository;
 import com.autocrowd.backend.service.DriverService;
 import com.autocrowd.backend.service.OrderService;
 import com.autocrowd.backend.util.JwtUtil;
@@ -21,8 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.autocrowd.backend.entity.Vehicle;
-import com.autocrowd.backend.repository.VehicleRepository;
+import com.autocrowd.backend.dto.DriverOrderDetailResponse;
 
 /**
  * 车主控制器
@@ -351,6 +355,46 @@ public class DriverController {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", 500);
             errorResponse.put("message", "服务器内部错误: " + e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+
+    /**
+     * 获取司机已完成的订单历史
+     */
+    @GetMapping("/orders/history")
+    public ResponseEntity<Map<String, Object>> getDriverOrderHistory(HttpServletRequest httpRequest) {
+        System.out.println("[DriverController] 收到查询司机历史订单请求");
+        try {
+            // 从Authorization头获取token并解析司机ID
+            String authHeader = httpRequest.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            String token = authHeader.substring(7);
+            Claims claims = jwtUtil.parseToken(token);
+            // 获取driverId (注意：生成token时使用的是"userId"，而不是"driverId")
+            String driverId = claims.get("userId", String.class);
+
+            if (driverId == null) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            
+            List<DriverOrderDetailResponse> historyOrders = orderService.getDriverHistoryOrders(Integer.valueOf(driverId));
+            
+            Map<String, Object> result = new HashMap<>();
+            result.put("data", historyOrders);
+            System.out.println("[DriverController] 返回司机历史订单结果: " + historyOrders.size() + " 条记录");
+            return ResponseEntity.ok(result);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误");
             return ResponseEntity.ok(errorResponse);
         }
     }

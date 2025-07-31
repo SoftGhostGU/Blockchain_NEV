@@ -4,11 +4,13 @@ import com.autocrowd.backend.dto.LoginRequest;
 import com.autocrowd.backend.dto.RegisterRequest;
 import com.autocrowd.backend.dto.UserProfileDTO;
 import com.autocrowd.backend.dto.UserProfileUpdateRequest;
+import com.autocrowd.backend.dto.UserOrderDetailResponse;
 import com.autocrowd.backend.entity.User;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.UserRepository;
 import com.autocrowd.backend.service.UserService;
+import com.autocrowd.backend.service.OrderService;
 import com.autocrowd.backend.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -32,6 +35,7 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
+    private final OrderService orderService;
     
     /**
      * 用户注册接口
@@ -237,6 +241,46 @@ public class UserController {
             response.put("data", data);
             System.out.println("[Controller] 用户登录接口 - 返回登录响应: " + response);
         return ResponseEntity.ok(response);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误");
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+
+    /**
+     * 查询用户历史订单（已完成的订单）
+     */
+    @GetMapping("/orders/history")
+    public ResponseEntity<Map<String, Object>> getUserOrderHistory(HttpServletRequest httpRequest) {
+        System.out.println("[UserController] 收到查询用户历史订单请求");
+        try {
+            // 从Authorization头获取token并解析用户ID
+            String authHeader = httpRequest.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            String token = authHeader.substring(7);
+            Claims claims = jwtUtil.parseToken(token);
+            // 获取userId
+            String userId = claims.get("userId", String.class);
+
+            if (userId == null) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            
+            List<UserOrderDetailResponse> historyOrders = orderService.getUserHistoryOrders(Integer.valueOf(userId));
+            
+            Map<String, Object> result = new HashMap<>();
+            result.put("data", historyOrders);
+            System.out.println("[UserController] 返回用户历史订单结果: " + historyOrders.size() + " 条记录");
+            return ResponseEntity.ok(result);
         } catch (BusinessException e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", e.getCode());
