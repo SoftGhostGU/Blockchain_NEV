@@ -1,9 +1,7 @@
 package com.autocrowd.backend.service.impl;
 
-import com.autocrowd.backend.dto.CreateOrderRequest;
-import com.autocrowd.backend.dto.EstimatePriceRequest;
-import com.autocrowd.backend.dto.UserOrderDetailResponse;
-import com.autocrowd.backend.dto.DriverOrderDetailResponse;
+import com.autocrowd.backend.dto.driver.DriverOrderDetailResponse;
+import com.autocrowd.backend.dto.order.*;
 import com.autocrowd.backend.entity.Driver;
 import com.autocrowd.backend.entity.Order;
 import com.autocrowd.backend.entity.Review;
@@ -24,8 +22,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import com.autocrowd.backend.dto.CurrentOrderResponse;
-import com.autocrowd.backend.dto.AddReviewRequest;
 import com.autocrowd.backend.repository.ReviewRepository;
 
 @Service
@@ -125,64 +121,72 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 获取所有当前进行中的订单
-     * @return 进行中的订单信息列表
+     * 获取用户当前订单
+     * @param userId 用户ID
+     * @return 当前订单响应DTO
      */
     @Override
-    public List<CurrentOrderResponse> getAllCurrentOrder() {
-        System.out.println("[OrderService] 获取所有进行中的订单");
+    public CurrentOrderResponse getCurrentOrderByUserId(Integer userId) {
+        System.out.println("[OrderService] 获取用户当前订单: userId=" + userId);
         
         try {
-            // 查询状态为 1=On the way 或 2=In progress 的订单
-            List<Byte> statuses = Arrays.asList((byte) 1, (byte) 2);
+            // 查询用户状态为 0=Waiting, 1=On the way 或 2=In progress 的订单
+            List<Byte> statuses = Arrays.asList((byte) 0, (byte) 1, (byte) 2);
             
-            List<Order> orders = orderRepository.findByStatusIn(statuses);
-            System.out.println("[OrderService] 查询到进行中的订单数量: " + orders.size());
+            // 收集所有状态下的订单
+            List<Order> allOrders = new ArrayList<>();
+            for (Byte status : statuses) {
+                allOrders.addAll(orderRepository.findByUserIdAndStatus(userId, status));
+            }
+            
+            System.out.println("[OrderService] 查询到用户当前订单数量: " + allOrders.size());
+            
+            if (allOrders.isEmpty()) {
+                return null;
+            }
+            
+            // 取第一个订单（通常用户同时只能有一个进行中的订单）
+            Order order = allOrders.get(0);
             
             // 转换为响应DTO
-            List<CurrentOrderResponse> responses = new ArrayList<>();
-            for (Order order : orders) {
-                CurrentOrderResponse response = new CurrentOrderResponse();
-                response.setOrderId(order.getOrderId());
-                response.setStartLocation(order.getStartLocation());
-                response.setDestination(order.getDestination());
-                response.setStatus(order.getStatus());
-                response.setEstimatedPrice(order.getEstimatedPrice());
-                response.setCreatedAt(order.getCreatedAt());
-                
-                // 如果订单有司机ID，获取司机和车辆信息
-                if (order.getDriverId() != null) {
-                    Optional<Driver> driverOpt = driverRepository.findById(order.getDriverId());
-                    if (driverOpt.isPresent()) {
-                        Driver driver = driverOpt.get();
-                        CurrentOrderResponse.DriverInfoDTO driverInfo = new CurrentOrderResponse.DriverInfoDTO();
-                        driverInfo.setDriverId(driver.getDriverId());
-                        driverInfo.setUsername(driver.getUsername());
-                        driverInfo.setPhone(driver.getPhone());
-                        
-                        // 如果订单有车辆ID，获取车辆信息
-                        if (order.getVehicleId() != null) {
-                            Optional<Vehicle> vehicleOpt = vehicleRepository.findById(order.getVehicleId());
-                            if (vehicleOpt.isPresent()) {
-                                Vehicle vehicle = vehicleOpt.get();
-                                CurrentOrderResponse.VehicleInfoDTO vehicleInfo = new CurrentOrderResponse.VehicleInfoDTO();
-                                vehicleInfo.setLicensePlate(vehicle.getLicensePlate());
-                                vehicleInfo.setFuelLevel(vehicle.getFuelLevel());
-                                driverInfo.setVehicle(vehicleInfo);
-                            }
+            CurrentOrderResponse response = new CurrentOrderResponse();
+            response.setOrderId(order.getOrderId());
+            response.setStartLocation(order.getStartLocation());
+            response.setDestination(order.getDestination());
+            response.setStatus(order.getStatus());
+            response.setEstimatedPrice(order.getEstimatedPrice());
+            response.setCreatedAt(order.getCreatedAt());
+            
+            // 如果订单有司机ID，获取司机和车辆信息
+            if (order.getDriverId() != null) {
+                Optional<Driver> driverOpt = driverRepository.findById(order.getDriverId());
+                if (driverOpt.isPresent()) {
+                    Driver driver = driverOpt.get();
+                    CurrentOrderResponse.DriverInfoDTO driverInfo = new CurrentOrderResponse.DriverInfoDTO();
+                    driverInfo.setDriverId(driver.getDriverId());
+                    driverInfo.setUsername(driver.getUsername());
+                    driverInfo.setPhone(driver.getPhone());
+                    
+                    // 如果订单有车辆ID，获取车辆信息
+                    if (order.getVehicleId() != null) {
+                        Optional<Vehicle> vehicleOpt = vehicleRepository.findById(order.getVehicleId());
+                        if (vehicleOpt.isPresent()) {
+                            Vehicle vehicle = vehicleOpt.get();
+                            CurrentOrderResponse.VehicleInfoDTO vehicleInfo = new CurrentOrderResponse.VehicleInfoDTO();
+                            vehicleInfo.setLicensePlate(vehicle.getLicensePlate());
+                            vehicleInfo.setFuelLevel(vehicle.getFuelLevel());
+                            driverInfo.setVehicle(vehicleInfo);
                         }
-                        
-                        response.setDriver(driverInfo);
                     }
+                    
+                    response.setDriver(driverInfo);
                 }
-                
-                responses.add(response);
             }
-                
-            System.out.println("[OrderService] 转换订单列表完成");
-            return responses;
+            
+            System.out.println("[OrderService] 转换订单完成");
+            return response;
         } catch (Exception e) {
-            System.err.println("[OrderService] 获取进行中的订单异常: " + e.getMessage());
+            System.err.println("[OrderService] 获取用户当前订单异常: " + e.getMessage());
             throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询订单失败: " + e.getMessage());
         }
     }
@@ -214,7 +218,7 @@ public class OrderServiceImpl implements OrderService {
      * @return 更新后的订单
      */
     @Override
-    public Order updateOrderStatus(String orderId, byte status) {
+    public Order updateOrderStatus(String orderId, Byte status) {
         System.out.println("[OrderService] 更新订单状态: orderId=" + orderId + ", status=" + status);
         
         try {
@@ -279,11 +283,6 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    @Override
-    public List<Order> getCurrentOrderByStatus(String status) {
-        return new ArrayList<>();
-    }
-
     /**
      * 结算订单
      * @param orderId 订单ID
@@ -329,7 +328,7 @@ public class OrderServiceImpl implements OrderService {
      * @return 评价结果
      */
     @Override
-    public Review addReview(AddReviewRequest request, String userId) {
+    public Review addReview(AddReviewRequest request, Integer userId) {
         System.out.println("[OrderService] 添加订单评价: orderId=" + request.getOrderId() + ", userId=" + userId);
         
         try {
@@ -351,7 +350,7 @@ public class OrderServiceImpl implements OrderService {
             // 创建评价
             Review review = new Review();
             review.setOrderId(request.getOrderId());
-            review.setUserId(Integer.valueOf(userId));
+            review.setUserId(userId);
             review.setDriverId(order.getDriverId());
             review.setContent(request.getContent());
             review.setCommentStar(request.getCommentStar());

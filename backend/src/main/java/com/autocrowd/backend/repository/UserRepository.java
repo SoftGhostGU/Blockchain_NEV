@@ -13,41 +13,30 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     /**
- * 根据用户名查询用户
- * @param username 用户名
- * @return 包含用户实体的Optional对象
- */
-Optional<User> findByUsername(String username);
+     * 根据用户名查询用户
+     * @param username 用户名
+     * @return 包含用户实体的Optional对象
+     */
+    Optional<User> findByUsername(String username);
+    
     /**
- * 根据手机号查询用户
- * @param phone 手机号
- * @return 包含用户实体的Optional对象
- */
-Optional<User> findByPhone(String phone);
+     * 根据手机号查询用户
+     * @param phone 手机号
+     * @return 包含用户实体的Optional对象
+     */
+    Optional<User> findByPhone(String phone);
+    
     /**
- * 检查用户名是否已存在
- * @param username 用户名
- * @return 用户名存在返回true，否则返回false
- */
-boolean existsByUsername(String username);
+     * 检查用户名是否已存在
+     * @param username 用户名
+     * @return 用户名存在返回true，否则返回false
+     */
+    boolean existsByUsername(String username);
+    
     /**
- * 检查手机号是否已存在
- * @param phone 手机号
- * @return 手机号存在返回true，否则返回false
- */
-boolean existsByPhone(String phone);
-    /**
- * 根据用户名和密码查询用户
- * @param username 用户名
- * @param password 密码
- * @return 包含用户实体的Optional对象
- */
-Optional<User> findByUsernameAndPassword(String username, String password);
-    /**
- * 根据手机号和密码查询用户
- * @param phone 手机号
- * @param password 密码
- * @return 包含用户实体的Optional对象
- */
-Optional<User> findByPhoneAndPassword(String phone, String password);
+     * 检查手机号是否已存在
+     * @param phone 手机号
+     * @return 手机号存在返回true，否则返回false
+     */
+    boolean existsByPhone(String phone);
 }

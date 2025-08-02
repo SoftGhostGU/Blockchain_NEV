@@ -1,4 +1,4 @@
-package com.autocrowd.backend.dto;
+package com.autocrowd.backend.dto.order;
 
 import lombok.Data;
 import java.math.BigDecimal;

@@ -1,16 +1,11 @@
 package com.autocrowd.backend.service;
 
-import com.autocrowd.backend.dto.CreateOrderRequest;
+import com.autocrowd.backend.dto.driver.DriverOrderDetailResponse;
+import com.autocrowd.backend.dto.order.*;
 import com.autocrowd.backend.entity.Order;
 import java.math.BigDecimal;
 
 import com.autocrowd.backend.entity.Review;
-
-import com.autocrowd.backend.dto.EstimatePriceRequest;
-import com.autocrowd.backend.dto.CurrentOrderResponse;
-import com.autocrowd.backend.dto.AddReviewRequest;
-import com.autocrowd.backend.dto.UserOrderDetailResponse;
-import com.autocrowd.backend.dto.DriverOrderDetailResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -20,16 +15,31 @@ public interface OrderService {
 
     /**
      * 价格预估
-     * @param request 预估请求参数
-     * @return 预估结果包含价格、距离和时间
+     * @param estimatePriceRequest 价格预估请求DTO
+     * @return 预估价格信息
      */
-    Map<String, Object> estimatePrice(EstimatePriceRequest request);
+    Map<String, Object> estimatePrice(EstimatePriceRequest estimatePriceRequest);
 
     /**
-     * 获取所有当前进行中的订单
-     * @return 进行中的订单信息列表
+     * 获取用户当前订单
+     * @param userId 用户ID
+     * @return 当前订单响应DTO
      */
-    List<CurrentOrderResponse> getAllCurrentOrder();
+    CurrentOrderResponse getCurrentOrderByUserId(Integer userId);
+
+    /**
+     * 用户获取历史订单列表
+     * @param userId 用户ID
+     * @return 用户订单详情响应DTO列表
+     */
+    List<UserOrderDetailResponse> getUserHistoryOrders(Integer userId);
+
+    /**
+     * 车主获取历史订单列表
+     * @param driverId 车主ID
+     * @return 车主订单详情响应DTO列表
+     */
+    List<DriverOrderDetailResponse> getDriverHistoryOrders(Integer driverId);
 
     /**
      * 根据订单ID获取订单详情
@@ -39,56 +49,34 @@ public interface OrderService {
     Order getOrderById(String orderId);
 
     /**
-     * 更新订单状态
+     * 车主接单
      * @param orderId 订单ID
-     * @param status 新状态
-     * @return 更新后的订单
-     */
-    Order updateOrderStatus(String orderId, byte status);
-
-    /**
-     * 司机接单
-     * @param orderId 订单ID
-     * @param driverId 司机ID
+     * @param driverId 车主ID
      * @param vehicleId 车辆ID
-     * @return 接单结果
+     * @return 接单后的订单
      */
     Order acceptOrder(String orderId, Integer driverId, Integer vehicleId);
-    
-    /**
-     * 根据状态获取订单列表
-     * @param status 订单状态
-     * @return 订单列表
-     */
-    List<Order> getCurrentOrderByStatus(String status);
 
     /**
-     * 结算订单
+     * 车主完成订单
      * @param orderId 订单ID
      * @param actualPrice 实际价格
-     * @return 结算后的订单
+     * @return 完成的订单
      */
     Order completeOrder(String orderId, BigDecimal actualPrice);
-    
+
     /**
-     * 添加订单评价
-     * @param request 评价请求
+     * 用户评价订单
+     * @param addReviewRequest 添加评价请求DTO
      * @param userId 用户ID
-     * @return 评价结果
      */
-    Review addReview(AddReviewRequest request, String userId);
-    
+    Review addReview(AddReviewRequest addReviewRequest, Integer userId);
+
     /**
-     * 获取用户的历史订单（已完成的订单）
-     * @param userId 用户ID
-     * @return 订单详情列表
+     * 更新订单状态
+     * @param orderId 订单ID
+     * @param status 新的状态
+     * @return 更新后的订单
      */
-    List<UserOrderDetailResponse> getUserHistoryOrders(Integer userId);
-    
-    /**
-     * 获取司机的历史订单（已完成的订单）
-     * @param driverId 司机ID
-     * @return 订单详情列表
-     */
-    List<DriverOrderDetailResponse> getDriverHistoryOrders(Integer driverId);
+    Order updateOrderStatus(String orderId, Byte status);
 }

@@ -1,17 +1,16 @@
 
 package com.autocrowd.backend.controller;
 
-import com.autocrowd.backend.dto.*;
+import com.autocrowd.backend.dto.driver.*;
+import com.autocrowd.backend.dto.order.*;
+import com.autocrowd.backend.dto.vehicle.VehicleDTO;
 import com.autocrowd.backend.entity.Driver;
 import com.autocrowd.backend.entity.Order;
 import com.autocrowd.backend.entity.Vehicle;
-import com.autocrowd.backend.entity.Review;
-import com.autocrowd.backend.entity.User;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.DriverRepository;
 import com.autocrowd.backend.repository.VehicleRepository;
-import com.autocrowd.backend.repository.UserRepository;
 import com.autocrowd.backend.service.DriverService;
 import com.autocrowd.backend.service.OrderService;
 import com.autocrowd.backend.util.JwtUtil;
@@ -26,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.stream.Collectors;
-import com.autocrowd.backend.dto.DriverOrderDetailResponse;
 
 /**
  * 车主控制器
@@ -379,9 +377,7 @@ public class DriverController {
             if (driverId == null) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
             }
-            
             List<DriverOrderDetailResponse> historyOrders = orderService.getDriverHistoryOrders(Integer.valueOf(driverId));
-            
             Map<String, Object> result = new HashMap<>();
             result.put("data", historyOrders);
             System.out.println("[DriverController] 返回司机历史订单结果: " + historyOrders.size() + " 条记录");

@@ -1,4 +1,4 @@
-package com.autocrowd.backend.dto;
+package com.autocrowd.backend.dto.vehicle;
 
 import lombok.Data;
 

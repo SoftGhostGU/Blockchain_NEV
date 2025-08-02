@@ -1,9 +1,8 @@
 package com.autocrowd.backend.service;
-import com.autocrowd.backend.dto.LoginRequest;
-import com.autocrowd.backend.dto.RegisterRequest;
-import com.autocrowd.backend.dto.UserProfileDTO;
-
-import com.autocrowd.backend.dto.UserProfileUpdateRequest;
+import com.autocrowd.backend.dto.user.LoginRequest;
+import com.autocrowd.backend.dto.user.RegisterRequest;
+import com.autocrowd.backend.dto.user.UserProfileDTO;
+import com.autocrowd.backend.dto.user.UserProfileUpdateRequest;
 
 /**
  * 用户服务接口，定义用户认证和个人资料相关方法

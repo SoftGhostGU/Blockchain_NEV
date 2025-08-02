@@ -1,9 +1,11 @@
 package com.autocrowd.backend.service.impl;
 
-import com.autocrowd.backend.dto.RegisterRequest;
 import java.math.BigDecimal;
-import com.autocrowd.backend.dto.LoginRequest;
-import com.autocrowd.backend.dto.UserProfileUpdateRequest;
+
+import com.autocrowd.backend.dto.user.LoginRequest;
+import com.autocrowd.backend.dto.user.RegisterRequest;
+import com.autocrowd.backend.dto.user.UserProfileDTO;
+import com.autocrowd.backend.dto.user.UserProfileUpdateRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.autocrowd.backend.service.UserService;
@@ -13,7 +15,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.exception.BusinessException;
-import com.autocrowd.backend.dto.UserProfileDTO;
+import com.autocrowd.backend.util.PasswordEncoderUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 用户服务实现类
@@ -23,6 +27,8 @@ import com.autocrowd.backend.dto.UserProfileDTO;
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
     /**
@@ -34,32 +40,32 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserProfileDTO register(RegisterRequest registerRequest) {
-        System.out.println("[Service] 处理用户注册请求: " + registerRequest);
-        System.out.println("[Service] 检查用户名是否存在: " + registerRequest.getUsername());
+        logger.info("[Service] 处理用户注册请求: {}", registerRequest);
+        logger.info("[Service] 检查用户名是否存在: {}", registerRequest.getUsername());
         // Check if username already exists
         if (userRepository.existsByUsername(registerRequest.getUsername())) {
             throw new BusinessException(ExceptionCodeEnum.USERNAME_ALREADY_EXISTS);
         }
 
         // Check if phone already exists
-        System.out.println("[Service] 检查手机号是否存在: " + registerRequest.getPhone());
+        logger.info("[Service] 检查手机号是否存在: {}", registerRequest.getPhone());
         if (userRepository.existsByPhone(registerRequest.getPhone())) {
             throw new BusinessException(ExceptionCodeEnum.PHONE_ALREADY_EXISTS);
         }
 
         // Create new user
-        System.out.println("[Service] 创建新用户");
+        logger.info("[Service] 创建新用户");
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setPhone(registerRequest.getPhone());
-        user.setPassword(registerRequest.getPassword()); // 注意：实际项目中应该加密密码
+        user.setPassword(PasswordEncoderUtil.encode(registerRequest.getPassword())); // 加密密码
         user.setCreditScore(100); // 默认信用分
         user.setBalance(BigDecimal.ZERO); // 默认余额为0
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
         User savedUser = userRepository.save(user);
-        System.out.println("[Service] 用户注册成功: " + savedUser.getUsername());
+        logger.info("[Service] 用户注册成功: {}", savedUser.getUsername());
 
         UserProfileDTO profileDTO = new UserProfileDTO();
         profileDTO.setUserId(savedUser.getUserId());
@@ -79,43 +85,43 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserProfileDTO login(LoginRequest loginRequest) {
-        System.out.println("[UserServiceImpl] 处理用户登录请求: " + loginRequest);
+        logger.info("[UserServiceImpl] 处理用户登录请求: {}", loginRequest);
         try {
+            User user = null;
+            
             // 尝试使用用户名登录
             if (loginRequest.getUsername() != null && !loginRequest.getUsername().trim().isEmpty()) {
-                System.out.println("[UserServiceImpl] 尝试使用用户名登录: " + loginRequest.getUsername());
-                return userRepository.findByUsernameAndPassword(loginRequest.getUsername(), loginRequest.getPassword())
-                        .map(user -> {
-                            System.out.println("[UserServiceImpl] 用户名登录成功: " + user.getUsername());
-                            UserProfileDTO profileDTO = new UserProfileDTO();
-                            profileDTO.setUserId(user.getUserId());
-                            profileDTO.setUsername(user.getUsername());
-                            profileDTO.setPhone(user.getPhone());
-                            profileDTO.setCreditScore(user.getCreditScore());
-                            profileDTO.setBalance(user.getBalance());
-                            return profileDTO;
-                        })
-                        .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.INVALID_PASSWORD, "用户名或密码错误"));
-            }
-
+                logger.info("[UserServiceImpl] 尝试使用用户名登录: {}", loginRequest.getUsername());
+                user = userRepository.findByUsername(loginRequest.getUsername())
+                        .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "用户不存在"));
+                
+                // 验证密码
+                if (!PasswordEncoderUtil.matches(loginRequest.getPassword(), user.getPassword())) {
+                    throw new BusinessException(ExceptionCodeEnum.INVALID_PASSWORD, "用户名或密码错误");
+                }
+            } 
             // 尝试使用手机号登录
-            if (loginRequest.getPhone() != null && !loginRequest.getPhone().trim().isEmpty()) {
-                System.out.println("[UserServiceImpl] 尝试使用手机号登录: " + loginRequest.getPhone());
-                return userRepository.findByPhoneAndPassword(loginRequest.getPhone(), loginRequest.getPassword())
-                        .map(user -> {
-                            System.out.println("[UserServiceImpl] 手机号登录成功: " + user.getUsername());
-                            UserProfileDTO profileDTO = new UserProfileDTO();
-                            profileDTO.setUserId(user.getUserId());
-                            profileDTO.setUsername(user.getUsername());
-                            profileDTO.setPhone(user.getPhone());
-                            profileDTO.setCreditScore(user.getCreditScore());
-                            profileDTO.setBalance(user.getBalance());
-                            return profileDTO;
-                        })
-                        .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.INVALID_PASSWORD, "手机号或密码错误"));
+            else if (loginRequest.getPhone() != null && !loginRequest.getPhone().trim().isEmpty()) {
+                logger.info("[UserServiceImpl] 尝试使用手机号登录: {}", loginRequest.getPhone());
+                user = userRepository.findByPhone(loginRequest.getPhone())
+                        .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "用户不存在"));
+                
+                // 验证密码
+                if (!PasswordEncoderUtil.matches(loginRequest.getPassword(), user.getPassword())) {
+                    throw new BusinessException(ExceptionCodeEnum.INVALID_PASSWORD, "手机号或密码错误");
+                }
+            } else {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "用户名或手机号不能为空");
             }
 
-            throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "用户名或手机号不能为空");
+            logger.info("[UserServiceImpl] 登录成功: {}", user.getUsername());
+            UserProfileDTO profileDTO = new UserProfileDTO();
+            profileDTO.setUserId(user.getUserId());
+            profileDTO.setUsername(user.getUsername());
+            profileDTO.setPhone(user.getPhone());
+            profileDTO.setCreditScore(user.getCreditScore());
+            profileDTO.setBalance(user.getBalance());
+            return profileDTO;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
@@ -132,7 +138,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserProfileDTO getUserProfile(Integer userId) {
-        System.out.println("[UserServiceImpl] 处理获取用户资料请求: userId = " + userId);
+        logger.info("[UserServiceImpl] 处理获取用户资料请求: userId = {}", userId);
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "用户不存在"));
@@ -143,7 +149,7 @@ public class UserServiceImpl implements UserService {
             profileDTO.setPhone(user.getPhone());
             profileDTO.setCreditScore(user.getCreditScore());
             profileDTO.setBalance(user.getBalance());
-            System.out.println("[UserServiceImpl] 获取用户资料成功: " + user.getUsername());
+            logger.info("[UserServiceImpl] 获取用户资料成功: {}", user.getUsername());
             return profileDTO;
         } catch (BusinessException e) {
             throw e;
@@ -162,7 +168,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserProfileDTO updateUserProfile(Integer userId, UserProfileUpdateRequest profileUpdateRequest) {
-        System.out.println("[UserServiceImpl] 处理更新用户资料请求: userId = " + userId + ", request = " + profileUpdateRequest);
+        logger.info("[UserServiceImpl] 处理更新用户资料请求: userId = {}, request = {}", userId, profileUpdateRequest);
         try {
             // 获取用户实体
             User user = userRepository.findById(userId)
@@ -199,7 +205,7 @@ public class UserServiceImpl implements UserService {
 
             // 保存到数据库
             User updatedUser = userRepository.save(user);
-            System.out.println("[UserServiceImpl] 更新用户资料成功: " + updatedUser.getUsername());
+            logger.info("[UserServiceImpl] 更新用户资料成功: {}", updatedUser.getUsername());
 
             // 转换为DTO并返回
             UserProfileDTO profileDTO = new UserProfileDTO();
