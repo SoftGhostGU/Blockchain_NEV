@@ -1,4 +1,4 @@
-package com.autocrowd.backend.dto;
+package com.autocrowd.backend.dto.user;
 
 import lombok.Data;
 

@@ -1,14 +1,14 @@
 package com.autocrowd.backend.controller;
 
-import com.autocrowd.backend.dto.VehicleCreateRequest;
-import com.autocrowd.backend.dto.VehicleUpdateRequest;
-import com.autocrowd.backend.dto.VehicleDTO;
+import com.autocrowd.backend.dto.vehicle.*;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.service.VehicleService;
 import com.autocrowd.backend.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +26,8 @@ import java.util.Map;
 @RequestMapping("/api/driver/vehicle")
 @AllArgsConstructor
 public class VehicleController {
+    private static final Logger logger = LoggerFactory.getLogger(VehicleController.class);
+
     private final VehicleService vehicleService;
     private final JwtUtil jwtUtil;
     /**
@@ -41,21 +43,21 @@ public class VehicleController {
         try {
             // 从请求头获取token
             String token = httpRequest.getHeader("Authorization");
-            System.out.println("[VehicleController] 获取到Authorization头: " + (token != null ? "Bearer ****" : "null"));
+            logger.debug("[VehicleController] 获取到Authorization头: {}", (token != null ? "Bearer ****" : "null"));
             if (token == null || !token.startsWith("Bearer ")) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
             }
             token = token.substring(7);
 
             // 解析token获取司机信息
-            System.out.println("[VehicleController] 开始解析token");
+            logger.debug("[VehicleController] 开始解析token");
             Claims claims = jwtUtil.parseToken(token);
-            System.out.println("[VehicleController] token解析成功，claims内容: " + claims);
+            logger.debug("[VehicleController] token解析成功，claims内容: {}", claims);
             String driverIdStr = claims.get("userId", String.class);
             String username = claims.get("username", String.class);
-            System.out.println("[VehicleController] 从token中解析到司机信息 - driverId: " + driverIdStr + ", username: " + username);
+            logger.debug("[VehicleController] 从token中解析到司机信息 - driverId: {}, username: {}", driverIdStr, username);
             if (driverIdStr == null || driverIdStr.isEmpty()) {
-                System.out.println("[VehicleController] token解析失败: 司机ID为空");
+                logger.warn("[VehicleController] token解析失败: 司机ID为空");
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含司机ID");
             }
             Integer driverId;
@@ -63,25 +65,25 @@ public class VehicleController {
                 driverId = Integer.valueOf(driverIdStr);
                 System.out.println("[VehicleController] 司机ID字符串转换为整数成功: " + driverId);
             } catch (NumberFormatException e) {
-                System.out.println("[VehicleController] 司机ID格式错误，无法转换为整数: " + driverIdStr);
+                logger.warn("[VehicleController] 司机ID格式错误，无法转换为整数: " + driverIdStr);
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "司机ID格式错误");
             }
 
-            System.out.println("[VehicleController] 解析到的司机ID: " + driverId + ", 创建车辆请求参数: " + request);
+            logger.debug("[VehicleController] 解析到的司机ID: {}, 创建车辆请求参数: {}", driverId, request);
             VehicleDTO createdVehicle = vehicleService.createVehicle(driverId, request);
-            System.out.println("[VehicleController] 车辆创建成功: " + createdVehicle);
+            logger.debug("[VehicleController] 车辆创建成功: {}", createdVehicle);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdVehicle);
         } catch (BusinessException e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("code", e.getCode());
-            error.put("message", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+            logger.warn("[VehicleController] 业务异常: code={}, message={}", e.getCode(), e.getMessage());
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
         } catch (Exception e) {
-            System.out.println("[VehicleController] 服务器内部错误: " + e.getClass().getName() + ", 消息: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("[VehicleController] 服务器内部错误: {}, 消息: {}", e.getClass().getName(), e.getMessage(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", 500);
-            errorResponse.put("message", "服务器内部错误: " + e.getMessage());
+            errorResponse.put("message", "服务器内部错误");
             return ResponseEntity.ok(errorResponse);
         }
     }

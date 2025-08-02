@@ -1,4 +1,4 @@
-package com.autocrowd.backend.dto;
+package com.autocrowd.backend.dto.order;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

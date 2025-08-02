@@ -1,8 +1,8 @@
 package com.autocrowd.backend.service.impl;
 
-import com.autocrowd.backend.dto.VehicleCreateRequest;
-import com.autocrowd.backend.dto.VehicleUpdateRequest;
-import com.autocrowd.backend.dto.VehicleDTO;
+import com.autocrowd.backend.dto.vehicle.VehicleCreateRequest;
+import com.autocrowd.backend.dto.vehicle.VehicleDTO;
+import com.autocrowd.backend.dto.vehicle.VehicleUpdateRequest;
 import com.autocrowd.backend.entity.Vehicle;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;

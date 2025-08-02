@@ -1,20 +1,28 @@
 package com.autocrowd.backend.service.impl;
 
-import com.autocrowd.backend.dto.*;
+import com.autocrowd.backend.dto.driver.DriverLoginRequest;
+import com.autocrowd.backend.dto.driver.DriverProfileDTO;
+import com.autocrowd.backend.dto.driver.DriverProfileUpdateRequest;
+import com.autocrowd.backend.dto.driver.DriverRegisterRequest;
 import com.autocrowd.backend.entity.Driver;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.DriverRepository;
 import com.autocrowd.backend.service.DriverService;
+import com.autocrowd.backend.util.PasswordEncoderUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
 public class DriverServiceImpl implements DriverService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(DriverServiceImpl.class);
 
     private final DriverRepository driverRepository;
 
@@ -27,10 +35,23 @@ public class DriverServiceImpl implements DriverService {
      */
     @Override
     public DriverProfileDTO login(DriverLoginRequest loginRequest) {
-        System.out.println("[DriverServiceImpl] 处理车主登录请求: " + loginRequest);
+        logger.info("[DriverServiceImpl] 处理车主登录请求: {}", loginRequest);
         try {
-            Driver driver = driverRepository.findByPhoneAndPasswordWithLog(loginRequest.getPhone(), loginRequest.getPassword())
-                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "司机不存在或密码错误"));
+            Driver driver = null;
+            
+            // 使用手机号登录
+            if (loginRequest.getPhone() != null && !loginRequest.getPhone().trim().isEmpty()) {
+                logger.info("[DriverServiceImpl] 尝试使用手机号登录: {}", loginRequest.getPhone());
+                driver = driverRepository.findByPhone(loginRequest.getPhone())
+                        .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "司机不存在"));
+                
+                // 验证密码
+                if (!PasswordEncoderUtil.matches(loginRequest.getPassword(), driver.getPassword())) {
+                    throw new BusinessException(ExceptionCodeEnum.INVALID_PASSWORD, "手机号或密码错误");
+                }
+            } else {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "手机号不能为空");
+            }
 
             DriverProfileDTO profileDTO = new DriverProfileDTO();
             profileDTO.setUserId(driver.getDriverId());
@@ -39,7 +60,7 @@ public class DriverServiceImpl implements DriverService {
             profileDTO.setWalletBalance(driver.getWalletBalance());
             profileDTO.setPhone(driver.getPhone());
             profileDTO.setBankCard(driver.getBankCard());
-            System.out.println("[DriverServiceImpl] 车主登录成功: " + driver.getUsername());
+            logger.info("[DriverServiceImpl] 车主登录成功: {}", driver.getUsername());
             return profileDTO;
         } catch (BusinessException e) {
             throw e;
@@ -57,7 +78,7 @@ public class DriverServiceImpl implements DriverService {
      */
     @Override
     public DriverProfileDTO getDriverProfile(Integer driverId) {
-        System.out.println("[DriverServiceImpl] 处理获取车主资料请求: driverId = " + driverId);
+        logger.info("[DriverServiceImpl] 处理获取车主资料请求: driverId = {}", driverId);
         try {
             Driver driver = driverRepository.findById(driverId)
                     .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "司机不存在"));
@@ -69,7 +90,7 @@ public class DriverServiceImpl implements DriverService {
             profileDTO.setWalletBalance(driver.getWalletBalance());
             profileDTO.setPhone(driver.getPhone());
             profileDTO.setBankCard(driver.getBankCard());
-            System.out.println("[DriverServiceImpl] 获取车主资料成功: " + driver.getUsername());
+            logger.info("[DriverServiceImpl] 获取车主资料成功: {}", driver.getUsername());
             return profileDTO;
         } catch (BusinessException e) {
             throw e;
@@ -88,7 +109,7 @@ public class DriverServiceImpl implements DriverService {
      */
     @Override
     public DriverProfileDTO updateDriverProfile(Integer driverId, DriverProfileUpdateRequest profileUpdateRequest) {
-        System.out.println("[DriverServiceImpl] 处理更新车主资料请求: driverId = " + driverId + ", request = " + profileUpdateRequest);
+        logger.info("[DriverServiceImpl] 处理更新车主资料请求: driverId = {}, request = {}", driverId, profileUpdateRequest);
         try {
             // 获取司机实体
             Driver driver = driverRepository.findById(driverId)
@@ -129,7 +150,7 @@ public class DriverServiceImpl implements DriverService {
 
             // 保存到数据库
             Driver updatedDriver = driverRepository.save(driver);
-            System.out.println("[DriverServiceImpl] 更新车主资料成功: " + updatedDriver.getUsername());
+            logger.info("[DriverServiceImpl] 更新车主资料成功: {}", updatedDriver.getUsername());
 
             // 转换为DTO并返回
             DriverProfileDTO profileDTO = new DriverProfileDTO();
@@ -156,7 +177,7 @@ public class DriverServiceImpl implements DriverService {
      */
     @Override
     public DriverProfileDTO register(DriverRegisterRequest registerRequest) {
-        System.out.println("[DriverServiceImpl] 处理车主注册请求: " + registerRequest);
+        logger.info("[DriverServiceImpl] 处理车主注册请求: {}", registerRequest);
         try {
             // 检查用户名是否已存在
             if (driverRepository.existsByUsername(registerRequest.getUsername())) {
@@ -172,7 +193,7 @@ public class DriverServiceImpl implements DriverService {
             Driver driver = new Driver();
             driver.setUsername(registerRequest.getUsername());
             driver.setPhone(registerRequest.getPhone());
-            driver.setPassword(registerRequest.getPassword()); // 注意：实际项目中应该加密密码
+            driver.setPassword(PasswordEncoderUtil.encode(registerRequest.getPassword())); // 加密密码
             driver.setCreditScore(100); // 默认信用分
             driver.setWalletBalance(BigDecimal.ZERO); // 默认余额为0
             driver.setBankCard(registerRequest.getBankCard());
@@ -181,7 +202,7 @@ public class DriverServiceImpl implements DriverService {
 
             // 保存到数据库
             Driver savedDriver = driverRepository.save(driver);
-            System.out.println("[DriverServiceImpl] 车主注册成功: " + savedDriver.getUsername());
+            logger.info("[DriverServiceImpl] 车主注册成功: {}", savedDriver.getUsername());
 
             // 转换为DTO并返回
             DriverProfileDTO profileDTO = new DriverProfileDTO();
