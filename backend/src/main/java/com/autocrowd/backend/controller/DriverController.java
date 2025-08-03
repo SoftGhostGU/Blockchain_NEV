@@ -394,4 +394,78 @@ public class DriverController {
             return ResponseEntity.ok(errorResponse);
         }
     }
+    
+    /**
+     * 获取车主近七日营业额
+     */
+    @GetMapping("/turnover/days")
+    public ResponseEntity<Map<String, Object>> getDriverTurnoverLast7Days(HttpServletRequest httpRequest) {
+        System.out.println("[DriverController] 收到查询司机近七日营业额请求");
+        try {
+            // 从Authorization头获取token并解析司机ID
+            String authHeader = httpRequest.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            String token = authHeader.substring(7);
+            Claims claims = jwtUtil.parseToken(token);
+            String driverId = claims.get("userId", String.class);
+
+            if (driverId == null) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            List<TurnoverDTO> turnoverData = orderService.getDriverTurnoverLast7Days(Integer.valueOf(driverId));
+            Map<String, Object> result = new HashMap<>();
+            result.put("data", turnoverData);
+            System.out.println("[DriverController] 返回司机近七日营业额结果: " + turnoverData.size() + " 条记录");
+            return ResponseEntity.ok(result);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误");
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+    
+    /**
+     * 获取车主近七月营业额
+     */
+    @GetMapping("/turnover/months")
+    public ResponseEntity<Map<String, Object>> getDriverTurnoverLast7Months(HttpServletRequest httpRequest) {
+        System.out.println("[DriverController] 收到查询司机近七月营业额请求");
+        try {
+            // 从Authorization头获取token并解析司机ID
+            String authHeader = httpRequest.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            String token = authHeader.substring(7);
+            Claims claims = jwtUtil.parseToken(token);
+            String driverId = claims.get("userId", String.class);
+
+            if (driverId == null) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            List<TurnoverDTO> turnoverData = orderService.getDriverTurnoverLast7Months(Integer.valueOf(driverId));
+            Map<String, Object> result = new HashMap<>();
+            result.put("data", turnoverData);
+            System.out.println("[DriverController] 返回司机近七月营业额结果: " + turnoverData.size() + " 条记录");
+            return ResponseEntity.ok(result);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误");
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
 }

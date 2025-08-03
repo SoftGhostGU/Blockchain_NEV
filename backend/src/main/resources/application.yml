@@ -41,7 +41,3 @@ server:
 jwt:
   secret: bbe0ac1a5b8a113b4568d55c76fe887a1cd99b01acfad7957156945688e03e20
   expiration: 86400000
-
-sms:
-  access-key: your-sms-access-key     # SMS service access key
-  secret-key: your-sms-secret-key     # SMS service secret key
