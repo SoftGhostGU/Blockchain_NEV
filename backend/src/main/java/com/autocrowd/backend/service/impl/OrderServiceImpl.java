@@ -1,22 +1,19 @@
 package com.autocrowd.backend.service.impl;
 
 import com.autocrowd.backend.dto.driver.DriverOrderDetailResponse;
-import com.autocrowd.backend.dto.driver.TurnoverDTO;
 import com.autocrowd.backend.dto.order.*;
-import com.autocrowd.backend.entity.Driver;
-import com.autocrowd.backend.entity.Financial;
-import com.autocrowd.backend.entity.Order;
-import com.autocrowd.backend.entity.Review;
-import com.autocrowd.backend.entity.Vehicle;
-import com.autocrowd.backend.entity.User;
-import com.autocrowd.backend.exception.ExceptionCodeEnum;
+import com.autocrowd.backend.dto.driver.TurnoverDTO;
+import com.autocrowd.backend.entity.*;
 import com.autocrowd.backend.exception.BusinessException;
-import com.autocrowd.backend.repository.DriverRepository;
-import com.autocrowd.backend.repository.FinancialRepository;
-import com.autocrowd.backend.repository.OrderRepository;
-import com.autocrowd.backend.repository.VehicleRepository;
-import com.autocrowd.backend.repository.UserRepository;
+import com.autocrowd.backend.exception.ExceptionCodeEnum;
+import com.autocrowd.backend.repository.*;
+import com.autocrowd.backend.service.BlockchainService;
 import com.autocrowd.backend.service.OrderService;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,25 +22,28 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import com.autocrowd.backend.repository.ReviewRepository;
-
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     private final OrderRepository orderRepository;
     private final DriverRepository driverRepository;
     private final VehicleRepository vehicleRepository;
     private final ReviewRepository reviewRepository;
-    private final UserRepository userRepository;
     private final FinancialRepository financialRepository;
-
-    public OrderServiceImpl(OrderRepository orderRepository, DriverRepository driverRepository, VehicleRepository vehicleRepository, ReviewRepository reviewRepository, UserRepository userRepository, FinancialRepository financialRepository) {
-        this.orderRepository = orderRepository;
-        this.driverRepository = driverRepository;
-        this.vehicleRepository = vehicleRepository;
-        this.reviewRepository = reviewRepository;
-        this.userRepository = userRepository;
-        this.financialRepository = financialRepository;
+    private final UserRepository userRepository;
+    
+    @Autowired
+    private BlockchainService blockchainService;
+    
+    // Helper method to generate a more realistic order ID
+    private String generateOrderId() {
+        // Generate order ID in the format ORD20250717001
+        String datePart = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String randomPart = String.format("%03d", (new Random()).nextInt(1000));
+        return "ORD" + datePart + randomPart;
     }
     
     /**
@@ -67,11 +67,10 @@ public class OrderServiceImpl implements OrderService {
                 throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "车辆类型不能为空");
             }
 
-            System.out.println("[OrderService] 收到创建订单请求: 起点=" + request.getStartLocation() + ", 终点=" + request.getDestination() + ", 车辆类型=" + request.getVehicleType());
+            logger.info("[OrderService] 收到创建订单请求: 起点={}, 终点={}, 车辆类型={}", request.getStartLocation(), request.getDestination(), request.getVehicleType());
 
             // 生成订单ID (形如 ORD20250717001)
-            String orderId = "ORD" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")) + 
-                            String.format("%03d", (new Random()).nextInt(1000));
+            String orderId = generateOrderId();
 
             // 创建订单实体
             Order order = new Order();
@@ -90,13 +89,13 @@ public class OrderServiceImpl implements OrderService {
 
             // 保存订单
             Order savedOrder = orderRepository.save(order);
-            System.out.println("[OrderService] 订单创建成功: " + savedOrder.getOrderId());
+            logger.info("[OrderService] 订单创建成功: {}", savedOrder.getOrderId());
 
             return savedOrder;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 创建订单异常: " + e.getMessage());
+            logger.error("[OrderService] 创建订单异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.ORDER_CREATE_FAILED, "创建订单失败: " + e.getMessage());
         }
     }
@@ -108,7 +107,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Map<String, Object> estimatePrice(EstimatePriceRequest request) {
-        System.out.println("[OrderService] 收到价格预估请求: 起点=" + request.getStartLocation() + ", 终点=" + request.getDestination());
+        logger.info("[OrderService] 收到价格预估请求: 起点={}, 终点={}", request.getStartLocation(), request.getDestination());
         try {
             // 简单的距离计算（实际应使用地图API）
             // 由于缺少坐标信息，这里使用简单的字符串长度差作为示例计算
@@ -125,10 +124,10 @@ public class OrderServiceImpl implements OrderService {
             result.put("time", String.format("%.0f分钟", time));
             result.put("price", price);
 
-            System.out.println("[OrderService] 价格预估完成: 距离=" + distance + "公里, 时间=" + time + "分钟, 价格=" + price + "元");
+            logger.info("[OrderService] 价格预估完成: 距离={}公里, 时间={}分钟, 价格={}元", distance, time, price);
             return result;
         } catch (Exception e) {
-            System.err.println("[OrderService] 价格预估异常: " + e.getMessage());
+            logger.error("[OrderService] 价格预估异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.PRICE_ESTIMATION_FAILED, "价格预估失败: " + e.getMessage());
         }
     }
@@ -140,7 +139,6 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public CurrentOrderResponse getCurrentOrderByUserId(Integer userId) {
-        System.out.println("[OrderService] 查询用户当前订单: userId=" + userId);
         try {
             // 查找所有正在进行的订单状态 (0=等待中, 1=已接单, 2=已接上客人)
             List<Byte> statuses = Arrays.asList((byte) 0, (byte) 1, (byte) 2);
@@ -149,7 +147,6 @@ public class OrderServiceImpl implements OrderService {
                 allOrders.addAll(orderRepository.findByUserIdAndStatus(userId, status));
             }
 
-            System.out.println("[OrderService] 查询到用户当前订单数量: " + allOrders.size());
             if (allOrders.isEmpty()) {
                 return null; // 没有当前订单
             }
@@ -189,10 +186,9 @@ public class OrderServiceImpl implements OrderService {
                 }
             }
 
-            System.out.println("[OrderService] 返回用户当前订单: " + response.getOrderId());
             return response;
         } catch (Exception e) {
-            System.err.println("[OrderService] 查询订单异常: " + e.getMessage());
+            logger.error("[OrderService] 查询订单异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询订单失败: " + e.getMessage());
         }
     }
@@ -210,7 +206,7 @@ public class OrderServiceImpl implements OrderService {
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 查询订单异常: " + e.getMessage());
+            logger.error("[OrderService] 查询订单异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询订单失败: " + e.getMessage());
         }
     }
@@ -234,13 +230,13 @@ public class OrderServiceImpl implements OrderService {
 
             // 保存订单
             Order updatedOrder = orderRepository.save(order);
-            System.out.println("[OrderService] 订单状态更新成功: " + updatedOrder.getOrderId());
+            logger.info("[OrderService] 订单状态更新成功: {}", updatedOrder.getOrderId());
 
             return updatedOrder;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 更新订单状态异常: " + e.getMessage());
+            logger.error("[OrderService] 更新订单状态异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.ORDER_UPDATE_FAILED, "更新订单状态失败: " + e.getMessage());
         }
     }
@@ -254,7 +250,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Order acceptOrder(String orderId, Integer driverId, Integer vehicleId) {
-        System.out.println("[OrderService] 收到司机接单请求: 订单ID=" + orderId + ", 司机ID=" + driverId + ", 车辆ID=" + vehicleId);
+        logger.info("[OrderService] 收到司机接单请求: 订单ID={}, 司机ID={}, 车辆ID={}", orderId, driverId, vehicleId);
         try {
             // 查找订单
             Order order = orderRepository.findById(orderId)
@@ -273,13 +269,13 @@ public class OrderServiceImpl implements OrderService {
 
             // 保存订单
             Order updatedOrder = orderRepository.save(order);
-            System.out.println("[OrderService] 司机接单成功: " + updatedOrder.getOrderId());
+            logger.info("[OrderService] 司机接单成功: {}", updatedOrder.getOrderId());
 
             return updatedOrder;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 接单异常: " + e.getMessage());
+            logger.error("[OrderService] 接单异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.ORDER_ACCEPT_FAILED, "接单失败: " + e.getMessage());
         }
     }
@@ -291,8 +287,9 @@ public class OrderServiceImpl implements OrderService {
      * @return 完成的订单
      */
     @Override
+    @Transactional
     public Order completeOrder(String orderId, BigDecimal actualPrice) {
-        System.out.println("[OrderService] 收到完成订单请求: 订单ID=" + orderId + ", 实际价格=" + actualPrice);
+        logger.info("[OrderService] 收到完成订单请求: 订单ID={}, 实际价格={}", orderId, actualPrice);
         try {
             // 查找订单
             Order order = orderRepository.findById(orderId)
@@ -310,16 +307,22 @@ public class OrderServiceImpl implements OrderService {
             
             // 保存订单
             Order completedOrder = orderRepository.save(order);
-            System.out.println("[OrderService] 订单完成成功: " + completedOrder.getOrderId());
+            logger.info("[OrderService] 订单完成成功: {}", completedOrder.getOrderId());
             
             // 创建财务记录
             createFinancialRecords(order, actualPrice);
+            
+            // 将订单信息上链
+            boolean orderOnChain = blockchainService.createOrderOnBlockchain(completedOrder);
+            if (!orderOnChain) {
+                logger.error("[OrderService] 订单信息上链失败: {}", completedOrder.getOrderId());
+            }
             
             return completedOrder;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 完成订单异常: " + e.getMessage());
+            logger.error("[OrderService] 完成订单异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.ORDER_COMPLETE_FAILED, "完成订单失败: " + e.getMessage());
         }
     }
@@ -329,9 +332,10 @@ public class OrderServiceImpl implements OrderService {
      * @param order 订单
      * @param actualPrice 实际价格
      */
-    private void createFinancialRecords(Order order, BigDecimal actualPrice) {
+    @Override
+    public void createFinancialRecords(Order order, BigDecimal actualPrice) {
         try {
-            System.out.println("[OrderService] 为订单创建财务记录: 订单ID=" + order.getOrderId() + ", 实际价格=" + actualPrice);
+            logger.info("[OrderService] 为订单创建财务记录: 订单ID={}, 实际价格={}", order.getOrderId(), actualPrice);
             
             // 为用户创建支出记录
             Financial userFinancial = new Financial();
@@ -341,7 +345,7 @@ public class OrderServiceImpl implements OrderService {
             userFinancial.setAmount(actualPrice);
             userFinancial.setTransactionTime(LocalDateTime.now());
             financialRepository.save(userFinancial);
-            System.out.println("[OrderService] 用户财务记录创建成功: ID=" + userFinancial.getFinancialId());
+            logger.info("[OrderService] 用户财务记录创建成功: ID={}", userFinancial.getFinancialId());
             
             // 为车主创建收入记录
             Financial driverFinancial = new Financial();
@@ -351,10 +355,10 @@ public class OrderServiceImpl implements OrderService {
             driverFinancial.setAmount(actualPrice);
             driverFinancial.setTransactionTime(LocalDateTime.now());
             financialRepository.save(driverFinancial);
-            System.out.println("[OrderService] 车主财务记录创建成功: ID=" + driverFinancial.getFinancialId());
+            logger.info("[OrderService] 车主财务记录创建成功: ID={}", driverFinancial.getFinancialId());
             
         } catch (Exception e) {
-            System.err.println("[OrderService] 创建财务记录异常: " + e.getMessage());
+            logger.error("[OrderService] 创建财务记录异常: {}", e.getMessage(), e);
             // 财务记录创建失败不应影响订单完成，仅记录日志
         }
     }
@@ -366,7 +370,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Review addReview(AddReviewRequest request, Integer userId) {
-        System.out.println("[OrderService] 添加订单评价: orderId=" + request.getOrderId() + ", userId=" + userId);
+        logger.info("[OrderService] 添加订单评价: orderId={}, userId={}", request.getOrderId(), userId);
         try {
             // 查找订单
             Order order = orderRepository.findById(request.getOrderId())
@@ -395,13 +399,13 @@ public class OrderServiceImpl implements OrderService {
 
             // 保存评价
             Review savedReview = reviewRepository.save(review);
-            System.out.println("[OrderService] 订单评价添加成功: " + savedReview.getReviewId());
+            logger.info("[OrderService] 订单评价添加成功: {}", savedReview.getReviewId());
 
             return savedReview;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 添加评价异常: " + e.getMessage());
+            logger.error("[OrderService] 添加评价异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.REVIEW_CREATE_FAILED, "添加评价失败: " + e.getMessage());
         }
     }
@@ -413,11 +417,9 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public List<UserOrderDetailResponse> getUserHistoryOrders(Integer userId) {
-        System.out.println("[OrderService] 获取用户历史订单: userId=" + userId);
         try {
             // 查找已完成的订单 (status=3)
             List<Order> orders = orderRepository.findByUserIdAndStatus(userId, (byte) 3);
-            System.out.println("[OrderService] 查询到用户历史订单数量: " + orders.size());
 
             // 转换为响应DTO
             List<UserOrderDetailResponse> responses = new ArrayList<>();
@@ -426,10 +428,9 @@ public class OrderServiceImpl implements OrderService {
                 responses.add(response);
             }
 
-            System.out.println("[OrderService] 获取用户历史订单完成，共找到 " + responses.size() + " 条记录");
             return responses;
         } catch (Exception e) {
-            System.err.println("[OrderService] 查询历史订单异常: " + e.getMessage());
+            logger.error("[OrderService] 查询历史订单异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询历史订单失败: " + e.getMessage());
         }
     }
@@ -441,11 +442,9 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public List<DriverOrderDetailResponse> getDriverHistoryOrders(Integer driverId) {
-        System.out.println("[OrderService] 获取司机历史订单: driverId=" + driverId);
         try {
             // 查找已完成的订单 (status=3)
             List<Order> orders = orderRepository.findByDriverIdAndStatus(driverId, (byte) 3);
-            System.out.println("[OrderService] 查询到司机历史订单数量: " + orders.size());
 
             // 转换为响应DTO
             List<DriverOrderDetailResponse> responses = new ArrayList<>();
@@ -454,10 +453,9 @@ public class OrderServiceImpl implements OrderService {
                 responses.add(response);
             }
 
-            System.out.println("[OrderService] 获取司机历史订单完成，共找到 " + responses.size() + " 条记录");
             return responses;
         } catch (Exception e) {
-            System.err.println("[OrderService] 查询历史订单异常: " + e.getMessage());
+            logger.error("[OrderService] 查询历史订单异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询历史订单失败: " + e.getMessage());
         }
     }
@@ -576,6 +574,50 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return response;
+    }
+
+    @Override
+    public TurnoverDTO getDriverRecent7DaysTurnover(Integer driverId) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime sevenDaysAgo = now.minusDays(6); // 包含今天，共7天数据
+
+        // 从financial表中查询类型为Earnings的数据
+        List<Financial> earnings = financialRepository.findByRoleAndUserIdAndTransactionTypeAndTransactionTimeBetween(
+                "Driver", driverId, Financial.TransactionType.Earnings, sevenDaysAgo, now);
+
+        // 计算总营业额
+        BigDecimal totalTurnover = BigDecimal.ZERO;
+        for (Financial financial : earnings) {
+            totalTurnover = totalTurnover.add(financial.getAmount());
+        }
+
+        // 创建TurnoverDTO并返回
+        TurnoverDTO dto = new TurnoverDTO();
+        dto.setDay("最近7天");
+        dto.setValue(totalTurnover);
+        return dto;
+    }
+
+    @Override
+    public TurnoverDTO getDriverRecent6MonthsTurnover(Integer driverId) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime sixMonthsAgo = now.minusMonths(5).withDayOfMonth(1).with(LocalDateTime.MIN.toLocalTime());
+
+        // 从financial表中查询类型为Earnings的数据
+        List<Financial> earnings = financialRepository.findByRoleAndUserIdAndTransactionTypeAndTransactionTimeBetween(
+                "Driver", driverId, Financial.TransactionType.Earnings, sixMonthsAgo, now);
+
+        // 计算总营业额
+        BigDecimal totalTurnover = BigDecimal.ZERO;
+        for (Financial financial : earnings) {
+            totalTurnover = totalTurnover.add(financial.getAmount());
+        }
+
+        // 创建TurnoverDTO并返回
+        TurnoverDTO dto = new TurnoverDTO();
+        dto.setDay("最近6个月");
+        dto.setValue(totalTurnover);
+        return dto;
     }
 
     @Override
