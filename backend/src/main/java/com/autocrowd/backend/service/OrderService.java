@@ -1,6 +1,7 @@
 package com.autocrowd.backend.service;
 
 import com.autocrowd.backend.dto.driver.DriverOrderDetailResponse;
+import com.autocrowd.backend.dto.driver.TurnoverDTO;
 import com.autocrowd.backend.dto.order.*;
 import com.autocrowd.backend.entity.Order;
 import java.math.BigDecimal;
@@ -79,4 +80,18 @@ public interface OrderService {
      * @return 更新后的订单
      */
     Order updateOrderStatus(String orderId, Byte status);
+    
+    /**
+     * 获取车主近七日营业额
+     * @param driverId 车主ID
+     * @return 近七日营业额数据列表
+     */
+    List<TurnoverDTO> getDriverTurnoverLast7Days(Integer driverId);
+    
+    /**
+     * 获取车主近七月营业额
+     * @param driverId 车主ID
+     * @return 近七月营业额数据列表
+     */
+    List<TurnoverDTO> getDriverTurnoverLast7Months(Integer driverId);
 }

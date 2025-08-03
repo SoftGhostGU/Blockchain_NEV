@@ -15,11 +15,13 @@ public class Financial {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "financial_id")
     private Integer financialId;
-    
-    @ManyToOne
-    @JoinColumn(name = "driver_id")
-    private Driver driver;
-    
+
+    @JoinColumn(name = "user_id")
+    private Integer userId;
+
+    @Column(name = "role")
+    private String role;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "transaction_type", nullable = false)
     private TransactionType transactionType;
@@ -31,7 +33,7 @@ public class Financial {
     private LocalDateTime transactionTime;
     
     public enum TransactionType {
-        Deposit, Withdrawal, Earnings
+        Withdrawal, Earnings, Recharge, Expenses
     }
 
 }

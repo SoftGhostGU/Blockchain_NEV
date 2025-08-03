@@ -1,8 +1,10 @@
 package com.autocrowd.backend.service.impl;
 
 import com.autocrowd.backend.dto.driver.DriverOrderDetailResponse;
+import com.autocrowd.backend.dto.driver.TurnoverDTO;
 import com.autocrowd.backend.dto.order.*;
 import com.autocrowd.backend.entity.Driver;
+import com.autocrowd.backend.entity.Financial;
 import com.autocrowd.backend.entity.Order;
 import com.autocrowd.backend.entity.Review;
 import com.autocrowd.backend.entity.Vehicle;
@@ -10,6 +12,7 @@ import com.autocrowd.backend.entity.User;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.repository.DriverRepository;
+import com.autocrowd.backend.repository.FinancialRepository;
 import com.autocrowd.backend.repository.OrderRepository;
 import com.autocrowd.backend.repository.VehicleRepository;
 import com.autocrowd.backend.repository.UserRepository;
@@ -32,13 +35,15 @@ public class OrderServiceImpl implements OrderService {
     private final VehicleRepository vehicleRepository;
     private final ReviewRepository reviewRepository;
     private final UserRepository userRepository;
+    private final FinancialRepository financialRepository;
 
-    public OrderServiceImpl(OrderRepository orderRepository, DriverRepository driverRepository, VehicleRepository vehicleRepository, ReviewRepository reviewRepository, UserRepository userRepository) {
+    public OrderServiceImpl(OrderRepository orderRepository, DriverRepository driverRepository, VehicleRepository vehicleRepository, ReviewRepository reviewRepository, UserRepository userRepository, FinancialRepository financialRepository) {
         this.orderRepository = orderRepository;
         this.driverRepository = driverRepository;
         this.vehicleRepository = vehicleRepository;
         this.reviewRepository = reviewRepository;
         this.userRepository = userRepository;
+        this.financialRepository = financialRepository;
     }
     
     /**
@@ -99,25 +104,33 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 价格预估
      * @param request 预估请求参数
-     * @return 预估结果包含价格、距离和时间
+     * @return 预估价格信息
      */
     @Override
     public Map<String, Object> estimatePrice(EstimatePriceRequest request) {
-        System.out.println("[OrderService] 处理价格预估请求: " + request);
-        
-        Map<String, Object> result = new HashMap<>();
-        
-        // 简单的价格计算逻辑（实际项目中应该基于距离、时间等因素计算）
-        double distance = Math.random() * 50 + 5; // 模拟距离 5-55 公里
-        double time = distance / 30 * 60; // 模拟时间，假设平均速度30公里/小时
-        BigDecimal price = BigDecimal.valueOf(distance * 2.5).setScale(2, RoundingMode.HALF_UP); // 每公里2.5元
-        
-        result.put("distance", String.format("%.2f公里", distance));
-        result.put("time", String.format("%.0f分钟", time));
-        result.put("price", price);
-        
-        System.out.println("[OrderService] 价格预估完成: " + result);
-        return result;
+        System.out.println("[OrderService] 收到价格预估请求: 起点=" + request.getStartLocation() + ", 终点=" + request.getDestination());
+        try {
+            // 简单的距离计算（实际应使用地图API）
+            // 由于缺少坐标信息，这里使用简单的字符串长度差作为示例计算
+            double distance = Math.abs(request.getDestination().length() - request.getStartLocation().length()) * 2.0;
+
+            // 简单的时间计算（假设速度为30公里/小时）
+            double time = distance / 30 * 60; // 分钟
+
+            // 计算价格（每公里2.5元）
+            BigDecimal price = BigDecimal.valueOf(distance * 2.5).setScale(2, RoundingMode.HALF_UP); // 每公里2.5元
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("distance", String.format("%.2f公里", distance));
+            result.put("time", String.format("%.0f分钟", time));
+            result.put("price", price);
+
+            System.out.println("[OrderService] 价格预估完成: 距离=" + distance + "公里, 时间=" + time + "分钟, 价格=" + price + "元");
+            return result;
+        } catch (Exception e) {
+            System.err.println("[OrderService] 价格预估异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.PRICE_ESTIMATION_FAILED, "价格预估失败: " + e.getMessage());
+        }
     }
 
     /**
@@ -127,28 +140,22 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public CurrentOrderResponse getCurrentOrderByUserId(Integer userId) {
-        System.out.println("[OrderService] 获取用户当前订单: userId=" + userId);
-        
+        System.out.println("[OrderService] 查询用户当前订单: userId=" + userId);
         try {
-            // 查询用户状态为 0=Waiting, 1=On the way 或 2=In progress 的订单
+            // 查找所有正在进行的订单状态 (0=等待中, 1=已接单, 2=已接上客人)
             List<Byte> statuses = Arrays.asList((byte) 0, (byte) 1, (byte) 2);
-            
-            // 收集所有状态下的订单
             List<Order> allOrders = new ArrayList<>();
             for (Byte status : statuses) {
                 allOrders.addAll(orderRepository.findByUserIdAndStatus(userId, status));
             }
-            
+
             System.out.println("[OrderService] 查询到用户当前订单数量: " + allOrders.size());
-            
             if (allOrders.isEmpty()) {
-                return null;
+                return null; // 没有当前订单
             }
-            
-            // 取第一个订单（通常用户同时只能有一个进行中的订单）
+
+            // 返回第一个订单（通常一个用户只会有一个进行中的订单）
             Order order = allOrders.get(0);
-            
-            // 转换为响应DTO
             CurrentOrderResponse response = new CurrentOrderResponse();
             response.setOrderId(order.getOrderId());
             response.setStartLocation(order.getStartLocation());
@@ -156,8 +163,8 @@ public class OrderServiceImpl implements OrderService {
             response.setStatus(order.getStatus());
             response.setEstimatedPrice(order.getEstimatedPrice());
             response.setCreatedAt(order.getCreatedAt());
-            
-            // 如果订单有司机ID，获取司机和车辆信息
+
+            // 如果订单已被司机接单，查询司机和车辆信息
             if (order.getDriverId() != null) {
                 Optional<Driver> driverOpt = driverRepository.findById(order.getDriverId());
                 if (driverOpt.isPresent()) {
@@ -166,8 +173,8 @@ public class OrderServiceImpl implements OrderService {
                     driverInfo.setDriverId(driver.getDriverId());
                     driverInfo.setUsername(driver.getUsername());
                     driverInfo.setPhone(driver.getPhone());
-                    
-                    // 如果订单有车辆ID，获取车辆信息
+
+                    // 查询车辆信息
                     if (order.getVehicleId() != null) {
                         Optional<Vehicle> vehicleOpt = vehicleRepository.findById(order.getVehicleId());
                         if (vehicleOpt.isPresent()) {
@@ -178,15 +185,14 @@ public class OrderServiceImpl implements OrderService {
                             driverInfo.setVehicle(vehicleInfo);
                         }
                     }
-                    
                     response.setDriver(driverInfo);
                 }
             }
-            
-            System.out.println("[OrderService] 转换订单完成");
+
+            System.out.println("[OrderService] 返回用户当前订单: " + response.getOrderId());
             return response;
         } catch (Exception e) {
-            System.err.println("[OrderService] 获取用户当前订单异常: " + e.getMessage());
+            System.err.println("[OrderService] 查询订单异常: " + e.getMessage());
             throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询订单失败: " + e.getMessage());
         }
     }
@@ -198,15 +204,13 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public Order getOrderById(String orderId) {
-        System.out.println("[OrderService] 根据ID获取订单详情: " + orderId);
-        
         try {
             return orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 获取订单详情异常: " + e.getMessage());
+            System.err.println("[OrderService] 查询订单异常: " + e.getMessage());
             throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询订单失败: " + e.getMessage());
         }
     }
@@ -214,26 +218,24 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 更新订单状态
      * @param orderId 订单ID
-     * @param status 新状态
+     * @param status 新的状态
      * @return 更新后的订单
      */
     @Override
     public Order updateOrderStatus(String orderId, Byte status) {
-        System.out.println("[OrderService] 更新订单状态: orderId=" + orderId + ", status=" + status);
-        
         try {
-            // 获取订单
+            // 查找订单
             Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
-            
-            // 更新状态
+
+            // 更新订单状态和更新时间
             order.setStatus(status);
             order.setUpdatedAt(LocalDateTime.now());
-            
-            // 保存更新
+
+            // 保存订单
             Order updatedOrder = orderRepository.save(order);
             System.out.println("[OrderService] 订单状态更新成功: " + updatedOrder.getOrderId());
-            
+
             return updatedOrder;
         } catch (BusinessException e) {
             throw e;
@@ -244,109 +246,143 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 司机接单
+     * 车主接单
      * @param orderId 订单ID
-     * @param driverId 司机ID
+     * @param driverId 车主ID
      * @param vehicleId 车辆ID
-     * @return 接单结果
+     * @return 接单后的订单
      */
     @Override
     public Order acceptOrder(String orderId, Integer driverId, Integer vehicleId) {
-        System.out.println("[OrderService] 司机接单: orderId=" + orderId + ", driverId=" + driverId + ", vehicleId=" + vehicleId);
-        
+        System.out.println("[OrderService] 收到司机接单请求: 订单ID=" + orderId + ", 司机ID=" + driverId + ", 车辆ID=" + vehicleId);
         try {
-            // 获取订单
+            // 查找订单
             Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
-            
-            // 检查订单状态是否为等待中
+
+            // 检查订单状态
             if (order.getStatus() != 0) {
                 throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法接单");
             }
-            
-            // 设置司机ID、车辆ID和状态
+
+            // 更新订单信息
             order.setDriverId(driverId);
             order.setVehicleId(vehicleId);
             order.setStatus((byte) 1); // 1=On the way
             order.setUpdatedAt(LocalDateTime.now());
-            
-            // 保存更新
+
+            // 保存订单
             Order updatedOrder = orderRepository.save(order);
             System.out.println("[OrderService] 司机接单成功: " + updatedOrder.getOrderId());
-            
+
             return updatedOrder;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 司机接单异常: " + e.getMessage());
+            System.err.println("[OrderService] 接单异常: " + e.getMessage());
             throw new BusinessException(ExceptionCodeEnum.ORDER_ACCEPT_FAILED, "接单失败: " + e.getMessage());
         }
     }
 
     /**
-     * 结算订单
+     * 车主完成订单
      * @param orderId 订单ID
      * @param actualPrice 实际价格
-     * @return 结算后的订单
+     * @return 完成的订单
      */
     @Override
     public Order completeOrder(String orderId, BigDecimal actualPrice) {
-        System.out.println("[OrderService] 结算订单: orderId=" + orderId + ", actualPrice=" + actualPrice);
-        
+        System.out.println("[OrderService] 收到完成订单请求: 订单ID=" + orderId + ", 实际价格=" + actualPrice);
         try {
-            // 获取订单
+            // 查找订单
             Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
-            
-            // 检查订单状态是否为进行中
-            if (order.getStatus() != 2) { // 2=In progress
-                throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法结算");
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+
+            // 检查订单状态 (只有状态为2(已接上客人)的订单才能完成)
+            if (order.getStatus() != 2) { // 2 = 已接上客人
+                throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法完成");
             }
-            
-            // 设置实际价格和状态
+
+            // 更新订单状态和实际价格
+            order.setStatus((byte) 3); // 3 = 已完成
             order.setActualPrice(actualPrice);
-            order.setStatus((byte) 3); // 3=Completed
             order.setUpdatedAt(LocalDateTime.now());
             
-            // 保存更新
-            Order updatedOrder = orderRepository.save(order);
-            System.out.println("[OrderService] 订单结算成功: " + updatedOrder.getOrderId());
+            // 保存订单
+            Order completedOrder = orderRepository.save(order);
+            System.out.println("[OrderService] 订单完成成功: " + completedOrder.getOrderId());
             
-            return updatedOrder;
+            // 创建财务记录
+            createFinancialRecords(order, actualPrice);
+            
+            return completedOrder;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 订单结算异常: " + e.getMessage());
-            throw new BusinessException(ExceptionCodeEnum.ORDER_COMPLETE_FAILED, "订单结算失败: " + e.getMessage());
+            System.err.println("[OrderService] 完成订单异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.ORDER_COMPLETE_FAILED, "完成订单失败: " + e.getMessage());
         }
     }
     
     /**
-     * 添加订单评价
-     * @param request 评价请求
+     * 为完成的订单创建财务记录
+     * @param order 订单
+     * @param actualPrice 实际价格
+     */
+    private void createFinancialRecords(Order order, BigDecimal actualPrice) {
+        try {
+            System.out.println("[OrderService] 为订单创建财务记录: 订单ID=" + order.getOrderId() + ", 实际价格=" + actualPrice);
+            
+            // 为用户创建支出记录
+            Financial userFinancial = new Financial();
+            userFinancial.setUserId(order.getUserId());
+            userFinancial.setRole("User");
+            userFinancial.setTransactionType(Financial.TransactionType.Expenses);
+            userFinancial.setAmount(actualPrice);
+            userFinancial.setTransactionTime(LocalDateTime.now());
+            financialRepository.save(userFinancial);
+            System.out.println("[OrderService] 用户财务记录创建成功: ID=" + userFinancial.getFinancialId());
+            
+            // 为车主创建收入记录
+            Financial driverFinancial = new Financial();
+            driverFinancial.setUserId(order.getDriverId());
+            driverFinancial.setRole("Driver");
+            driverFinancial.setTransactionType(Financial.TransactionType.Earnings);
+            driverFinancial.setAmount(actualPrice);
+            driverFinancial.setTransactionTime(LocalDateTime.now());
+            financialRepository.save(driverFinancial);
+            System.out.println("[OrderService] 车主财务记录创建成功: ID=" + driverFinancial.getFinancialId());
+            
+        } catch (Exception e) {
+            System.err.println("[OrderService] 创建财务记录异常: " + e.getMessage());
+            // 财务记录创建失败不应影响订单完成，仅记录日志
+        }
+    }
+
+    /**
+     * 用户评价订单
+     * @param request 添加评价请求DTO
      * @param userId 用户ID
-     * @return 评价结果
      */
     @Override
     public Review addReview(AddReviewRequest request, Integer userId) {
         System.out.println("[OrderService] 添加订单评价: orderId=" + request.getOrderId() + ", userId=" + userId);
-        
         try {
-            // 获取订单
+            // 查找订单
             Order order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
-            
+
             // 检查订单状态是否为已完成
             if (order.getStatus() != 3) { // 3=Completed
                 throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "只能对已完成的订单进行评价");
             }
-            
-            // 检查是否已经评价过
+
+            // 检查是否已评价
             List<Review> existingReviews = reviewRepository.findByOrderId(request.getOrderId());
             if (!existingReviews.isEmpty()) {
                 throw new BusinessException(ExceptionCodeEnum.REVIEW_ALREADY_EXISTS, "该订单已评价");
             }
-            
+
             // 创建评价
             Review review = new Review();
             review.setOrderId(request.getOrderId());
@@ -356,80 +392,80 @@ public class OrderServiceImpl implements OrderService {
             review.setCommentStar(request.getCommentStar());
             review.setCreatedAt(LocalDateTime.now());
             review.setUpdatedAt(LocalDateTime.now());
-            
+
             // 保存评价
             Review savedReview = reviewRepository.save(review);
             System.out.println("[OrderService] 订单评价添加成功: " + savedReview.getReviewId());
-            
+
             return savedReview;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            System.err.println("[OrderService] 添加订单评价异常: " + e.getMessage());
+            System.err.println("[OrderService] 添加评价异常: " + e.getMessage());
             throw new BusinessException(ExceptionCodeEnum.REVIEW_CREATE_FAILED, "添加评价失败: " + e.getMessage());
         }
     }
-    
+
     /**
-     * 获取用户的历史订单（已完成的订单）
+     * 用户获取历史订单列表
      * @param userId 用户ID
-     * @return 订单详情列表
+     * @return 用户订单详情响应DTO列表
      */
     @Override
     public List<UserOrderDetailResponse> getUserHistoryOrders(Integer userId) {
         System.out.println("[OrderService] 获取用户历史订单: userId=" + userId);
-        
         try {
-            // 查询用户已完成的订单（状态为3）
+            // 查找已完成的订单 (status=3)
             List<Order> orders = orderRepository.findByUserIdAndStatus(userId, (byte) 3);
-            
-            // 转换为用户端专用的详细响应DTO
+            System.out.println("[OrderService] 查询到用户历史订单数量: " + orders.size());
+
+            // 转换为响应DTO
             List<UserOrderDetailResponse> responses = new ArrayList<>();
             for (Order order : orders) {
                 UserOrderDetailResponse response = convertToUserOrderDetailResponse(order);
                 responses.add(response);
             }
-            
+
             System.out.println("[OrderService] 获取用户历史订单完成，共找到 " + responses.size() + " 条记录");
             return responses;
         } catch (Exception e) {
-            System.err.println("[OrderService] 获取用户历史订单异常: " + e.getMessage());
+            System.err.println("[OrderService] 查询历史订单异常: " + e.getMessage());
             throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询历史订单失败: " + e.getMessage());
         }
     }
-    
+
     /**
-     * 获取司机的历史订单（已完成的订单）
-     * @param driverId 司机ID
-     * @return 订单详情列表
+     * 车主获取历史订单列表
+     * @param driverId 车主ID
+     * @return 车主订单详情响应DTO列表
      */
     @Override
     public List<DriverOrderDetailResponse> getDriverHistoryOrders(Integer driverId) {
         System.out.println("[OrderService] 获取司机历史订单: driverId=" + driverId);
-        
         try {
-            // 查询司机已完成的订单（状态为3）
+            // 查找已完成的订单 (status=3)
             List<Order> orders = orderRepository.findByDriverIdAndStatus(driverId, (byte) 3);
-            
-            // 转换为车主端专用的详细响应DTO
+            System.out.println("[OrderService] 查询到司机历史订单数量: " + orders.size());
+
+            // 转换为响应DTO
             List<DriverOrderDetailResponse> responses = new ArrayList<>();
             for (Order order : orders) {
                 DriverOrderDetailResponse response = convertToDriverOrderDetailResponse(order);
                 responses.add(response);
             }
-            
+
             System.out.println("[OrderService] 获取司机历史订单完成，共找到 " + responses.size() + " 条记录");
             return responses;
         } catch (Exception e) {
-            System.err.println("[OrderService] 获取司机历史订单异常: " + e.getMessage());
+            System.err.println("[OrderService] 查询历史订单异常: " + e.getMessage());
             throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "查询历史订单失败: " + e.getMessage());
         }
     }
-    
+
     /**
-     * 将Order实体转换为UserOrderDetailResponse DTO（用户端专用）
+     * 将订单实体转换为用户订单详情响应DTO
      * @param order 订单实体
-     * @return 用户端订单详情响应DTO
+     * @return 用户订单详情响应DTO
      */
     private UserOrderDetailResponse convertToUserOrderDetailResponse(Order order) {
         UserOrderDetailResponse response = new UserOrderDetailResponse();
@@ -442,8 +478,8 @@ public class OrderServiceImpl implements OrderService {
         response.setCreatedAt(order.getCreatedAt());
         response.setUpdatedAt(order.getUpdatedAt());
         response.setType(order.getType());
-        
-        // 获取司机信息（不包含手机号和钱包余额等敏感信息）
+
+        // 查询司机信息
         if (order.getDriverId() != null) {
             Optional<Driver> driverOpt = driverRepository.findById(order.getDriverId());
             if (driverOpt.isPresent()) {
@@ -452,23 +488,24 @@ public class OrderServiceImpl implements OrderService {
                 driverInfo.setDriverId(driver.getDriverId());
                 driverInfo.setUsername(driver.getUsername());
                 driverInfo.setCreditScore(driver.getCreditScore());
+
+                // 查询车辆信息
+                if (order.getVehicleId() != null) {
+                    Optional<Vehicle> vehicleOpt = vehicleRepository.findById(order.getVehicleId());
+                    if (vehicleOpt.isPresent()) {
+                        Vehicle vehicle = vehicleOpt.get();
+                        UserOrderDetailResponse.VehicleInfoDTO vehicleInfo = new UserOrderDetailResponse.VehicleInfoDTO();
+                        vehicleInfo.setVehicleId(vehicle.getVehicleId());
+                        vehicleInfo.setLicensePlate(vehicle.getLicensePlate());
+                        // 移除对setVehicle方法的调用，因为DriverInfoDTO中没有这个方法
+                        // driverInfo.setVehicle(vehicleInfo);
+                    }
+                }
                 response.setDriver(driverInfo);
             }
         }
-        
-        // 获取车辆信息
-        if (order.getVehicleId() != null) {
-            Optional<Vehicle> vehicleOpt = vehicleRepository.findById(order.getVehicleId());
-            if (vehicleOpt.isPresent()) {
-                Vehicle vehicle = vehicleOpt.get();
-                UserOrderDetailResponse.VehicleInfoDTO vehicleInfo = new UserOrderDetailResponse.VehicleInfoDTO();
-                vehicleInfo.setVehicleId(vehicle.getVehicleId());
-                vehicleInfo.setLicensePlate(vehicle.getLicensePlate());
-                response.setVehicle(vehicleInfo);
-            }
-        }
-        
-        // 获取评价信息
+
+        // 查询评价信息
         List<Review> reviews = reviewRepository.findByOrderId(order.getOrderId());
         if (!reviews.isEmpty()) {
             Review review = reviews.get(0); // 一个订单只应该有一个评价
@@ -480,14 +517,14 @@ public class OrderServiceImpl implements OrderService {
             reviewInfo.setUpdatedAt(review.getUpdatedAt());
             response.setReview(reviewInfo);
         }
-        
+
         return response;
     }
-    
+
     /**
-     * 将Order实体转换为DriverOrderDetailResponse DTO（车主端专用）
+     * 将订单实体转换为车主订单详情响应DTO
      * @param order 订单实体
-     * @return 车主端订单详情响应DTO
+     * @return 车主订单详情响应DTO
      */
     private DriverOrderDetailResponse convertToDriverOrderDetailResponse(Order order) {
         DriverOrderDetailResponse response = new DriverOrderDetailResponse();
@@ -500,8 +537,8 @@ public class OrderServiceImpl implements OrderService {
         response.setCreatedAt(order.getCreatedAt());
         response.setUpdatedAt(order.getUpdatedAt());
         response.setType(order.getType());
-        
-        // 获取用户信息（不包含手机号等敏感信息）
+
+        // 查询用户信息
         if (order.getUserId() != null) {
             Optional<User> userOpt = userRepository.findById(order.getUserId());
             if (userOpt.isPresent()) {
@@ -512,8 +549,8 @@ public class OrderServiceImpl implements OrderService {
                 response.setUser(userInfo);
             }
         }
-        
-        // 获取车辆信息
+
+        // 查询车辆信息
         if (order.getVehicleId() != null) {
             Optional<Vehicle> vehicleOpt = vehicleRepository.findById(order.getVehicleId());
             if (vehicleOpt.isPresent()) {
@@ -524,8 +561,8 @@ public class OrderServiceImpl implements OrderService {
                 response.setVehicle(vehicleInfo);
             }
         }
-        
-        // 获取评价信息
+
+        // 查询评价信息
         List<Review> reviews = reviewRepository.findByOrderId(order.getOrderId());
         if (!reviews.isEmpty()) {
             Review review = reviews.get(0); // 一个订单只应该有一个评价
@@ -537,8 +574,74 @@ public class OrderServiceImpl implements OrderService {
             reviewInfo.setUpdatedAt(review.getUpdatedAt());
             response.setReview(reviewInfo);
         }
-        
+
         return response;
     }
 
+    @Override
+    public List<TurnoverDTO> getDriverTurnoverLast7Days(Integer driverId) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime sevenDaysAgo = now.minusDays(6); // 包含今天，共7天数据
+
+        // 从financial表中查询类型为Earnings的数据
+        List<Financial> earnings = financialRepository.findByRoleAndUserIdAndTransactionTypeAndTransactionTimeBetween(
+                "Driver", driverId, Financial.TransactionType.Earnings, sevenDaysAgo, now);
+
+        // 创建包含最近7天的Map
+        Map<String, BigDecimal> dailyTurnover = new HashMap<>();
+        for (int i = 0; i < 7; i++) {
+            LocalDateTime date = sevenDaysAgo.plusDays(i);
+            String dateStr = date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            dailyTurnover.put(dateStr, BigDecimal.ZERO);
+        }
+
+        // 统计每天的营业额
+        for (Financial financial : earnings) {
+            String dateStr = financial.getTransactionTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            if (dailyTurnover.containsKey(dateStr)) {
+                BigDecimal current = dailyTurnover.get(dateStr);
+                dailyTurnover.put(dateStr, current.add(financial.getAmount()));
+            }
+        }
+
+        // 转换为TurnoverDTO列表
+        List<TurnoverDTO> result = new ArrayList<>();
+        for (Map.Entry<String, BigDecimal> entry : dailyTurnover.entrySet()) {
+            TurnoverDTO dto = new TurnoverDTO();
+            dto.setDay(entry.getKey());
+            dto.setValue(entry.getValue());
+            result.add(dto);
+        }
+
+        // 按日期排序
+        result.sort(Comparator.comparing(TurnoverDTO::getDay));
+        return result;
+    }
+
+    @Override
+    public List<TurnoverDTO> getDriverTurnoverLast7Months(Integer driverId) {
+        LocalDateTime now = LocalDateTime.now();
+        List<TurnoverDTO> result = new ArrayList<>();
+
+        for (int i = 6; i >= 0; i--) {
+            LocalDateTime monthStart = now.minusMonths(i).withDayOfMonth(1).with(LocalDateTime.MIN.toLocalTime());
+            LocalDateTime monthEnd = monthStart.plusMonths(1).minusDays(1).with(LocalDateTime.MAX.toLocalTime());
+
+            // 从financial表中查询类型为Earnings的数据
+            List<Financial> earnings = financialRepository.findByRoleAndUserIdAndTransactionTypeAndTransactionTimeBetween(
+                    "Driver", driverId, Financial.TransactionType.Earnings, monthStart, monthEnd);
+
+            BigDecimal monthlyTurnover = BigDecimal.ZERO;
+            for (Financial financial : earnings) {
+                monthlyTurnover = monthlyTurnover.add(financial.getAmount());
+            }
+
+            TurnoverDTO dto = new TurnoverDTO();
+            dto.setDay(monthStart.format(DateTimeFormatter.ofPattern("yyyy-MM")));
+            dto.setValue(monthlyTurnover);
+            result.add(dto);
+        }
+
+        return result;
+    }
 }
