@@ -164,7 +164,6 @@ public class OrderController {
             logger.debug("[OrderController] 返回创建订单结果: {}", order);
             return ResponseEntity.ok(result);
         } catch (BusinessException e) {
-            logger.warn("[OrderController] 业务异常: code={}, message={}", e.getCode(), e.getMessage());
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", e.getCode());
             errorResponse.put("message", e.getMessage());
