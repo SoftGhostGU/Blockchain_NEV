@@ -15,7 +15,7 @@ import {
 
 import { DownOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Button, Dropdown, Space } from 'antd';
+import { Button, Dropdown, Space, Flex, Progress } from 'antd';
 import { useState } from 'react';
 
 export default function orderManage() {
@@ -47,6 +47,20 @@ export default function orderManage() {
       username: '张俊喆',
       commentStar: 5,
       commentText: '非常好，车子开的很稳，路上没有堵车，车主服务态度很好，很快就送达，很满意！',
+    },
+    {
+      orderId: 'ORD20250717002',
+      orderTime: '2025-07-18 10:00:00',
+      orderType: '同城配送',
+      balance: '+￥150',
+      status: '已完成',
+      // operate: '· · ·'
+      startLocation: '北京市朝阳区三里屯',
+      endLocation: '北京市海淀区中关村',
+      userAvatar: userAvatar,
+      username: '张俊喆',
+      commentStar: 5,
+      commentText: '非常好，车子开的很稳，路上没有堵车，车主服务态度很好，很快就送达，很满意！',
     }
   ]
 
@@ -57,6 +71,13 @@ export default function orderManage() {
     { star: 2, count: 6 },
     { star: 1, count: 2 }
   ];
+
+  // 计算需要的值
+  const rate_order_finish = 98.7;
+  const avg_order_benefit = originalOrderList.reduce((acc, cur) => acc + Number(cur.balance.split('￥')[1]), 0) / originalOrderList.length ;
+  const rate_order_benefit = avg_order_benefit / originalOrderList.reduce((acc, cur) => acc > Number(cur.balance.split('￥')[1]) ? acc : Number(cur.balance.split('￥')[1]), 0) * 100;
+  const rate_comment_5 = starCount[0].count / starCount.reduce((acc, cur) => acc + cur.count, 0) * 100;
+  const rate_user_satisfaction = starCount.reduce((acc, cur) => acc + cur.star * cur.count / 5, 0) / starCount.reduce((acc, cur) => acc + cur.count, 0) * 100;
 
   const [time, setTime] = useState('全部时间');
   const [comment, setComment] = useState('全部评价');
@@ -252,13 +273,59 @@ export default function orderManage() {
           <div className='colomn-title'>评分分布</div>
           <CirclePieChart data={starCount} />
         </div>
-        <div className='colomn-item'>
-          <div className='colomn-title'>评分分布</div>
-          <CirclePieChart data={starCount} />
-        </div>
-        <div className='colomn-item'>
-          <div className='colomn-title'>评分分布</div>
-          <CirclePieChart data={starCount} />
+        <div className='colomn-item order-item'>
+          <div className='info-item line-blue'>
+            <div className='info-item-title'>
+              <div className='title-info'>订单完成率</div>
+              <div className='color-green'>{ rate_order_finish.toFixed(1) }%</div>
+            </div>
+            <Progress
+              percent={Number(rate_order_finish.toFixed(1))}
+              size="small"
+              strokeColor="#79c23e"
+              status="active"
+              showInfo={false}
+            />
+          </div>
+          <div className='info-item line-greens'>
+            <div className='info-item-title'>
+              <div className='title-info'>平均订单金额</div>
+              <div className='color-blue'>{ avg_order_benefit.toFixed(1) }</div>
+            </div>
+            <Progress
+              percent={Number(rate_order_benefit.toFixed(1))}
+              size="small"
+              strokeColor="#4d77f7"
+              status="active"
+              showInfo={false}
+            />
+          </div>
+          <div className='info-item line-red'>
+            <div className='info-item-title'>
+              <div className='title-info'>五星好评率</div>
+              <div className='color-yellow'>{ rate_comment_5.toFixed(1) }%</div>
+            </div>
+            <Progress
+              percent={Number(rate_comment_5.toFixed(1))}
+              size="small"
+              strokeColor="#edb53b"
+              status="active"
+              showInfo={false}
+            />
+          </div>
+          <div className='info-item line-yellow'>
+            <div className='info-item-title'>
+              <div className='title-info'>用户满意度</div>
+              <div className='color-red'>{ rate_user_satisfaction.toFixed(1) }</div>
+            </div>
+            <Progress
+              percent={Number(rate_user_satisfaction.toFixed(1))}
+              size="small"
+              strokeColor="#e24c24"
+              status="active"
+              showInfo={false}
+            />
+          </div>
         </div>
       </div>
       <div className='order-container'>
