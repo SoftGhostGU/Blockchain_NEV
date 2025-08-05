@@ -13,7 +13,7 @@ const CirclePieChart: React.FC<CirclePieChartProps> = ({ data }) => {
 
   useEffect(() => {
     const handleResize = () => {
-      const newWidth = Math.max((window.innerWidth * 0.84 - 30) * 30 % - 50, 100);
+      const newWidth = Math.max((window.innerWidth * 0.84 - 30) * 40 % - 50, 100);
       const newHeight = Math.max((window.innerHeight - 162) / 3 - 66, 100);
 
       setWidth(newWidth);
@@ -40,8 +40,8 @@ const CirclePieChart: React.FC<CirclePieChartProps> = ({ data }) => {
           data={chartData}
           cx="50%"
           cy="50%"
-          innerRadius={40}
-          outerRadius={55}
+          innerRadius={60}
+          outerRadius={80}
           paddingAngle={5}
           dataKey="value"
           label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
