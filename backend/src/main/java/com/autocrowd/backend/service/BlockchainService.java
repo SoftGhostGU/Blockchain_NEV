@@ -2,6 +2,7 @@ package com.autocrowd.backend.service;
 
 import com.autocrowd.backend.entity.Order;
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface BlockchainService {
     /**
@@ -30,4 +31,23 @@ public interface BlockchainService {
      * @return 是否上链成功
      */
     boolean createDriverTransactionOnBlockchain(String financialId, Integer driverId, BigDecimal amount, long timestamp);
+
+    /**
+     * 查询已完成的订单列表
+     * @return 已完成的订单列表
+     */
+    List<Order> getCompletedOrdersFromBlockchain();
+
+    /**
+     * 获取总交易额
+     * @return 总交易额
+     */
+    BigDecimal getTotalTransactionAmountFromBlockchain();
+
+    /**
+     * 根据车主ID获取其总交易额
+     * @param driverId 车主ID
+     * @return 车主的总交易额
+     */
+    BigDecimal getTotalTransactionAmountByDriverFromBlockchain(Integer driverId);
 }
