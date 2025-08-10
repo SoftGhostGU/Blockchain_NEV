@@ -1,5 +1,5 @@
-import '../style/Navbar.scss'
-import logo from '../assets/logo1.png'
+import './Navbar.scss'
+import logo from '../../assets/logo1.png'
 
 // import * as React from 'react';
 

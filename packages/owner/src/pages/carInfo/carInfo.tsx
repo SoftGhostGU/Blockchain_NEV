@@ -1,4 +1,4 @@
-import "../../style/carInfo.scss"
+import "./carInfo.scss"
 
 import mapTest from '../../assets/map_test.jpg'
 
