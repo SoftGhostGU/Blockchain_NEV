@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import "../../style/benefit.scss"
+import "./benefit.scss"
 
 import LineChart from '../../components/lineChart'
 import BarChart from '../../components/barChart'
