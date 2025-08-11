@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import "./benefit.scss"
 
 import LineChart from '../../components/lineChart'
@@ -31,6 +31,7 @@ import type {
 import {
   createStyles
 } from 'antd-style';
+import { useColorModeStore } from '../../store/store';
 
 const { Search } = Input;
 // type SearchProps = GetProps<typeof Input.Search>;
@@ -332,6 +333,22 @@ export default function benefit() {
     toggleModal(0, false);
   };
 
+
+  const isNightMode = useColorModeStore(state => state.isNightMode);
+  const toggleColorMode = useColorModeStore(state => state.toggleColorMode);
+
+  useEffect(() => {
+    const rowItems = document.querySelectorAll('.row-item');
+    rowItems.forEach(item => {
+      if (isNightMode) {
+        item.classList.add('night-mode');
+        console.log("切换到夜间模式");
+      } else {
+        item.classList.remove('night-mode');
+        console.log("切换到日间模式");
+      }
+    });
+  }, [isNightMode]);
 
 
   return (

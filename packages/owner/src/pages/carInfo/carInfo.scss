@@ -6,6 +6,13 @@
     url('//at.alicdn.com/t/c/font_4974777_oysj7n9gp4.ttf?t=1752501001035') format('truetype');
 }
 
+:root {
+  --background-light: #ffffff;
+  --color-light: #000000;
+  --background-dark: #0c1527;
+  --color-dark: #ffffff;
+}
+
 .app-container {
   max-width: 100%;
   padding: 25px;
@@ -51,6 +58,19 @@
     .small {
       font-size: 12px;
     }
+  }
+
+  .block_three.night-mode {
+    width: 100%;
+    background-color: var(--background-dark);
+    padding: 15px;
+    // margin-bottom: 25px;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    // border: #c5c5c5 1px solid;
+    box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease-in-out;
   }
 
   .block_three:hover {
@@ -113,6 +133,11 @@
             font-size: 12px;
             color: #555;
           }
+
+          .list-item-text.night-mode {
+            font-size: 12px;
+            color: #aaa;
+          }
         }
       }
     }
@@ -149,6 +174,11 @@
         .progress-label {
           font-size: 12px;
           color: #555;
+        }
+
+        .progress-label.night-mode {
+          font-size: 12px;
+          color: #aaa;
         }
 
         .progress-value {
@@ -191,6 +221,11 @@
       .progress-label {
         font-size: 12px;
         color: #555;
+      }
+
+      .progress-label.night-mode {
+        font-size: 12px;
+        color: #aaa;
       }
 
       .progress-value {
@@ -266,6 +301,19 @@
         justify-content: space-between;
       }
     }
+  }
+
+  .map-container.night-mode {
+    width: 82%;
+    height: calc(100vh - 165px);
+    margin-left: 55px;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: var(--background-dark);
+    position: relative;
+    // border: #c5c5c5 1px solid;
+    box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease-in-out;
   }
 
   .map-container:hover {

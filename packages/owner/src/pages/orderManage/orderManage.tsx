@@ -15,8 +15,9 @@ import {
 
 import { DownOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { Button, Dropdown, Space, Flex, Progress } from 'antd';
-import { useState } from 'react';
+import { Button, Dropdown, Space, Flex, Progress, ConfigProvider, theme } from 'antd';
+import { useEffect, useState } from 'react';
+import { useColorModeStore } from '../../store/store';
 
 export default function orderManage() {
   const originalOrderList = [
@@ -74,7 +75,7 @@ export default function orderManage() {
 
   // 计算需要的值
   const rate_order_finish = 98.7;
-  const avg_order_benefit = originalOrderList.reduce((acc, cur) => acc + Number(cur.balance.split('￥')[1]), 0) / originalOrderList.length ;
+  const avg_order_benefit = originalOrderList.reduce((acc, cur) => acc + Number(cur.balance.split('￥')[1]), 0) / originalOrderList.length;
   const rate_order_benefit = avg_order_benefit / originalOrderList.reduce((acc, cur) => acc > Number(cur.balance.split('￥')[1]) ? acc : Number(cur.balance.split('￥')[1]), 0) * 100;
   const rate_comment_5 = starCount[0].count / starCount.reduce((acc, cur) => acc + cur.count, 0) * 100;
   const rate_user_satisfaction = starCount.reduce((acc, cur) => acc + cur.star * cur.count / 5, 0) / starCount.reduce((acc, cur) => acc + cur.count, 0) * 100;
@@ -266,139 +267,167 @@ export default function orderManage() {
     onClick: handleOrderMenuClick,
   }
 
+  const isNightMode = useColorModeStore(state => state.isNightMode);
+  useEffect(() => {
+    const colomnItem = document.querySelectorAll('.colomn-item');
+    const colomnTitle = document.querySelectorAll('.colomn-title');
+    const titleInfo = document.querySelectorAll('.title-info');
+    const ordersContainer = document.querySelector('.orders-container');
+    const orderTitle = document.querySelector('.order-title');
+    if (isNightMode) {
+      colomnItem.forEach(item => { item.classList.add('night-mode') });
+      colomnTitle.forEach(item => { item.classList.add('night-mode') });
+      titleInfo.forEach(item => { item.classList.add('night-mode') });
+      ordersContainer?.classList.add('night-mode');
+      orderTitle?.classList.add('night-mode');
+      console.log("切换到夜间模式")
+    } else {
+      colomnItem.forEach(item => { item.classList.remove('night-mode') });
+      colomnTitle.forEach(item => { item.classList.remove('night-mode') });
+      titleInfo.forEach(item => { item.classList.remove('night-mode') });
+      ordersContainer?.classList.remove('night-mode');
+      orderTitle?.classList.remove('night-mode');
+      console.log("切换到日间模式")
+    }
+  }, [isNightMode]);
+
   return (
-    <div className="order-container">
-      <div className='colomn-container'>
-        <div className='colomn-item'>
-          <div className='colomn-title'>评分分布</div>
-          <CirclePieChart data={starCount} />
+    <ConfigProvider
+      theme={{ algorithm: isNightMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}
+    >
+      <div className="order-container">
+        <div className='colomn-container'>
+          <div className='colomn-item'>
+            <div className='colomn-title'>评分分布</div>
+            <CirclePieChart data={starCount} />
+          </div>
+          <div className='colomn-item order-item'>
+            <div className='info-item line-blue'>
+              <div className='info-item-title'>
+                <div className='title-info'>订单完成率</div>
+                <div className='color-green'>{rate_order_finish.toFixed(1)}%</div>
+              </div>
+              <Progress
+                percent={Number(rate_order_finish.toFixed(1))}
+                size="small"
+                strokeColor="#79c23e"
+                status="active"
+                showInfo={false}
+              />
+            </div>
+            <div className='info-item line-greens'>
+              <div className='info-item-title'>
+                <div className='title-info'>平均订单金额</div>
+                <div className='color-blue'>{avg_order_benefit.toFixed(1)}</div>
+              </div>
+              <Progress
+                percent={Number(rate_order_benefit.toFixed(1))}
+                size="small"
+                strokeColor="#4d77f7"
+                status="active"
+                showInfo={false}
+              />
+            </div>
+            <div className='info-item line-red'>
+              <div className='info-item-title'>
+                <div className='title-info'>五星好评率</div>
+                <div className='color-yellow'>{rate_comment_5.toFixed(1)}%</div>
+              </div>
+              <Progress
+                percent={Number(rate_comment_5.toFixed(1))}
+                size="small"
+                strokeColor="#edb53b"
+                status="active"
+                showInfo={false}
+              />
+            </div>
+            <div className='info-item line-yellow'>
+              <div className='info-item-title'>
+                <div className='title-info'>用户满意度</div>
+                <div className='color-red'>{rate_user_satisfaction.toFixed(1)}</div>
+              </div>
+              <Progress
+                percent={Number(rate_user_satisfaction.toFixed(1))}
+                size="small"
+                strokeColor="#e24c24"
+                status="active"
+                showInfo={false}
+              />
+            </div>
+          </div>
         </div>
-        <div className='colomn-item order-item'>
-          <div className='info-item line-blue'>
-            <div className='info-item-title'>
-              <div className='title-info'>订单完成率</div>
-              <div className='color-green'>{ rate_order_finish.toFixed(1) }%</div>
-            </div>
-            <Progress
-              percent={Number(rate_order_finish.toFixed(1))}
-              size="small"
-              strokeColor="#79c23e"
-              status="active"
-              showInfo={false}
+        <div className='orders-container'>
+          <div className='order-title'>
+            <CalendarOutlined
+              style={{ marginRight: '10px' }}
             />
+            <Dropdown
+              menu={dayMenuProps}
+            >
+              <Button>
+                <Space>
+                  {time}
+                  <DownOutlined />
+                </Space>
+              </Button>
+            </Dropdown>
+
+            <FilterOutlined
+              style={{
+                marginRight: '10px',
+                marginLeft: '20px'
+              }}
+            />
+            <Dropdown menu={commentMenuProps}>
+              <Button>
+                <Space>
+                  {comment}
+                  <DownOutlined />
+                </Space>
+              </Button>
+            </Dropdown>
+
+            <SortAscendingOutlined
+              style={{
+                marginRight: '10px',
+                marginLeft: '20px'
+              }}
+            />
+            <Dropdown menu={orderMenuProps}>
+              <Button>
+                <Space>
+                  {order}
+                  <DownOutlined />
+                </Space>
+              </Button>
+            </Dropdown>
+
+            <Button
+              style={{
+                marginLeft: '20px',
+                backgroundColor: '#578ff8',
+                color: '#fff',
+              }}
+              onClick={() => {
+                setTime('全部时间');
+                setComment('全部评价');
+                setOrder('时间正序');
+                setOrderList(originalOrderList);
+              }}
+            >
+              重置筛选
+            </Button>
+
           </div>
-          <div className='info-item line-greens'>
-            <div className='info-item-title'>
-              <div className='title-info'>平均订单金额</div>
-              <div className='color-blue'>{ avg_order_benefit.toFixed(1) }</div>
-            </div>
-            <Progress
-              percent={Number(rate_order_benefit.toFixed(1))}
-              size="small"
-              strokeColor="#4d77f7"
-              status="active"
-              showInfo={false}
-            />
-          </div>
-          <div className='info-item line-red'>
-            <div className='info-item-title'>
-              <div className='title-info'>五星好评率</div>
-              <div className='color-yellow'>{ rate_comment_5.toFixed(1) }%</div>
-            </div>
-            <Progress
-              percent={Number(rate_comment_5.toFixed(1))}
-              size="small"
-              strokeColor="#edb53b"
-              status="active"
-              showInfo={false}
-            />
-          </div>
-          <div className='info-item line-yellow'>
-            <div className='info-item-title'>
-              <div className='title-info'>用户满意度</div>
-              <div className='color-red'>{ rate_user_satisfaction.toFixed(1) }</div>
-            </div>
-            <Progress
-              percent={Number(rate_user_satisfaction.toFixed(1))}
-              size="small"
-              strokeColor="#e24c24"
-              status="active"
-              showInfo={false}
-            />
+          <div className='order-card-list'>
+            {
+              orderList.map((item) => (
+                <OrderCard data={item} />
+              ))
+            }
           </div>
         </div>
       </div>
-      <div className='order-container'>
-        <div className='order-title'>
-          <CalendarOutlined
-            style={{ marginRight: '10px' }}
-          />
-          <Dropdown
-            menu={dayMenuProps}
-          >
-            <Button>
-              <Space>
-                {time}
-                <DownOutlined />
-              </Space>
-            </Button>
-          </Dropdown>
-
-          <FilterOutlined
-            style={{
-              marginRight: '10px',
-              marginLeft: '20px'
-            }}
-          />
-          <Dropdown menu={commentMenuProps}>
-            <Button>
-              <Space>
-                {comment}
-                <DownOutlined />
-              </Space>
-            </Button>
-          </Dropdown>
-
-          <SortAscendingOutlined
-            style={{
-              marginRight: '10px',
-              marginLeft: '20px'
-            }}
-          />
-          <Dropdown menu={orderMenuProps}>
-            <Button>
-              <Space>
-                {order}
-                <DownOutlined />
-              </Space>
-            </Button>
-          </Dropdown>
-
-          <Button
-            style={{
-              marginLeft: '20px',
-              backgroundColor: '#578ff8',
-              color: '#fff',
-            }}
-            onClick={() => {
-              setTime('全部时间');
-              setComment('全部评价');
-              setOrder('时间正序');
-              setOrderList(originalOrderList);
-            }}
-          >
-            重置筛选
-          </Button>
-
-        </div>
-        <div className='order-card-list'>
-          {
-            orderList.map((item) => (
-              <OrderCard data={item} />
-            ))
-          }
-        </div>
-      </div>
-    </div>
+    </ConfigProvider>
   );
 }
