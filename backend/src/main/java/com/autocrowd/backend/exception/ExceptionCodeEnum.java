@@ -22,6 +22,7 @@ public enum ExceptionCodeEnum {
     USER_LOGIN_ERROR(10016, "用户登录异常"),
     USER_PROFILE_ERROR(10017, "用户资料获取异常"),
     USER_UPDATE_ERROR(10018, "用户资料更新异常"),
+    WEAK_PASSWORD(10019, "密码强度不足，必须包含至少8个字符，且至少包含大写字母、小写字母、数字、特殊字符中的三种"),
     // 司机相关异常
     DRIVERNAME_ALREADY_EXISTS(10021, "司机用户名已存在"),
     DRIVER_NOT_FOUND(10022, "司机不存在"),
