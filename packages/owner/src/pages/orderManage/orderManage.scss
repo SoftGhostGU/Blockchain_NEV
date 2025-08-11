@@ -1,3 +1,10 @@
+:root {
+  --background-light: #ffffff;
+  --color-light: #000000;
+  --background-dark: #0c1527;
+  --color-dark: #ffffff;
+}
+
 .order-container {
   height: 100%;
   display: flex;
@@ -26,6 +33,22 @@
         font-size: 18px;
         height: 0;
       }
+
+      .colomn-title.night-mode {
+        color: #aaa;
+        font-size: 18px;
+        height: 0;
+      }
+    }
+
+    .colomn-item.night-mode {
+      height: calc((100vh - 162px) / 5 * 2 - 40px);
+      background-color: var(--background-dark);
+      margin: 10px 0;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease-in-out;
     }
 
     .colomn-item:hover {
@@ -42,7 +65,6 @@
       .info-item {
         height: auto;
         font-size: 14px;
-        color: #333;
         margin-bottom: 10px;
         flex-direction: row;
 
@@ -52,7 +74,12 @@
           justify-content: space-between;
 
           .title-info {
-            color: #333;
+            color: #555;
+            font-weight: bold;
+          }
+
+          .title-info.night-mode {
+            color: #aaa;
             font-weight: bold;
           }
 
@@ -80,7 +107,7 @@
     }
   }
 
-  .order-container {
+  .orders-container {
     width: 70%;
     height: calc(100vh - 162px);
     background-color: #fff;
@@ -98,6 +125,16 @@
       background-color: #fff;
       padding-bottom: 20px;
       display: flex;
+      transition: all 0.3s ease-in-out;
+      // z-index: 100;
+    }
+
+    .order-title.night-mode {
+      position: absolute;
+      background-color: var(--background-dark);
+      padding-bottom: 20px;
+      display: flex;
+      transition: all 0.3s ease-in-out;
       // z-index: 100;
     }
 
@@ -107,6 +144,20 @@
       padding-bottom: 1%;
       overflow: auto;
     }
+  }
+
+  .orders-container.night-mode {
+    width: 70%;
+    height: calc(100vh - 162px);
+    background-color: var(--background-dark);
+    display: flex;
+    flex-direction: column;
+    border-radius: 15px;
+    margin: 10px 25px;
+    margin-right: 0;
+    padding: 20px;
+    box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease-in-out;
   }
 
   .order-container:hover {
@@ -136,8 +187,21 @@
       margin-right: 10px;
     }
 
+    .order-id.night-mode {
+      font-weight: bold;
+      color: #ccc;
+      line-height: 25px;
+      margin-right: 10px;
+    }
+
     .order-time {
       color: #666;
+      font-size: 12px;
+      line-height: 25px;
+    }
+
+    .order-time.night-mode {
+      color: #999;
       font-size: 12px;
       line-height: 25px;
     }
@@ -179,6 +243,13 @@
       text-align: center;
       margin: 4px 0;
     }
+  }
+
+  .route-info.night-mode {
+    padding: 3px 0;
+    border-top: 1px dashed #111;
+    border-bottom: 1px dashed #111;
+    margin-bottom: 10px;
   }
 
   .user-comment {
@@ -224,6 +295,12 @@
         line-height: 1.5;
       }
 
+      .comment-text.night-mode {
+        color: #999;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+
     }
   }
 
@@ -255,6 +332,17 @@
       color: #f5222d;
     }
   }
+}
+
+.order-card.night-mode {
+  width: calc(100% - 40px);
+  height: fit-content;
+  padding: 15px;
+  border: #313131 solid 1px;
+  border-radius: 15px;
+  position: relative;
+  margin-top: 20px;
+  transition: all 0.3s ease-in-out;
 }
 
 .order-card:hover {
