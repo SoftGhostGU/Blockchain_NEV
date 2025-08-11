@@ -10,6 +10,7 @@ import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.DriverRepository;
 import com.autocrowd.backend.service.DriverService;
 import com.autocrowd.backend.util.PasswordEncoderUtil;
+import com.autocrowd.backend.util.PasswordValidatorUtil;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -188,6 +189,9 @@ public class DriverServiceImpl implements DriverService {
             if (driverRepository.existsByPhone(registerRequest.getPhone())) {
                 throw new BusinessException(ExceptionCodeEnum.PHONE_ALREADY_EXISTS);
             }
+
+            // 验证密码强度
+            PasswordValidatorUtil.validatePassword(registerRequest.getPassword());
 
             // 创建新司机
             Driver driver = new Driver();

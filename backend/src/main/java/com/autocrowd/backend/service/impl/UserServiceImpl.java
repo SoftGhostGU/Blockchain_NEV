@@ -6,6 +6,7 @@ import com.autocrowd.backend.dto.user.LoginRequest;
 import com.autocrowd.backend.dto.user.RegisterRequest;
 import com.autocrowd.backend.dto.user.UserProfileDTO;
 import com.autocrowd.backend.dto.user.UserProfileUpdateRequest;
+import com.autocrowd.backend.util.PasswordValidatorUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.autocrowd.backend.service.UserService;
@@ -52,6 +53,9 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByPhone(registerRequest.getPhone())) {
             throw new BusinessException(ExceptionCodeEnum.PHONE_ALREADY_EXISTS);
         }
+
+        // 验证密码强度
+        PasswordValidatorUtil.validatePassword(registerRequest.getPassword());
 
         // Create new user
         logger.info("[Service] 创建新用户");
