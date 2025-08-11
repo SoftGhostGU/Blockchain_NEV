@@ -1,5 +1,6 @@
 import './Navbar.scss'
 import logo from '../../assets/logo1.png'
+import { useColorModeStore } from '../../store/store'
 
 // import * as React from 'react';
 
@@ -11,13 +12,55 @@ import {
   WalletOutlined,
   UnorderedListOutlined,
   CarOutlined,
+  SunOutlined,
+  MoonOutlined
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
 export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) => void }) {
+  const isNightMode = useColorModeStore(state => state.isNightMode);
+  const toggleColorMode = useColorModeStore(state => state.toggleColorMode);
+
+  const changeNightMode = () => {
+    toggleColorMode(!isNightMode);
+  }
+
+  useEffect(() => {
+    function checkTimeForMode() {
+      const currentHour = new Date().getHours();
+      console.log("当前时间：", currentHour);
+      toggleColorMode(currentHour >= 18 || currentHour < 6);
+    }
+
+    checkTimeForMode();
+
+    // 每小时检查一次时间
+    const intervalId = setInterval(checkTimeForMode, 3600000);
+
+    // 清除定时器以避免内存泄漏
+    return () => clearInterval(intervalId);
+  }, [toggleColorMode]);
+
+  useEffect(() => {
+    const body = document.body;
+    const topNavbar = document.querySelector('.top-navbar');
+    const leftNavbar = document.querySelector('.left-navbar');
+    if (isNightMode) {
+      body.classList.add('night-mode');
+      topNavbar?.classList.add('night-mode');
+      leftNavbar?.classList.add('night-mode');
+      console.log("切换到夜间模式")
+    } else {
+      body.classList.remove('night-mode');
+      topNavbar?.classList.remove('night-mode');
+      leftNavbar?.classList.remove('night-mode');
+      console.log("切换到日间模式")
+    }
+  }, [isNightMode]);
+
   const [name, _] = useState('ZHANGSAN');
   const items: MenuItem[] = [
     {
@@ -67,6 +110,11 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
           <BellOutlined className='icon' />
           <SettingOutlined className='icon' />
           <UserOutlined className='icon' />
+          {isNightMode ? (
+            <SunOutlined className='icon' onClick={changeNightMode} />
+          ) : (
+            <MoonOutlined className='icon' onClick={changeNightMode} />
+          )}
           <div className='owner-name'>{name}</div>
         </div>
       </div>
@@ -79,7 +127,7 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
             defaultSelectedKeys={['1']}
             defaultOpenKeys={['sub1']}
             mode="inline"
-            theme="light"
+            theme={isNightMode ? "dark" : "light"}
             items={items}
             className='navbar-menu'
             style={{ lineHeight: '60px' }}
