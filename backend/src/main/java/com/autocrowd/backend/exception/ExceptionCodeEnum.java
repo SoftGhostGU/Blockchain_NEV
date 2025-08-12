@@ -72,7 +72,8 @@ public enum ExceptionCodeEnum {
     REVIEW_CONTENT_EMPTY(30008, "评价内容不能为空"),
     REVIEW_RATING_INVALID(30009, "无效的评分"),
     REVIEW_TARGET_NOT_FOUND(30010, "评价目标不存在"),
-    PRICE_ESTIMATE_FAILED(20002, "价格预估失败");
+    PRICE_ESTIMATE_FAILED(20002, "价格预估失败"),
+    FINANCIAL_RECORD_CREATION_FAILED(40001, "财务记录创建失败");
 
     private final int code;
     private final String message;
