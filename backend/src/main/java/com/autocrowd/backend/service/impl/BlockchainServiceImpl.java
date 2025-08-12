@@ -3,6 +3,8 @@ package com.autocrowd.backend.service.impl;
 import com.autocrowd.backend.config.BlockchainConfig;
 import com.autocrowd.backend.entity.Order;
 import com.autocrowd.backend.service.BlockchainService;
+import com.autocrowd.backend.exception.BusinessException;
+import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import org.hyperledger.fabric.gateway.Wallet;
 import org.hyperledger.fabric.gateway.Wallets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Service
 public class BlockchainServiceImpl implements BlockchainService {
@@ -35,7 +38,9 @@ public class BlockchainServiceImpl implements BlockchainService {
     private Network network;
     private Contract orderContract;
     private Contract financialContract;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private boolean isInitialized = false;
+    private final ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule());
     
     // 区块链连接
     @PostConstruct
@@ -63,9 +68,12 @@ public class BlockchainServiceImpl implements BlockchainService {
             orderContract = network.getContract(blockchainConfig.getOrderChaincodeName());
             financialContract = network.getContract(blockchainConfig.getFinancialChaincodeName());
             
+            isInitialized = true;
             logger.info("[BlockchainService] 区块链连接初始化成功");
         } catch (Exception e) {
+            isInitialized = false;
             logger.error("[BlockchainService] 区块链连接初始化失败: {}", e.getMessage(), e);
+            // 记录详细的错误信息，但不中断应用程序启动
         }
     }
     
@@ -75,11 +83,26 @@ public class BlockchainServiceImpl implements BlockchainService {
         if (gateway != null) {
             gateway.close();
         }
+        isInitialized = false;
+    }
+    
+    /**
+     * 检查区块链连接是否已初始化
+     * @throws BusinessException 如果连接未初始化或初始化失败
+     */
+    private void checkInitialization() {
+        if (!isInitialized) {
+            logger.warn("[BlockchainService] 区块链服务未初始化或初始化失败");
+            throw new BusinessException(ExceptionCodeEnum.SYSTEM_ERROR, "区块链服务不可用");
+        }
     }
     
     @Override
     public boolean createOrderOnBlockchain(Order order) {
         try {
+            // 检查连接是否已初始化
+            checkInitialization();
+            
             logger.info("[BlockchainService] 开始将订单信息上链: 订单ID={}", order.getOrderId());
             
             // 调用订单链码的CreateOrder方法
@@ -88,6 +111,9 @@ public class BlockchainServiceImpl implements BlockchainService {
             
             logger.info("[BlockchainService] 订单信息上链成功: 订单ID={}", order.getOrderId());
             return true;
+        } catch (BusinessException e) {
+            logger.error("[BlockchainService] 订单上链失败: {}", e.getMessage(), e);
+            return false;
         } catch (Exception e) {
             logger.error("[BlockchainService] 订单上链失败: {}", e.getMessage(), e);
             return false;
@@ -97,6 +123,9 @@ public class BlockchainServiceImpl implements BlockchainService {
     @Override
     public boolean createUserTransactionOnBlockchain(String financialId, Integer userId, BigDecimal amount, long timestamp) {
         try {
+            // 检查连接是否已初始化
+            checkInitialization();
+            
             logger.info("[BlockchainService] 开始将用户交易信息上链: 用户ID={}, 金额={}", userId, amount);
             
             // 调用金融链码的CreateAsset方法（用户交易）
@@ -113,6 +142,9 @@ public class BlockchainServiceImpl implements BlockchainService {
     @Override
     public boolean createDriverTransactionOnBlockchain(String financialId, Integer driverId, BigDecimal amount, long timestamp) {
         try {
+            // 检查连接是否已初始化
+            checkInitialization();
+            
             logger.info("[BlockchainService] 开始将车主交易信息上链: 车主ID={}, 金额={}", driverId, amount);
             
             // 调用金融链码的CreateAsset方法（车主交易）
@@ -132,8 +164,11 @@ public class BlockchainServiceImpl implements BlockchainService {
      */
     @Override
     public List<Order> getCompletedOrdersFromBlockchain() {
-        logger.info("[BlockchainService] 查询区块链上的已完成订单");
         try {
+            // 检查连接是否已初始化
+            checkInitialization();
+            
+            logger.info("[BlockchainService] 查询区块链上的已完成订单");
             // 调用订单链码的GetAllOrders方法
             byte[] result = orderContract.evaluateTransaction("GetAllOrders");
             String ordersJson = new String(result);
@@ -152,8 +187,11 @@ public class BlockchainServiceImpl implements BlockchainService {
      */
     @Override
     public BigDecimal getTotalTransactionAmountFromBlockchain() {
-        logger.info("[BlockchainService] 查询区块链上的总交易额");
         try {
+            // 检查连接是否已初始化
+            checkInitialization();
+            
+            logger.info("[BlockchainService] 查询区块链上的总交易额");
             // 调用金融链码的GetTotalAmount方法（假设存在）
             byte[] result = financialContract.evaluateTransaction("GetTotalAmount");
             String amountStr = new String(result);
@@ -173,8 +211,11 @@ public class BlockchainServiceImpl implements BlockchainService {
      */
     @Override
     public BigDecimal getTotalTransactionAmountByDriverFromBlockchain(Integer driverId) {
-        logger.info("[BlockchainService] 查询车主在区块链上的总交易额: 车主ID={}", driverId);
         try {
+            // 检查连接是否已初始化
+            checkInitialization();
+            
+            logger.info("[BlockchainService] 查询车主在区块链上的总交易额: 车主ID={}", driverId);
             // 调用金融链码的GetTotalAmountByDriver方法（假设存在）
             byte[] result = financialContract.evaluateTransaction("GetTotalAmountByDriver", driverId.toString());
             String amountStr = new String(result);
