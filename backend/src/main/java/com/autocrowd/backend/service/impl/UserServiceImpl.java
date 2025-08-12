@@ -1,24 +1,26 @@
 package com.autocrowd.backend.service.impl;
 
-import java.math.BigDecimal;
-
 import com.autocrowd.backend.dto.user.LoginRequest;
 import com.autocrowd.backend.dto.user.RegisterRequest;
 import com.autocrowd.backend.dto.user.UserProfileDTO;
 import com.autocrowd.backend.dto.user.UserProfileUpdateRequest;
-import com.autocrowd.backend.util.PasswordValidatorUtil;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
-import com.autocrowd.backend.service.UserService;
 import com.autocrowd.backend.entity.User;
-import com.autocrowd.backend.repository.UserRepository;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.exception.BusinessException;
+import com.autocrowd.backend.repository.UserRepository;
+import com.autocrowd.backend.service.BlockchainService;
+import com.autocrowd.backend.service.UserService;
 import com.autocrowd.backend.util.PasswordEncoderUtil;
+import com.autocrowd.backend.util.PasswordValidatorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 用户服务实现类
@@ -26,12 +28,16 @@ import org.slf4j.LoggerFactory;
  * 作为业务逻辑层，实现UserService接口定义的所有功能
  */
 @Service
-@AllArgsConstructor
 public class UserServiceImpl implements UserService {
     
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
+    
+    @Autowired
+    private BlockchainService blockchainService;
+
     /**
      * 用户注册业务逻辑实现
      * 验证用户注册信息，检查用户名和手机号唯一性，创建新用户账户
@@ -178,6 +184,8 @@ public class UserServiceImpl implements UserService {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "用户不存在"));
 
+            BigDecimal oldBalance = user.getBalance();
+
             // 更新用户信息
             if (profileUpdateRequest.getUsername() != null && !profileUpdateRequest.getUsername().trim().isEmpty()) {
                 // 检查用户名是否已存在
@@ -210,6 +218,17 @@ public class UserServiceImpl implements UserService {
             // 保存到数据库
             User updatedUser = userRepository.save(user);
             logger.info("[UserServiceImpl] 更新用户资料成功: {}", updatedUser.getUsername());
+
+            // 如果余额有变更，同步到区块链
+            if (profileUpdateRequest.getBalance() != null && 
+                (oldBalance == null || oldBalance.compareTo(profileUpdateRequest.getBalance()) != 0)) {
+                blockchainService.createUserTransactionOnBlockchain(
+                    "BALANCE_UPDATE_" + userId + "_" + System.currentTimeMillis(),
+                    userId,
+                    profileUpdateRequest.getBalance(),
+                    System.currentTimeMillis()
+                );
+            }
 
             // 转换为DTO并返回
             UserProfileDTO profileDTO = new UserProfileDTO();

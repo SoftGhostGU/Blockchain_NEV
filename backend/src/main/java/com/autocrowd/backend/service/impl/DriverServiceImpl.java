@@ -5,27 +5,33 @@ import com.autocrowd.backend.dto.driver.DriverProfileDTO;
 import com.autocrowd.backend.dto.driver.DriverProfileUpdateRequest;
 import com.autocrowd.backend.dto.driver.DriverRegisterRequest;
 import com.autocrowd.backend.entity.Driver;
-import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
+import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.repository.DriverRepository;
+import com.autocrowd.backend.service.BlockchainService;
 import com.autocrowd.backend.service.DriverService;
 import com.autocrowd.backend.util.PasswordEncoderUtil;
 import com.autocrowd.backend.util.PasswordValidatorUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class DriverServiceImpl implements DriverService {
     
     private static final Logger logger = LoggerFactory.getLogger(DriverServiceImpl.class);
-
-    private final DriverRepository driverRepository;
+    
+    @Autowired
+    private DriverRepository driverRepository;
+    
+    @Autowired
+    private BlockchainService blockchainService;
 
     /**
      * 司机登录业务逻辑实现
@@ -116,6 +122,8 @@ public class DriverServiceImpl implements DriverService {
             Driver driver = driverRepository.findById(driverId)
                     .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "司机不存在"));
 
+            BigDecimal oldWalletBalance = driver.getWalletBalance();
+
             // 更新司机信息
             if (profileUpdateRequest.getUsername() != null && !profileUpdateRequest.getUsername().trim().isEmpty()) {
                 // 检查用户名是否已存在
@@ -152,6 +160,17 @@ public class DriverServiceImpl implements DriverService {
             // 保存到数据库
             Driver updatedDriver = driverRepository.save(driver);
             logger.info("[DriverServiceImpl] 更新车主资料成功: {}", updatedDriver.getUsername());
+
+            // 如果余额有变更，同步到区块链
+            if (profileUpdateRequest.getWalletBalance() != null && 
+                (oldWalletBalance == null || oldWalletBalance.compareTo(profileUpdateRequest.getWalletBalance()) != 0)) {
+                blockchainService.createDriverTransactionOnBlockchain(
+                    "BALANCE_UPDATE_" + driverId + "_" + System.currentTimeMillis(),
+                    driverId,
+                    profileUpdateRequest.getWalletBalance(),
+                    System.currentTimeMillis()
+                );
+            }
 
             // 转换为DTO并返回
             DriverProfileDTO profileDTO = new DriverProfileDTO();
