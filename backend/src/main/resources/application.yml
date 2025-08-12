@@ -49,8 +49,3 @@ fabric:
   orderChaincodeName: ordercontract
   financialChaincodeName: basic
   cryptoPath: ./blockchain/fabric-example/test-network/organizations/peerOrganizations/org1.example.com
-  certDirPath: ./blockchain/fabric-example/test-network/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts
-  keyDirPath: ./blockchain/fabric-example/test-network/organizations/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore
-  tlsCertPath: ./blockchain/fabric-example/test-network/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
-  peerEndpoint: localhost:7051
-  peerHostAlias: peer0.org1.example.com
