@@ -36,6 +36,7 @@
     background-color: var(--background-light);
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
   }
 
   .time.night-mode {
@@ -49,6 +50,12 @@
     background-color: var(--background-dark);
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .time:hover {
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
   }
 
   .calendar {
@@ -62,6 +69,7 @@
     background-color: var(--background-light);
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease-in-out;
   }
 
   .calendar.night-mode {
@@ -74,6 +82,12 @@
     background-color: var(--background-dark);
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease-in-out;
+  }
+
+  .calendar:hover {
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
   }
 
   .weather {
@@ -92,7 +106,7 @@
     background-color: var(--background-light);
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(0, 0, 0, 0.3);
-    flex: 1;
+    transition: all 0.3s ease-in-out;
   }
 
   .weather.night-mode {
@@ -111,7 +125,12 @@
     background-color: var(--background-dark);
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.3);
-    flex: 1;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .weather:hover {
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
   }
 
   .video-container {
@@ -124,6 +143,7 @@
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(0, 0, 0, 0.3);
     position: relative;
+    transition: all 0.3s ease-in-out;
   }
 
   .video-container.night-mode {
@@ -135,6 +155,12 @@
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.3);
     position: relative;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .video-container:hover {
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
   }
 
   .video-container.night-mode::after {
@@ -151,7 +177,6 @@
     z-index: 1; // 确保遮罩在内容组件之上
   }
 }
-
 
 // 时钟相关的样式
 .react-clock {
