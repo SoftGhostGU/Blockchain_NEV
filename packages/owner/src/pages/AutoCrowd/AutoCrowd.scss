@@ -5,22 +5,30 @@
   --color-dark: #ffffff;
 }
 
-.column-auto-crowd {
+.auto-crowd-container {
   width: fit-content;
   height: fit-content;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+}
+
+.column-auto-crowd {
+  width: fit-content;
+  height: 100%;
   min-height: 100px;
   // background-color: red;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  margin: 20px 25px;
+  margin: 40px 15px;
   flex-wrap: wrap;
 
   .time {
     width: 440px;
     height: 100%;
-    padding: 30px;
+    padding: 43px 30px;
     display: flex;
     flex-direction: row;
     margin: 20px;
@@ -33,7 +41,7 @@
   .time.night-mode {
     width: 440px;
     height: 100%;
-    padding: 30px;
+    padding: 43px 30px;
     display: flex;
     flex-direction: row;
     margin: 20px;
@@ -43,9 +51,35 @@
     box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.3);
   }
 
+  .calendar {
+    width: 460px;
+    min-height: 100px;
+    padding: 20px;
+    margin: 20px;
+    display: flex;
+    flex: 1;
+    border-radius: 15px;
+    background-color: var(--background-light);
+    // border-bottom: #e3e3e3 1px solid;
+    box-shadow: 2px 4px 30px rgba(0, 0, 0, 0.3);
+  }
+
+  .calendar.night-mode {
+    width: 460px;
+    min-height: 100px;
+    padding: 20px;
+    display: flex;
+    flex: 1;
+    border-radius: 15px;
+    background-color: var(--background-dark);
+    // border-bottom: #e3e3e3 1px solid;
+    box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.3);
+  }
+
   .weather {
-    width: 480px;
+    width: 460px;
     height: 100%;
+    min-height: 281.333px;
     padding: 10px;
     margin: 20px;
     border-radius: 15px;
@@ -58,11 +92,13 @@
     background-color: var(--background-light);
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(0, 0, 0, 0.3);
+    flex: 1;
   }
 
   .weather.night-mode {
-    width: 480px;
+    width: 460px;
     height: 100%;
+    min-height: 281.333px;
     padding: 10px;
     margin: 20px;
     border-radius: 15px;
@@ -75,20 +111,45 @@
     background-color: var(--background-dark);
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.3);
+    flex: 1;
   }
 
-  // .weather.night-mode::after {
-  //   content: '';
-  //   position: absolute;
-  //   top: 0;
-  //   left: 0;
-  //   width: 100%;
-  //   height: 100%;
-  //   border-radius: 15px;
-  //   background-color: rgba(0, 0, 0, 0.6); // 黑色遮罩，透明度为0.3
-  //   pointer-events: none; // 确保遮罩不影响内部组件的交互
-  //   z-index: 1; // 确保遮罩在内容组件之上
-  // }
+  .video-container {
+    // width: calc(100vw - 1175px);
+    width: 440px;
+    border-radius: 15px;
+    margin: 20px;
+    padding: 20px;
+    background-color: var(--background-light);
+    // border-bottom: #e3e3e3 1px solid;
+    box-shadow: 2px 4px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+  }
+
+  .video-container.night-mode {
+    width: 440px;
+    border-radius: 15px;
+    margin: 20px;
+    padding: 20px;
+    background-color: var(--background-dark);
+    // border-bottom: #e3e3e3 1px solid;
+    box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.3);
+    position: relative;
+  }
+
+  .video-container.night-mode::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
+    margin: 20px;
+    // border-radius: 15px;
+    background-color: rgba(0, 0, 0, 0.6); // 黑色遮罩
+    pointer-events: none; // 确保遮罩不影响内部组件的交互
+    z-index: 1; // 确保遮罩在内容组件之上
+  }
 }
 
 
