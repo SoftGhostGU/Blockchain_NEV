@@ -4,6 +4,7 @@ import AutoCrowd from '../pages/AutoCrowd/AutoCrowd';
 import CarInfo from '../pages/carInfo/carInfo';
 import Benefit from '../pages/benefit/benefit';
 import OrderManage from '../pages/orderManage/orderManage';
+import UserInfo from '../pages/userInfo/userInfo'
 import NotFound from '../pages/notFound/notFound'
 
 export default function MainLayout() {
@@ -15,6 +16,7 @@ export default function MainLayout() {
       case '1': return <CarInfo />;
       case '2': return <Benefit />;
       case '3': return <OrderManage />;
+      case '4': return <UserInfo />;
       default: return <NotFound />;
     }
   };
