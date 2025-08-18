@@ -1,0 +1,128 @@
+.user-info-container {
+  margin: 45px;
+  height: fit-content;
+  // background-color: red;
+
+  .welcome-title {
+    padding: 20px;
+    padding-top: 0;
+    font-size: 36px;
+    display: flex;
+    // font-weight: bold;
+
+    .user-name {
+      font-weight: bold;
+    }
+  }
+
+  .user-info-item {
+    width: 400px;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: var(--background-light);
+    box-shadow: 2px 4px 30px rgba(0, 0, 0, 0.3);
+    transition: all 0.1s ease-in-out;
+
+    .user-info-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #333;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .user-info-title.night-mode {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+      color: #ccc;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #111;
+    }
+
+    .user-info-field {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding: 8px 0;
+
+      .field-label {
+        width: 100px;
+        font-weight: bold;
+        color: #666;
+      }
+
+      .field-label.night-mode {
+        width: 100px;
+        font-weight: bold;
+        color: #999;
+      }
+
+      .field-value {
+        flex: 1;
+        color: #333;
+      }
+
+      .field-value.night-mode {
+        flex: 1;
+        color: #ccc;
+      }
+
+      &:last-child {
+        .field-value {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+      }
+    }
+
+    .edit-button {
+      background-color: #1890ff;
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 4px;
+      margin-top: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+      margin-right: 10px;
+
+      &:hover {
+        background-color: #40a9ff;
+      }
+    }
+
+    .cancel-button {
+      background-color: #d4504a;
+      color: white;
+      border: none;
+      padding: 5px 15px;
+      border-radius: 4px;
+      margin-top: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: #f07069;
+      }
+    }
+  }
+
+  .user-info-item.night-mode {
+    width: 400px;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: var(--background-dark);
+    box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.3);
+    transition: all 0.1 s ease-in-out;
+  }
+
+  .user-info-item:hover {
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
+  }
+}
