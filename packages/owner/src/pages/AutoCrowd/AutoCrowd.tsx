@@ -3,7 +3,7 @@ import { Clock as ClockText } from '../../components/Clock/clock'
 import Clock from 'react-clock';
 import Calendar from '../../components/calendar'
 // import { Weather } from '../../components/weather'
-import { useEffect, useState, lazy, Suspense } from 'react';
+import { useEffect, useState, lazy, Suspense, useRef } from 'react';
 import { useColorModeStore } from '../../store/store';
 import outer_img from '../../assets/outer_img.png'
 import video from '../../assets/testmp4.mp4'
@@ -74,7 +74,7 @@ export default function AutoCrowd() {
                 destroyOnHidden: true,
                 imageRender: () => (
                   <video
-                    muted
+                    // muted
                     width="60%"
                     controls
                     src={video}
