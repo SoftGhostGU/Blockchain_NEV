@@ -1,5 +1,6 @@
 package com.autocrowd.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -42,11 +43,13 @@ public class Order {
     
     
     @Column(name = "created_at")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     
     @Column(name = "type")
     private String type;
     
     @Column(name = "updated_at")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 }

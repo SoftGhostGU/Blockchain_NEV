@@ -3,6 +3,19 @@ package com.autocrowd.backend.service.impl;
 import com.autocrowd.backend.config.BlockchainConfig;
 import com.autocrowd.backend.entity.Order;
 import com.autocrowd.backend.service.BlockchainService;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
+import io.grpc.Channel;
+import org.bouncycastle.jcajce.provider.digest.SHA256;
+import org.hyperledger.fabric.client.Contract;
+import org.hyperledger.fabric.client.Gateway;
+import org.hyperledger.fabric.client.Hash;
+import org.hyperledger.fabric.client.Network;
+import org.hyperledger.fabric.client.identity.Identity;
+import org.hyperledger.fabric.client.identity.Identities;
+import org.hyperledger.fabric.client.identity.Signer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +23,24 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.io.Reader;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.PrivateKey;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-import org.hyperledger.fabric.gateway.Contract;
-import org.hyperledger.fabric.gateway.Gateway;
-import org.hyperledger.fabric.gateway.Network;
-import org.hyperledger.fabric.gateway.Wallet;
-import org.hyperledger.fabric.gateway.Wallets;
+import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -33,13 +54,21 @@ public class BlockchainServiceImpl implements BlockchainService {
     
     private Gateway gateway;
     private Network network;
+
+//    @Resource
     private Contract orderContract;
     private Contract financialContract;
     private final ObjectMapper objectMapper = new ObjectMapper();
-    
+
     // 区块链连接
     @PostConstruct
     public void init() {
+        JavaTimeModule javaTimeModule = new JavaTimeModule();
+        javaTimeModule.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        javaTimeModule.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        javaTimeModule.addSerializer(LocalTime.class, new LocalTimeSerializer(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        objectMapper.registerModule(javaTimeModule);
+
         logger.info("[BlockchainService] 初始化区块链连接");
         logger.info("[BlockchainService] 区块链配置信息:");
         logger.info("  MSP ID: {}", blockchainConfig.getMspId());
@@ -51,18 +80,31 @@ public class BlockchainServiceImpl implements BlockchainService {
         
         try {
             // 创建钱包并加载身份
-            Wallet wallet = Wallets.newFileSystemWallet(Paths.get("wallet"));
-            
+            Identity identity = BlockchainConfig.newIdentity(Paths.get(blockchainConfig.getCertDirPath()), blockchainConfig.getMspId());
+            Signer signer = BlockchainConfig.newSigner(Paths.get(blockchainConfig.getKeyDirPath()));
+            Channel channel = BlockchainConfig.newGrpcConnection(Paths.get(blockchainConfig.getTlsCertPath()), blockchainConfig.getPeerEndpoint(), blockchainConfig.getPeerHostAlias());
+
             // 创建gateway连接
-            gateway = Gateway.createBuilder()
-                    .identity(wallet, "user1")
+            gateway = Gateway.newInstance()
+                    .identity(identity)
+                    .signer(signer)
+                    .hash(Hash.SHA256)
+                    .connection(channel)
+                    .evaluateOptions(options -> options.withDeadlineAfter(5, TimeUnit.SECONDS))
+                    .endorseOptions(options -> options.withDeadlineAfter(15, TimeUnit.SECONDS))
+                    .submitOptions(options -> options.withDeadlineAfter(5, TimeUnit.SECONDS))
+                    .commitStatusOptions(options -> options.withDeadlineAfter(1, TimeUnit.MINUTES))
                     .connect();
             
             // 获取网络和合约
             network = gateway.getNetwork(blockchainConfig.getChannelName());
             orderContract = network.getContract(blockchainConfig.getOrderChaincodeName());
             financialContract = network.getContract(blockchainConfig.getFinancialChaincodeName());
-            
+
+            // 账本初始化
+            orderContract.submitTransaction("InitLedger");
+            financialContract.submitTransaction("InitLedger");
+
             logger.info("[BlockchainService] 区块链连接初始化成功");
         } catch (Exception e) {
             logger.error("[BlockchainService] 区块链连接初始化失败: {}", e.getMessage(), e);
@@ -184,6 +226,18 @@ public class BlockchainServiceImpl implements BlockchainService {
         } catch (Exception e) {
             logger.error("[BlockchainService] 查询车主总交易额失败: {}", e.getMessage(), e);
             return BigDecimal.ZERO;
+        }
+    }
+
+    private static X509Certificate readX509Certificate(final Path certificatePath) throws IOException, CertificateException {
+        try (Reader certificateReader = Files.newBufferedReader(certificatePath, StandardCharsets.UTF_8)) {
+            return Identities.readX509Certificate(certificateReader);
+        }
+    }
+
+    private static PrivateKey getPrivateKey(final Path privateKeyPath) throws IOException, InvalidKeyException {
+        try (Reader privateKeyReader = Files.newBufferedReader(privateKeyPath, StandardCharsets.UTF_8)) {
+            return Identities.readPrivateKey(privateKeyReader);
         }
     }
 }
