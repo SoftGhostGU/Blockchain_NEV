@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.autocrowd.backend.repository.DriverRepository">
+    <resultMap id="DriverResultMap" type="com.autocrowd.backend.entity.Driver">
+        <id column="driver_id" property="driverId"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="phone" property="phone"/>
+        <result column="credit_score" property="creditScore"/>
+        <result column="wallet_balance" property="walletBalance"/>
+        <result column="bank_card" property="bankCard"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <select id="findByPhone" resultMap="DriverResultMap">
+        SELECT * FROM drivers WHERE phone = #{phone}
+    </select>
+
+    <select id="existsByPhone" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM drivers WHERE phone = #{phone}
+    </select>
+
+    <select id="findByPhoneAndPassword" resultMap="DriverResultMap">
+        SELECT * FROM drivers WHERE phone = #{phone} AND password = #{password}
+    </select>
+    <select id="findByUsername" resultMap="DriverResultMap">
+        SELECT * FROM drivers WHERE username = #{username}
+    </select>
+
+    <select id="existsByUsername" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM drivers WHERE username = #{username}
+    </select>
+
+    <select id="findByUsernameAndPassword" resultMap="DriverResultMap">
+        SELECT * FROM drivers WHERE username = #{username} AND password = #{password}
+    </select>
+</mapper>

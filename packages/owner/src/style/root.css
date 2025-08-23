@@ -1,0 +1,288 @@
+#root {
+    height: 100%;
+}
+
+/* 全局主题颜色配置 */
+:root {
+    --main-bg: #1890ff;
+    --main-bg-menu: #e6f7ff;
+    /* 全局背景颜色 */
+    --main-color: rgb(255, 255, 255);
+    --logo-border-color: rebeccapurple;
+    --header-height: 68px;
+    --content-padding: 10px 20px;
+    --base-color: var(--main-color);
+    --primary-color: red
+}
+
+/* 弹出框头部 */
+.ant-modal-header,
+.ant-drawer-header {
+    background-color: var(--main-bg);
+}
+
+.anticon {
+    cursor: pointer;
+}
+
+/* 弹出框标题 */
+.ant-modal-title,
+.ant-drawer-title {
+    color: var(--main-color);
+}
+
+/* 按钮 */
+.ant-btn-primary {
+    background-color: var(--main-bg);
+    border-color: var(--main-bg);
+}
+
+/* 菜单选中色 */
+.ant-menu-dark.ant-menu-dark:not(.ant-menu-horizontal) .ant-menu-item-selected,
+.ant-menu-dark.ant-menu-horizontal>.ant-menu-item:hover,
+.ant-menu.ant-menu-dark .ant-menu-item-selected,
+.ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
+    background-color: var(--main-bg) !important;
+    color: #fff !important;
+}
+
+/* 步骤条 */
+.ant-steps-item:hover .ant-steps-item-icon {
+    border-color: var(--main-bg) !important;
+    color: var(--main-bg) !important;
+}
+
+.ant-steps-item:hover .ant-steps-item-title {
+    border-color: var(--main-bg) !important;
+    color: var(--main-bg) !important;
+}
+
+.ant-steps-item:hover .ant-steps-icon {
+    color: var(--main-bg) !important;
+}
+
+.ant-steps-item-active:hover .ant-steps-icon {
+    color: #fff !important;
+}
+
+/* 复选框选中颜色 */
+.ant-checkbox-checked .ant-checkbox-inner,
+.ant-tree-checkbox-checked .ant-tree-checkbox-inner {
+    background-color: var(--main-bg);
+    border-color: var(--main-bg);
+}
+
+input:hover,
+.ant-input-password:hover,
+.ant-select:not(.ant-select-disabled):hover .ant-select-selector,
+.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector,
+.ant-input:focus,
+.ant-input-focused,
+.ant-input-password:focus,
+.ant-input-password-focused,
+.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover,
+.ant-picker:hover,
+.ant-picker-focused,
+.ant-checkbox-wrapper:hover .ant-checkbox-inner,
+.ant-checkbox:hover .ant-checkbox-inner,
+.ant-checkbox-input:focus+.ant-checkbox-inner,
+.ant-input:hover,
+.ant-input-inner,
+.ant-input:focus+.ant-input-inner,
+.ant-input-password-inner:focus,
+.ant-input-password:focus+.ant-input-password-inner,
+.ant-calendar-picker:hover .ant-calendar-picker-input,
+.ant-calendar-picker:hover .ant-calendar-picker-input:not(.ant-input-disabled),
+.ant-calendar-picker:focus .ant-calendar-picker-input:not(.ant-input-disabled),
+.ant-input-number:focus,
+.ant-input-number-focused,
+.ant-input-number:hover,
+.ant-input-affix-wrapper-focused,
+.ant-menu-vertical .ant-menu-item::after,
+.ant-menu-vertical-left .ant-menu-item::after,
+.ant-menu-vertical-right .ant-menu-item::after,
+.ant-menu-inline .ant-menu-item::after,
+.ant-checkbox-checked:focus,
+.ant-checkbox-checked-focused,
+.ant-checkbox-checked:hover,
+.ant-checkbox-checked-inner,
+.ant-switch-checked:focus,
+.ant-switch:focus,
+.ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):focus-within,
+.ant-radio-input:focus+.ant-radio-inner {
+    border-color: var(--main-bg);
+    box-shadow: 0 0 0 2px rgba(var(--main-bg), 0.2);
+}
+
+
+.ant-picker-cell-in-view.ant-picker-cell-today .ant-picker-cell-inner::before,
+.ant-pagination-item-active,
+.ant-pagination-item-active:hover,
+.ant-btn-default:hover,
+.ant-btn-primary:hover,
+.ant-btn-primary:focus,
+.ant-btn-default:focus,
+.ant-tree-checkbox-wrapper:hover .ant-tree-checkbox-inner,
+.ant-tree-checkbox:hover .ant-tree-checkbox-inner,
+.ant-tree-checkbox-input:focus+.ant-tree-checkbox-inner,
+.ant-radio-checked::after,
+.ant-radio-wrapper:hover .ant-radio,
+.ant-radio:hover .ant-radio-inner,
+.ant-radio-input:focus+.ant-radio-inner,
+.ant-steps-item-finish .ant-steps-item-icon,
+.ant-steps-item-process .ant-steps-item-icon {
+    border-color: var(--main-bg);
+
+}
+
+.ant-radio-checked .ant-radio-inner {
+    border-color: var(--main-bg) !important;
+}
+
+.ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled),
+.ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled):hover,
+.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled)::before,
+.ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled),
+.ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+    background: var(--main-bg) !important;
+    border-color: var(--main-bg) !important;
+}
+
+.ant-radio-button-wrapper span:hover,
+.ant-radio-button-wrapper:hover,
+.ant-spin-text {
+    color: var(--main-bg) !important;
+}
+
+.ant-select-item-option-active,
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+    background-color: var(--main-bg-menu) !important;
+}
+
+.ant-radio-button-wrapper-checked span:hover,
+.ant-radio-button-wrapper-checked:hover {
+    color: #fff !important;
+}
+
+.ant-table .ant-dropdown-trigger {
+    margin: 0 10px;
+}
+
+.ant-popover-message-icon {
+    display: inline-block;
+    margin-right: 8px;
+    color: var(--main-bg);
+    font-size: 14px;
+}
+
+.ant-popover-message {
+    display: flex;
+}
+
+.ant-popover-message-title,
+.ant-btn-link {
+    padding: 0;
+}
+
+a,
+link:hover,
+.ant-picker-today-btn,
+a:hover,
+.ant-picker-today-btn:hover,
+.ant-picker-header-view button:hover,
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn,
+.ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn:hover,
+.ant-tabs-tab:hover,
+.ant-pagination-item-active a,
+.ant-pagination-item-active:hover a,
+.ant-btn-default:hover,
+.ant-table-row-expand-icon:focus-visible,
+.ant-table-row-expand-icon:hover,
+.ant-checkbox-checked::after,
+.ant-btn-link,
+.ant-btn-link:hover,
+.ant-btn-link:focus,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item:hover,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu:hover,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item-active,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu-active,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item-open,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu-open,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item-selected,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu-selected,
+.ant-steps-item-finish .ant-steps-item-icon>.ant-steps-icon {
+    color: var(--main-bg);
+}
+
+.ant-menu-item-selected,
+.ant-menu-light .ant-menu-item:hover,
+.ant-menu-light .ant-menu-item-active,
+.ant-menu-light .ant-menu:not(.ant-menu-inline) .ant-menu-submenu-open,
+.ant-menu-light .ant-menu-submenu-active,
+.ant-menu-light .ant-menu-submenu-title:hover,
+.ant-menu-submenu-selected,
+.ant-menu-submenu:hover>.ant-menu-submenu-title>.ant-menu-submenu-expand-icon,
+.ant-menu-submenu:hover>.ant-menu-submenu-title>.ant-menu-submenu-arrow,
+.ant-tag-checkable:hover {
+    color: var(--main-bg) !important;
+}
+
+.ant-tag-checkable-checked:hover {
+    color: #fff !important;
+}
+
+.ant-tabs-ink-bar,
+.ant-btn-primary:hover,
+.ant-btn-primary:focus,
+.ant-checkbox-indeterminate .ant-checkbox-inner::after,
+.ant-switch-checked,
+.ant-steps-item-finish>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title::after,
+.ant-steps-item-process>.ant-steps-item-container>.ant-steps-item-icon,
+.ant-spin .ant-spin-dot-item,
+.ant-tag-checkable-checked,
+.ant-picker-cell-in-view.ant-picker-cell-selected .ant-picker-cell-inner,
+.ant-picker-cell-in-view.ant-picker-cell-range-start .ant-picker-cell-inner,
+.ant-picker-cell-in-view.ant-picker-cell-range-end .ant-picker-cell-inner,
+.ant-radio-inner::after {
+    background: var(--main-bg);
+}
+
+.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected,
+.ant-tree .ant-tree-node-content-wrapper.ant-tree-node-selected {
+    background-color: var(--main-bg-menu);
+}
+
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item:hover::after,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu:hover::after,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item-active::after,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu-active::after,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item-open::after,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu-open::after,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-item-selected::after,
+.ant-menu-horizontal:not(.ant-menu-dark)>.ant-menu-submenu-selected::after {
+    border-bottom: 2px solid var(--main-bg);
+}
+
+/* 下拉菜单 */
+.ant-dropdown-menu-item-selected,
+.ant-dropdown-menu-submenu-title-selected {
+    background-color: var(--main-bg-menu);
+    color: var(--main-bg);
+}
+
+/* 日期选择bar */
+.ant-picker-range .ant-picker-active-bar {
+    background-color: var(--main-bg);
+}
+
+.versionModal .ant-modal-body {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.ant-tooltip .ant-tooltip-arrow{
+    height: 10px !important;
+}
+.ant-popover-placement-top .ant-popover-arrow{
+    bottom: 6.5px;
+}

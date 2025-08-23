@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.autocrowd.backend.repository.VehicleRepository">
+    <resultMap id="VehicleResultMap" type="com.autocrowd.backend.entity.Vehicle">
+        <id column="vehicle_id" property="vehicleId"/>
+        <result column="license_plate" property="licensePlate"/>
+        <result column="driver_id" property="driverId"/>
+        <result column="fuel_level" property="fuelLevel"/>
+        <result column="condition_id" property="conditionId"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+
+    <!-- 根据司机ID查询车辆 -->
+    <select id="findByDriverId" resultMap="VehicleResultMap">
+        SELECT * FROM vehicles WHERE driver_id = #{driverId}
+    </select>
+
+    <!-- 检查车辆ID和司机ID是否匹配 -->
+    <select id="existsByVehicleIdAndDriverId" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM vehicles WHERE vehicle_id = #{vehicleId} AND driver_id = #{driverId}
+    </select>
+    
+    <!-- 检查车牌号是否存在 -->
+    <select id="existsByLicensePlate" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0 FROM vehicles WHERE license_plate = #{licensePlate}
+    </select>
+</mapper>
