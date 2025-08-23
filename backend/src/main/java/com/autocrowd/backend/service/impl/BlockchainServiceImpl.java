@@ -54,8 +54,7 @@ public class BlockchainServiceImpl implements BlockchainService {
     
     private Gateway gateway;
     private Network network;
-
-//    @Resource
+    
     private Contract orderContract;
     private Contract financialContract;
     private final ObjectMapper objectMapper = new ObjectMapper();
