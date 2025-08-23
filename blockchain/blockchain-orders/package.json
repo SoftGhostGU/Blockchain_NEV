@@ -1,5 +1,5 @@
 {
-    "name": "asset-transfer-basic",
+    "name": "blockchain-orders",
     "version": "1.0.0",
     "description": "Asset Transfer Basic contract implemented in TypeScript",
     "main": "dist/index.js",

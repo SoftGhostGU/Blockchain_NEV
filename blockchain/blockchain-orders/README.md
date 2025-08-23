@@ -294,7 +294,7 @@ async function updateOrder(contract: Contract): Promise<void>{
 # deploy this chaincode
 cd ${...}/Blockchain_NEV/blockchain/fabric-example/test-network
 ./network.sh up createChannel -c mychannel
-./network.sh deployCC -ccn basic -ccp ../../blockchain-orders/ -ccl typescript
+./network.sh deployCC -ccn ordersLedger -ccp ../../blockchain-orders/ -ccl typescript
 
 # run the application
 cd ${...}/Blockchain_NEV/blockchain/blockchain-orders/caller_examples

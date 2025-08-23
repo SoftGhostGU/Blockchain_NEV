@@ -1,14 +1,15 @@
 package com.autocrowd.backend.service.impl;
 
 import com.autocrowd.backend.config.BlockchainConfig;
+import com.autocrowd.backend.entity.Financial;
 import com.autocrowd.backend.entity.Order;
 import com.autocrowd.backend.service.BlockchainService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import io.grpc.Channel;
-import org.bouncycastle.jcajce.provider.digest.SHA256;
 import org.hyperledger.fabric.client.Contract;
 import org.hyperledger.fabric.client.Gateway;
 import org.hyperledger.fabric.client.Hash;
@@ -23,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -125,8 +125,20 @@ public class BlockchainServiceImpl implements BlockchainService {
             logger.info("[BlockchainService] 开始将订单信息上链: 订单ID={}", order.getOrderId());
             
             // 调用订单链码的CreateOrder方法
-            String orderJson = objectMapper.writeValueAsString(order);
-            orderContract.submitTransaction("CreateOrder", orderJson);
+            orderContract.submitTransaction(
+                    "CreateOrder",
+                    order.getOrderId(),
+                    order.getUserId().toString(),
+                    order.getDriverId().toString(),
+                    order.getVehicleId().toString(),
+                    order.getStartLocation(),
+                    order.getDestination(),
+                    order.getStatus().toString(),
+                    order.getEstimatedPrice().toString(),
+                    order.getActualPrice().toString(),
+                    order.getCreatedAt().toString(),
+                    order.getType(),
+                    order.getUpdatedAt().toString());
             
             logger.info("[BlockchainService] 订单信息上链成功: 订单ID={}", order.getOrderId());
             return true;
@@ -135,14 +147,45 @@ public class BlockchainServiceImpl implements BlockchainService {
             return false;
         }
     }
-    
+
     @Override
-    public boolean createUserTransactionOnBlockchain(String financialId, Integer userId, BigDecimal amount, long timestamp) {
+    public boolean saveOrderOnBlockchain(Order order) {
         try {
-            logger.info("[BlockchainService] 开始将用户交易信息上链: 用户ID={}, 金额={}", userId, amount);
-            
+            logger.info("[BlockchainService] 保存订单信息: 订单ID={}", order.getOrderId());
+            orderContract.submitTransaction(
+                    "UpdateOrder",
+                    order.getOrderId(),
+                    order.getUserId().toString(),
+                    order.getDriverId().toString(),
+                    order.getVehicleId().toString(),
+                    order.getStartLocation(),
+                    order.getDestination(),
+                    order.getStatus().toString(),
+                    order.getEstimatedPrice().toString(),
+                    order.getActualPrice().toString(),
+                    order.getCreatedAt().toString(),
+                    order.getType(),
+                    order.getUpdatedAt().toString());
+
+            logger.info("[BlockchainService] 订单信息保存成功: 订单ID={}", order.getOrderId());
+            return true;
+        } catch (Exception e)
+        {
+            logger.error("[BlockchainService] 订单保存失败: {}", e.getMessage(), e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean createUserTransactionOnBlockchain(Financial userFinancial) {
+        try {
+            logger.info("[BlockchainService] 开始将用户交易信息上链: 用户ID={}, 金额={}", userFinancial.getUserId(), userFinancial.getAmount());
+            String financialId = userFinancial.getFinancialId().toString();
+            String userId = userFinancial.getUserId().toString();
+            String amount = userFinancial.getAmount().toString();
+            String timestamp = String.valueOf(userFinancial.getTransactionTime());
             // 调用金融链码的CreateAsset方法（用户交易）
-            financialContract.submitTransaction("CreateAsset", financialId, "User" + userId, "Expenses", amount.toString(), String.valueOf(timestamp));
+            financialContract.submitTransaction("CreateAsset", financialId, userId, "User", "Expenses", amount, timestamp);
             
             logger.info("[BlockchainService] 用户交易信息上链成功: 用户ID={}", userId);
             return true;
@@ -153,12 +196,17 @@ public class BlockchainServiceImpl implements BlockchainService {
     }
     
     @Override
-    public boolean createDriverTransactionOnBlockchain(String financialId, Integer driverId, BigDecimal amount, long timestamp) {
+    public boolean createDriverTransactionOnBlockchain(Financial driverFinancial) {
         try {
-            logger.info("[BlockchainService] 开始将车主交易信息上链: 车主ID={}, 金额={}", driverId, amount);
-            
+            logger.info("[BlockchainService] 开始将车主交易信息上链: 车主ID={}, 金额={}", driverFinancial.getUserId(), driverFinancial.getAmount());
+
+            String financialId = driverFinancial.getFinancialId().toString();
+            String driverId = driverFinancial.getUserId().toString();
+            String amount = driverFinancial.getAmount().toString();
+            String timestamp = String.valueOf(driverFinancial.getTransactionTime());
+
             // 调用金融链码的CreateAsset方法（车主交易）
-            financialContract.submitTransaction("CreateAsset", financialId, "Driver" + driverId, "Earnings", amount.toString(), String.valueOf(timestamp));
+            financialContract.submitTransaction("CreateAsset", financialId, driverId, "Driver", "Earnings", amount, timestamp);
             
             logger.info("[BlockchainService] 车主交易信息上链成功: 车主ID={}", driverId);
             return true;
@@ -177,11 +225,12 @@ public class BlockchainServiceImpl implements BlockchainService {
         logger.info("[BlockchainService] 查询区块链上的已完成订单");
         try {
             // 调用订单链码的GetAllOrders方法
-            byte[] result = orderContract.evaluateTransaction("GetAllOrders");
+            byte[] result = orderContract.evaluateTransaction("QueryAllOrders");
             String ordersJson = new String(result);
+            List<Order> orders = objectMapper.readValue(ordersJson, new TypeReference<List<Order>>() {});
             // 这里需要根据实际返回的数据结构进行解析
             logger.info("[BlockchainService] 区块链已完成订单查询完成");
-            return List.of(); // 实际应从区块链获取数据并解析
+            return orders; // 实际应从区块链获取数据并解析
         } catch (Exception e) {
             logger.error("[BlockchainService] 查询已完成订单失败: {}", e.getMessage(), e);
             return List.of();
@@ -196,7 +245,7 @@ public class BlockchainServiceImpl implements BlockchainService {
     public BigDecimal getTotalTransactionAmountFromBlockchain() {
         logger.info("[BlockchainService] 查询区块链上的总交易额");
         try {
-            // 调用金融链码的GetTotalAmount方法（假设存在）
+            // 调用金融链码的GetTotalAmount方法
             byte[] result = financialContract.evaluateTransaction("GetTotalAmount");
             String amountStr = new String(result);
             BigDecimal amount = new BigDecimal(amountStr);
@@ -217,7 +266,7 @@ public class BlockchainServiceImpl implements BlockchainService {
     public BigDecimal getTotalTransactionAmountByDriverFromBlockchain(Integer driverId) {
         logger.info("[BlockchainService] 查询车主在区块链上的总交易额: 车主ID={}", driverId);
         try {
-            // 调用金融链码的GetTotalAmountByDriver方法（假设存在）
+            // 调用金融链码的GetTotalAmountByDriver方法
             byte[] result = financialContract.evaluateTransaction("GetTotalAmountByDriver", driverId.toString());
             String amountStr = new String(result);
             BigDecimal amount = new BigDecimal(amountStr);

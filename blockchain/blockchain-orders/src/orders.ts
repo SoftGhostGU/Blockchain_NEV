@@ -4,13 +4,6 @@
 
 import {Object, Property} from 'fabric-contract-api';
 
-export enum OrderStatusType {
-    PENDING = '待处理',
-    ACCEPTED = '已接受',
-    COMPLETED = '已完成',
-    CANCELED = '已取消',
-}
-
 @Object()
 export class Orders {
     @Property()
@@ -20,32 +13,32 @@ export class Orders {
     public userID: number = 0;
 
     @Property()
-    public ownerID: number = 0;
+    public driverID: number = 0;
+
+    @Property()
+    public vehicleID: number = 0;
 
     @Property()
     public startLocation: string = '';
 
     @Property()
-    public endLocation: string = '';
+    public destination: string = '';
+    
+    @Property()
+    public orderStatus: number = 0;
 
     @Property()
-    public startTime: string = '';
+    public estimatedPrice: number = 0;
 
     @Property()
-    public miles: string = '';
+    public actualPrice: number = 0;
 
     @Property()
-    public orderStatus: OrderStatusType = OrderStatusType.PENDING;
-
+    public createdTime: string = '';
+    
     @Property()
     public orderType: string = '';
-
+    
     @Property()
-    public cost: number = 0;
-
-    @Property()
-    public rate: number = 5;
-
-    @Property()
-    public comment: string = '';
+    public updatedTime: string = '';
 }
