@@ -1,4 +1,4 @@
-import './AutoCrowd.scss'
+import './index.scss'
 import { Clock as ClockText } from '../../components/Clock/clock'
 import Clock from 'react-clock';
 import Calendar from '../../components/calendar'

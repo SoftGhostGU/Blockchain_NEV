@@ -1,4 +1,4 @@
-import './orderManage.scss'
+import './index.scss'
 import CirclePieChart from '../../components/circlePieChart';
 import OrderCard from './components/orderCard'
 

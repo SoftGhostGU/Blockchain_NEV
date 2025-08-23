@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useColorModeStore } from '../../../store/store';
-import '../orderManage.scss'
+import '../index.scss'
 
 import { ConfigProvider, Rate, theme } from 'antd';
 
