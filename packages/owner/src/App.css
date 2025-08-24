@@ -1,0 +1,47 @@
+/* @import 'antd/dist/antd.css'; */
+/* @import 'antd/dist/reset.css'; */
+@import '/src/style/root.css';
+
+body,
+p,
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+.searchBar {
+  margin-bottom: 10px;
+}
+
+.searchreset {
+  margin-left: 10px;
+}
+
+.searchimport {
+  margin: 0 10px;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.1);
+}

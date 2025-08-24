@@ -2,9 +2,11 @@ import './Navbar.scss'
 import logo from '../../assets/logo1.png'
 import { useColorModeStore } from '../../store/store'
 
+import NotificationTooltip from '../NotificationTooltip'
+
 // import * as React from 'react';
 
-import { Menu } from 'antd';
+import { Menu, Tooltip } from 'antd';
 import {
   SettingOutlined,
   BellOutlined,
@@ -17,11 +19,15 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
 export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) => void }) {
   const [selectedKey, setSelectedKey] = useState('0');
+
+  const navigate = useNavigate();
+
   const isNightMode = useColorModeStore(state => state.isNightMode);
   const toggleColorMode = useColorModeStore(state => state.toggleColorMode);
 
@@ -115,13 +121,26 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
         </div>
 
         <div className='right-bar'>
-          <BellOutlined className='icon' />
-          <SettingOutlined className='icon' />
-          <UserOutlined className='icon' />
+          <Tooltip overlay={<NotificationTooltip />}>
+            <BellOutlined className='icon' />
+          </Tooltip>
+          <Tooltip title="修改车辆信息">
+            <CarOutlined className='icon' />
+          </Tooltip>
+          <Tooltip title="修改个人信息">
+            <SettingOutlined className='icon' onClick={() => {
+              navigate("/dashboard/settings");
+              setSelectedKey?.("4");
+            }} />
+          </Tooltip>
           {isNightMode ? (
-            <SunOutlined className='icon' onClick={changeNightMode} />
+            <Tooltip title="切换日间模式">
+              <SunOutlined className='icon' onClick={changeNightMode} />
+            </Tooltip>
           ) : (
-            <MoonOutlined className='icon' onClick={changeNightMode} />
+            <Tooltip title="切换日间模式">
+              <MoonOutlined className='icon' onClick={changeNightMode} />
+            </Tooltip>
           )}
           <div className='owner-name'>{name}</div>
         </div>
@@ -146,7 +165,7 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
             selectedKeys={[selectedKey]}
             onSelect={({ key }) => {
               setSelectedKey(key);        // 更新高亮
-              onMenuSelect?.(key);        // 通知父组件
+              onMenuSelect?.(key);        // 通知父组件   
             }}
           />
           {/* <Button className='button' type="primary" block>车辆信息</Button>
