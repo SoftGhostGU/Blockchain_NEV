@@ -50,7 +50,7 @@ export default function orderManage() {
       commentText: '非常好，车子开的很稳，路上没有堵车，车主服务态度很好，很快就送达，很满意！',
     },
     {
-      orderId: 'ORD20250717002',
+      orderId: 'ORD20250717003',
       orderTime: '2025-07-18 10:00:00',
       orderType: '同城配送',
       balance: '+￥150',
@@ -280,14 +280,14 @@ export default function orderManage() {
       titleInfo.forEach(item => { item.classList.add('night-mode') });
       ordersContainer?.classList.add('night-mode');
       orderTitle?.classList.add('night-mode');
-      console.log("切换到夜间模式")
+      
     } else {
       colomnItem.forEach(item => { item.classList.remove('night-mode') });
       colomnTitle.forEach(item => { item.classList.remove('night-mode') });
       titleInfo.forEach(item => { item.classList.remove('night-mode') });
       ordersContainer?.classList.remove('night-mode');
       orderTitle?.classList.remove('night-mode');
-      console.log("切换到日间模式")
+      
     }
   }, [isNightMode]);
 

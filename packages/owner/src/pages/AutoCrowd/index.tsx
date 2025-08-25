@@ -41,7 +41,7 @@ export default function AutoCrowd() {
       calendar?.classList.add('night-mode');
       weather?.classList.add('night-mode');
       videoContainer?.classList.add('night-mode');
-      // console.log("切换到夜间模式");
+      // ;
     } else {
       reactClockFace.forEach(item => { item.classList.remove('night-mode'); });
       reactClockHandBody.forEach(item => { item.classList.remove('night-mode'); });
@@ -50,7 +50,7 @@ export default function AutoCrowd() {
       calendar?.classList.remove('night-mode');
       weather?.classList.remove('night-mode');
       videoContainer?.classList.remove('night-mode');
-      // console.log("切换到日间模式");
+      // ;
     }
   }, [isNightMode]);
 

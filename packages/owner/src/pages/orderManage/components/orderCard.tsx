@@ -49,14 +49,14 @@ export default function OrderCard(data: OrderCardProps) {
         orderTime.forEach(item => { item.classList.add('night-mode') });
         routeInfo.forEach(item => { item.classList.add('night-mode') });
         commentText.forEach(item => { item.classList.add('night-mode') });
-        console.log("切换到夜间模式")
+        
       } else {
         orderCard.forEach(item => { item.classList.remove('night-mode') });
         orderId.forEach(item => { item.classList.remove('night-mode') });
         orderTime.forEach(item => { item.classList.remove('night-mode') });
         routeInfo.forEach(item => { item.classList.remove('night-mode') });
         commentText.forEach(item => { item.classList.remove('night-mode') });
-        console.log("切换到日间模式")
+        
       }
     }, [isNightMode]);
 

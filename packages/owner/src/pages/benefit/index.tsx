@@ -342,10 +342,10 @@ export default function benefit() {
     rowItems.forEach(item => {
       if (isNightMode) {
         item.classList.add('night-mode');
-        console.log("切换到夜间模式");
+        ;
       } else {
         item.classList.remove('night-mode');
-        console.log("切换到日间模式");
+        ;
       }
     });
   }, [isNightMode]);

@@ -24,6 +24,52 @@ import { useNavigate } from 'react-router-dom';
 type MenuItem = Required<MenuProps>['items'][number];
 
 export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) => void }) {
+
+  const orders = [
+    {
+      orderId: 'ORD20250717001',
+      orderTime: '2025-07-17 10:00:00',
+      orderType: '网约车',
+      balance: '+￥180',
+      status: '已完成',
+      // operate: '· · ·'
+      startLocation: '北京市朝阳区三里屯',
+      endLocation: '北京市海淀区中关村',
+      // userAvatar: userAvatar,
+      username: '张俊喆',
+      commentStar: 0.5,
+      commentText: '非常差劲，车子开得太快了，路上堵车，还不及时让行，要价高，简直黑车！投诉！终身静止使用这个平台！',
+    },
+    {
+      orderId: 'ORD20250717002',
+      orderTime: '2025-07-18 10:00:00',
+      orderType: '同城配送',
+      balance: '+￥150',
+      status: '已完成',
+      // operate: '· · ·'
+      startLocation: '北京市朝阳区三里屯',
+      endLocation: '北京市海淀区中关村',
+      // userAvatar: userAvatar,
+      username: '张俊喆',
+      commentStar: 5,
+      commentText: '非常好，车子开的很稳，路上没有堵车，车主服务态度很好，很快就送达，很满意！',
+    },
+    {
+      orderId: 'ORD20250717003',
+      orderTime: '2025-07-18 10:00:00',
+      orderType: '同城配送',
+      balance: '+￥150',
+      status: '已完成',
+      // operate: '· · ·'
+      startLocation: '北京市朝阳区三里屯',
+      endLocation: '北京市海淀区中关村',
+      // userAvatar: userAvatar,
+      username: '张俊喆',
+      commentStar: 5,
+      commentText: '非常好，车子开的很稳，路上没有堵车，车主服务态度很好，很快就送达，很满意！',
+    }
+  ];
+
   const [selectedKey, setSelectedKey] = useState('0');
 
   const navigate = useNavigate();
@@ -59,12 +105,12 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
       body.classList.add('night-mode');
       topNavbar?.classList.add('night-mode');
       leftNavbar?.classList.add('night-mode');
-      console.log("切换到夜间模式")
+      
     } else {
       body.classList.remove('night-mode');
       topNavbar?.classList.remove('night-mode');
       leftNavbar?.classList.remove('night-mode');
-      console.log("切换到日间模式")
+      
     }
   }, [isNightMode]);
 
@@ -121,7 +167,18 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
         </div>
 
         <div className='right-bar'>
-          <Tooltip overlay={<NotificationTooltip />}>
+          <Tooltip
+            trigger="hover"                 // 鼠标悬停更适合列表
+            placement="bottomRight"
+            color={isNightMode ? '#1f2937' : '#ffffff'}
+            overlayInnerStyle={{
+              padding: 12,                  // 让内边距合适
+              minWidth: 320,                // 和上面 scss 对齐
+              maxWidth: 420,                // 避免太宽
+              color: isNightMode ? '#f9fafb' : '#111827'  // 字体颜色
+            }}
+            title={<NotificationTooltip orders={orders} />}
+          >
             <BellOutlined className='icon' />
           </Tooltip>
           <Tooltip title="修改车辆信息">
@@ -138,7 +195,7 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
               <SunOutlined className='icon' onClick={changeNightMode} />
             </Tooltip>
           ) : (
-            <Tooltip title="切换日间模式">
+            <Tooltip title="切换夜间模式">
               <MoonOutlined className='icon' onClick={changeNightMode} />
             </Tooltip>
           )}

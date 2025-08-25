@@ -163,13 +163,13 @@ export default function CarInfo() {
       listItemText.forEach(item => item.classList.add('night-mode'));
       progressLabel.forEach(item => item.classList.add('night-mode'));
       mapContainer?.classList.add('night-mode');
-      console.log("切换到夜间模式")
+      
     } else {
       blockThree.forEach(item => item.classList.remove('night-mode'));
       listItemText.forEach(item => item.classList.remove('night-mode'));
       progressLabel.forEach(item => item.classList.remove('night-mode'));
       mapContainer?.classList.remove('night-mode');
-      console.log("切换到日间模式")
+      
     }
   }, [isNightMode]);
 
