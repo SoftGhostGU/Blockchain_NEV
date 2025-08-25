@@ -26,7 +26,7 @@
       padding: 20px;
       border-radius: 15px;
       box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
-      transition: all 0.3s ease-in-out;
+      // transition: all 0.3s ease-in-out;
 
       .colomn-title {
         color: #555;
@@ -48,7 +48,7 @@
       padding: 20px;
       border-radius: 15px;
       box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.2);
-      transition: all 0.3s ease-in-out;
+      // transition: all 0.3s ease-in-out;
     }
 
     .colomn-item:hover {
@@ -118,14 +118,14 @@
     margin-right: 0;
     padding: 20px;
     box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease-in-out;
+    // transition: all 0.3s ease-in-out;
 
     .order-title {
       position: absolute;
       background-color: #fff;
       padding-bottom: 20px;
       display: flex;
-      transition: all 0.3s ease-in-out;
+      // transition: all 0.3s ease-in-out;
       // z-index: 100;
     }
 
@@ -134,7 +134,7 @@
       background-color: var(--background-dark);
       padding-bottom: 20px;
       display: flex;
-      transition: all 0.3s ease-in-out;
+      // transition: all 0.3s ease-in-out;
       // z-index: 100;
     }
 
@@ -157,7 +157,7 @@
     margin-right: 0;
     padding: 20px;
     box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.2);
-    transition: all 0.3s ease-in-out;
+    // transition: all 0.3s ease-in-out;
   }
 
   .order-container:hover {
@@ -174,7 +174,7 @@
   border-radius: 15px;
   position: relative;
   margin-top: 20px;
-  transition: all 0.3s ease-in-out;
+  // transition: all 0.3s ease-in-out;
 
   .card-header {
     display: flex;
@@ -342,7 +342,7 @@
   border-radius: 15px;
   position: relative;
   margin-top: 20px;
-  transition: all 0.3s ease-in-out;
+  // transition: all 0.3s ease-in-out;
 }
 
 .order-card:hover {

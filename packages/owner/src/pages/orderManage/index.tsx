@@ -422,7 +422,7 @@ export default function orderManage() {
           <div className='order-card-list'>
             {
               orderList.map((item) => (
-                <OrderCard data={item} />
+                <OrderCard key={item.orderId} data={item} />
               ))
             }
           </div>

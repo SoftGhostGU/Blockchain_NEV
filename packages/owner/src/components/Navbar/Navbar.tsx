@@ -105,12 +105,12 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
       body.classList.add('night-mode');
       topNavbar?.classList.add('night-mode');
       leftNavbar?.classList.add('night-mode');
-      
+
     } else {
       body.classList.remove('night-mode');
       topNavbar?.classList.remove('night-mode');
       leftNavbar?.classList.remove('night-mode');
-      
+
     }
   }, [isNightMode]);
 
@@ -171,11 +171,13 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
             trigger="hover"                 // 鼠标悬停更适合列表
             placement="bottomRight"
             color={isNightMode ? '#1f2937' : '#ffffff'}
-            overlayInnerStyle={{
-              padding: 12,                  // 让内边距合适
-              minWidth: 320,                // 和上面 scss 对齐
-              maxWidth: 420,                // 避免太宽
-              color: isNightMode ? '#f9fafb' : '#111827'  // 字体颜色
+            styles={{
+              body: {
+                padding: 12,                  // 让内边距合适
+                minWidth: 320,                // 和上面 scss 对齐
+                maxWidth: 420,                // 避免太宽
+                color: isNightMode ? '#f9fafb' : '#111827'  // 字体颜色
+              }
             }}
             title={<NotificationTooltip orders={orders} />}
           >
