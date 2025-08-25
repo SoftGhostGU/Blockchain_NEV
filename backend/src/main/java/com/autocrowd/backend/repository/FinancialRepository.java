@@ -11,4 +11,7 @@ import java.util.List;
 public interface FinancialRepository extends JpaRepository<Financial, Integer> {
     List<Financial> findByRoleAndUserIdAndTransactionTypeAndTransactionTimeBetween(
             String role, Integer userId, Financial.TransactionType transactionType, LocalDateTime startTime, LocalDateTime endTime);
-}
+    
+    List<Financial> findByRoleAndUserIdAndTransactionTimeBetween(
+            String role, Integer userId, LocalDateTime startTime, LocalDateTime endTime);
+}

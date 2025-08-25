@@ -2,7 +2,7 @@ import "./carInfo.scss"
 
 import mapTest from '../../assets/map_test.jpg'
 
-import { ConfigProvider, Progress, theme, Timeline } from 'antd';
+import { Button, ConfigProvider, notification, Progress, Space, theme, Timeline } from 'antd';
 import type { ProgressProps } from 'antd';
 import {
   createFromIconfontCN,
@@ -20,6 +20,10 @@ import {
 } from '@ant-design/icons';
 import { useColorModeStore } from "../../store/store";
 import { useEffect } from "react";
+
+import type { NotificationArgsProps } from 'antd';
+
+type NotificationPlacement = NotificationArgsProps['placement'];
 
 const twoColors: ProgressProps['strokeColor'] = {
   '0%': '#108ee9',
@@ -62,6 +66,91 @@ export default function CarInfo() {
   const money = "128.00"
 
   // const orderNum = 8;
+
+  const [api, contextHolder] = notification.useNotification();
+  const close = () => {
+    console.log(
+      'Notification was closed. Either the close button was clicked or duration time elapsed.',
+    );
+  };
+  const handleCallBackSuccessfully = () => {
+    const key = `open${Date.now()}`;
+    api.open({
+      message: '召回车辆',
+      description:
+        '召回车辆成功，本单完成后即将回到指定地点',
+      key,
+      onClose: close,
+    });
+  }
+  const handleCallOutSuccessfully = () => {
+    const key = `open${Date.now()}`;
+    api.open({
+      message: '派出车辆',
+      description:
+        '派出车辆成功，车辆将按照合约内容持续接单',
+      key,
+      onClose: close,
+    });
+  }
+  const openNotificationOfCallBackCar = () => {
+    const key = `open${Date.now()}`;
+    const btn = (
+      <Space>
+        <Button type="link" size="small" onClick={() => api.destroy()}>
+          取消
+        </Button>
+        <Button type="primary" size="small" onClick={() => {
+          api.destroy(key)
+          handleCallBackSuccessfully()
+        }}>
+          确认
+        </Button>
+      </Space>
+    );
+    api.open({
+      message: '召回车辆',
+      description:
+        '确定要召回该车辆吗？',
+      btn,
+      key,
+      onClose: close,
+    });
+  };
+  const openNotificationOfCallOutCar = () => {
+    const key = `open${Date.now()}`;
+    const btn = (
+      <Space>
+        <Button type="link" size="small" onClick={() => api.destroy()}>
+          取消
+        </Button>
+        <Button type="primary" size="small" onClick={() => {
+          api.destroy(key)
+          handleCallOutSuccessfully()
+        }}>
+          确认
+        </Button>
+      </Space>
+    );
+    api.open({
+      message: '派出车辆',
+      description:
+        '确定要派出该车辆吗？',
+      btn,
+      key,
+      onClose: close,
+    });
+  };
+
+  const handleCallBackCar = () => {
+    console.log("点击了召回车辆")
+    openNotificationOfCallBackCar()
+  }
+
+  const handleCallOutCar = () => {
+    console.log("点击了派出车辆")
+    openNotificationOfCallOutCar()
+  }
 
   const isNightMode = useColorModeStore(state => state.isNightMode);
   useEffect(() => {
@@ -311,6 +400,15 @@ export default function CarInfo() {
             <BarChartOutlined className="button-icon" />
             <QuestionCircleOutlined className="button-icon" />
             <EllipsisOutlined className="button-icon" />
+            {contextHolder}
+            <button
+              className="button-button"
+              onClick={handleCallBackCar}
+            >召回车辆</button>
+            <button
+              className="button-button"
+              onClick={handleCallOutCar}
+            >派出车辆</button>
           </div>
           <div className="map">
             <img src={mapTest} alt="" className="map-img" />

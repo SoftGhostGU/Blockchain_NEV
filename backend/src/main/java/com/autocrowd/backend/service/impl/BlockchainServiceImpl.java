@@ -3,6 +3,7 @@ package com.autocrowd.backend.service.impl;
 import com.autocrowd.backend.config.BlockchainConfig;
 import com.autocrowd.backend.entity.Financial;
 import com.autocrowd.backend.entity.Order;
+import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.service.BlockchainService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -43,6 +44,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Service
 public class BlockchainServiceImpl implements BlockchainService {
@@ -107,6 +109,7 @@ public class BlockchainServiceImpl implements BlockchainService {
             logger.info("[BlockchainService] 区块链连接初始化成功");
         } catch (Exception e) {
             logger.error("[BlockchainService] 区块链连接初始化失败: {}", e.getMessage(), e);
+            // 记录详细的错误信息，但不中断应用程序启动
         }
     }
     
@@ -141,6 +144,9 @@ public class BlockchainServiceImpl implements BlockchainService {
             
             logger.info("[BlockchainService] 订单信息上链成功: 订单ID={}", order.getOrderId());
             return true;
+        } catch (BusinessException e) {
+            logger.error("[BlockchainService] 订单上链失败: {}", e.getMessage(), e);
+            return false;
         } catch (Exception e) {
             logger.error("[BlockchainService] 订单上链失败: {}", e.getMessage(), e);
             return false;
@@ -221,8 +227,8 @@ public class BlockchainServiceImpl implements BlockchainService {
      */
     @Override
     public List<Order> getCompletedOrdersFromBlockchain() {
-        logger.info("[BlockchainService] 查询区块链上的已完成订单");
         try {
+            logger.info("[BlockchainService] 查询区块链上的已完成订单");
             // 调用订单链码的GetAllOrders方法
             byte[] result = orderContract.evaluateTransaction("QueryAllOrders");
             String ordersJson = new String(result);
@@ -242,7 +248,6 @@ public class BlockchainServiceImpl implements BlockchainService {
      */
     @Override
     public BigDecimal getTotalTransactionAmountFromBlockchain() {
-        logger.info("[BlockchainService] 查询区块链上的总交易额");
         try {
             // 调用金融链码的GetTotalAmount方法
             byte[] result = financialContract.evaluateTransaction("GetTotalAmount");
@@ -263,7 +268,6 @@ public class BlockchainServiceImpl implements BlockchainService {
      */
     @Override
     public BigDecimal getTotalTransactionAmountByDriverFromBlockchain(Integer driverId) {
-        logger.info("[BlockchainService] 查询车主在区块链上的总交易额: 车主ID={}", driverId);
         try {
             // 调用金融链码的GetTotalAmountByDriver方法
             byte[] result = financialContract.evaluateTransaction("GetTotalAmountByDriver", driverId.toString());

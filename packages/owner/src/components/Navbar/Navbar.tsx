@@ -21,6 +21,7 @@ import { useEffect, useState } from 'react';
 type MenuItem = Required<MenuProps>['items'][number];
 
 export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) => void }) {
+  const [selectedKey, setSelectedKey] = useState('0');
   const isNightMode = useColorModeStore(state => state.isNightMode);
   const toggleColorMode = useColorModeStore(state => state.toggleColorMode);
 
@@ -99,13 +100,20 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
   return (
     <div className='navbar'>
       <div className='top-navbar'>
-        <div className='left-bar'>
+        <div
+          className='left-bar'
+          onClick={() => {
+            setSelectedKey('0');
+            onMenuSelect?.('0');
+          }}
+        >
           <img
             className='logo-image'
             src={logo}
           />
           <div className='title'>AutoCrowd</div>
         </div>
+
         <div className='right-bar'>
           <BellOutlined className='icon' />
           <SettingOutlined className='icon' />
@@ -124,14 +132,22 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
           {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </Button> */}
           <Menu
-            defaultSelectedKeys={['1']}
+            defaultSelectedKeys={['0']}
             defaultOpenKeys={['sub1']}
             mode="inline"
             theme={isNightMode ? "dark" : "light"}
             items={items}
             className='navbar-menu'
-            style={{ lineHeight: '60px' }}
-            onSelect={({ key }) => onMenuSelect?.(key)}
+            style={{
+              width: 'calc(100% - 10px)',
+              lineHeight: '60px',
+              marginLeft: '10px'
+            }}
+            selectedKeys={[selectedKey]}
+            onSelect={({ key }) => {
+              setSelectedKey(key);        // 更新高亮
+              onMenuSelect?.(key);        // 通知父组件
+            }}
           />
           {/* <Button className='button' type="primary" block>车辆信息</Button>
         <Button className='button' block>数据面板</Button>

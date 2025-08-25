@@ -333,9 +333,34 @@ public class OrderServiceImpl implements OrderService {
      * @param actualPrice 实际价格
      */
     @Override
+    @Transactional
     public void createFinancialRecords(Order order, BigDecimal actualPrice) {
         try {
             logger.info("[OrderService] 为订单创建财务记录: 订单ID={}, 实际价格={}", order.getOrderId(), actualPrice);
+            
+            // 获取用户和车主信息
+            User user = userRepository.findById(order.getUserId())
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "用户不存在"));
+            Driver driver = driverRepository.findById(order.getDriverId())
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "车主不存在"));
+            
+            // 更新用户余额（减少）
+            if (user.getBalance() == null) {
+                user.setBalance(BigDecimal.ZERO);
+            }
+            user.setBalance(user.getBalance().subtract(actualPrice));
+            user.setUpdatedAt(LocalDateTime.now());
+            userRepository.save(user);
+            logger.info("[OrderService] 用户余额更新成功: 用户ID={}, 新余额={}", user.getUserId(), user.getBalance());
+            
+            // 更新车主余额（增加）
+            if (driver.getWalletBalance() == null) {
+                driver.setWalletBalance(BigDecimal.ZERO);
+            }
+            driver.setWalletBalance(driver.getWalletBalance().add(actualPrice));
+            driver.setUpdatedAt(LocalDateTime.now());
+            driverRepository.save(driver);
+            logger.info("[OrderService] 车主余额更新成功: 车主ID={}, 新余额={}", driver.getDriverId(), driver.getWalletBalance());
             
             // 为用户创建支出记录
             Financial userFinancial = new Financial();
@@ -371,9 +396,40 @@ public class OrderServiceImpl implements OrderService {
                 logger.info("[OrderService] 车主财务记录创建成功: ID={}", driverFinancial.getFinancialId());
             }
             
+            // 将财务记录上链
+            long timestamp = System.currentTimeMillis();
+            String userFinancialId = "FIN_USER_" + order.getOrderId() + "_" + timestamp;
+            String driverFinancialId = "FIN_DRIVER_" + order.getOrderId() + "_" + timestamp;
+            
+            // 用户交易上链
+            boolean userOnChain = blockchainService.createUserTransactionOnBlockchain(
+                userFinancialId, 
+                order.getUserId(), 
+                actualPrice, 
+                timestamp
+            );
+            if (!userOnChain) {
+                logger.error("[OrderService] 用户财务记录上链失败: {}", userFinancialId);
+            } else {
+                logger.info("[OrderService] 用户财务记录上链成功: {}", userFinancialId);
+            }
+            
+            // 车主交易上链
+            boolean driverOnChain = blockchainService.createDriverTransactionOnBlockchain(
+                driverFinancialId, 
+                order.getDriverId(), 
+                actualPrice, 
+                timestamp
+            );
+            if (!driverOnChain) {
+                logger.error("[OrderService] 车主财务记录上链失败: {}", driverFinancialId);
+            } else {
+                logger.info("[OrderService] 车主财务记录上链成功: {}", driverFinancialId);
+            }
+            
         } catch (Exception e) {
             logger.error("[OrderService] 创建财务记录异常: {}", e.getMessage(), e);
-            // 财务记录创建失败不应影响订单完成，仅记录日志
+            throw new BusinessException(ExceptionCodeEnum.FINANCIAL_RECORD_CREATION_FAILED, "创建财务记录失败: " + e.getMessage());
         }
     }
 
