@@ -3,10 +3,11 @@ import logo from '../../assets/logo1.png'
 import { useColorModeStore } from '../../store/store'
 
 import NotificationTooltip from '../NotificationTooltip'
+import DrawerComponent from '../Drawer'
 
 // import * as React from 'react';
 
-import { Menu, Tooltip } from 'antd';
+import { Badge, Button, ConfigProvider, Drawer, Menu, Space, theme, Tooltip } from 'antd';
 import {
   SettingOutlined,
   BellOutlined,
@@ -71,6 +72,15 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
   ];
 
   const [selectedKey, setSelectedKey] = useState('0');
+  const [openDrawer, setOpenDrawer] = useState(false);
+
+  const showDrawer = () => {
+    setOpenDrawer(true);
+  };
+
+  const onClose = () => {
+    setOpenDrawer(false);
+  };
 
   const navigate = useNavigate();
 
@@ -150,88 +160,123 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
   ];
 
   return (
-    <div className='navbar'>
-      <div className='top-navbar'>
-        <div
-          className='left-bar'
-          onClick={() => {
-            setSelectedKey('0');
-            onMenuSelect?.('0');
-          }}
-        >
-          <img
-            className='logo-image'
-            src={logo}
-          />
-          <div className='title'>AutoCrowd</div>
-        </div>
-
-        <div className='right-bar'>
-          <Tooltip
-            trigger="hover"                 // 鼠标悬停更适合列表
-            placement="bottomRight"
-            color={isNightMode ? '#1f2937' : '#ffffff'}
-            styles={{
-              body: {
-                padding: 12,                  // 让内边距合适
-                minWidth: 320,                // 和上面 scss 对齐
-                maxWidth: 420,                // 避免太宽
-                color: isNightMode ? '#f9fafb' : '#111827'  // 字体颜色
-              }
+    <ConfigProvider
+      theme={{ algorithm: isNightMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}
+    >
+      <div className='navbar'>
+        <div className='top-navbar'>
+          <div
+            className='left-bar'
+            onClick={() => {
+              setSelectedKey('0');
+              onMenuSelect?.('0');
             }}
-            title={<NotificationTooltip orders={orders} />}
           >
-            <BellOutlined className='icon' />
-          </Tooltip>
-          <Tooltip title="修改车辆信息">
-            <CarOutlined className='icon' />
-          </Tooltip>
-          <Tooltip title="修改个人信息">
-            <SettingOutlined className='icon' onClick={() => {
-              navigate("/dashboard/settings");
-              setSelectedKey?.("4");
-            }} />
-          </Tooltip>
-          {isNightMode ? (
-            <Tooltip title="切换日间模式">
-              <SunOutlined className='icon' onClick={changeNightMode} />
+            <img
+              className='logo-image'
+              src={logo}
+            />
+            <div className='title'>AutoCrowd</div>
+          </div>
+
+          <div className='right-bar'>
+            <Tooltip
+              trigger="hover"                 // 鼠标悬停更适合列表
+              placement="bottomRight"
+              color={isNightMode ? '#1f2937' : '#ffffff'}
+              styles={{
+                body: {
+                  padding: 12,                  // 让内边距合适
+                  minWidth: 320,                // 和上面 scss 对齐
+                  maxWidth: 420,                // 避免太宽
+                  color: isNightMode ? '#f9fafb' : '#111827'  // 字体颜色
+                }
+              }}
+              title={<NotificationTooltip orders={orders} />}
+            >
+              <Badge count={orders.length} overflowCount={10} offset={[-20, 20]} size="small">
+                <BellOutlined className='icon' />
+              </Badge>
             </Tooltip>
-          ) : (
-            <Tooltip title="切换夜间模式">
-              <MoonOutlined className='icon' onClick={changeNightMode} />
+            <Tooltip title="修改车辆信息">
+              <CarOutlined className='icon' onClick={showDrawer} />
             </Tooltip>
-          )}
-          <div className='owner-name'>{name}</div>
+            <Tooltip title="修改个人信息">
+              <SettingOutlined className='icon' onClick={() => {
+                navigate("/dashboard/settings");
+                setSelectedKey?.("4");
+              }} />
+            </Tooltip>
+            {isNightMode ? (
+              <Tooltip title="切换日间模式">
+                <SunOutlined className='icon' onClick={changeNightMode} />
+              </Tooltip>
+            ) : (
+              <Tooltip title="切换夜间模式">
+                <MoonOutlined className='icon' onClick={changeNightMode} />
+              </Tooltip>
+            )}
+            <div className='owner-name'>{name}</div>
+          </div>
         </div>
-      </div>
-      <div className='main-content'>
-        <div className='left-navbar'>
-          {/* <Button type="primary" onClick={toggleCollapsed} style={{ marginBottom: 16 }}>
+        <div className='main-content'>
+          <div className='left-navbar'>
+            {/* <Button type="primary" onClick={toggleCollapsed} style={{ marginBottom: 16 }}>
           {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
         </Button> */}
-          <Menu
-            defaultSelectedKeys={['0']}
-            defaultOpenKeys={['sub1']}
-            mode="inline"
-            theme={isNightMode ? "dark" : "light"}
-            items={items}
-            className='navbar-menu'
-            style={{
-              width: 'calc(100% - 10px)',
-              lineHeight: '60px',
-              marginLeft: '10px'
-            }}
-            selectedKeys={[selectedKey]}
-            onSelect={({ key }) => {
-              setSelectedKey(key);        // 更新高亮
-              onMenuSelect?.(key);        // 通知父组件   
-            }}
-          />
-          {/* <Button className='button' type="primary" block>车辆信息</Button>
+            <Menu
+              defaultSelectedKeys={['0']}
+              defaultOpenKeys={['sub1']}
+              mode="inline"
+              theme={isNightMode ? "dark" : "light"}
+              items={items}
+              className='navbar-menu'
+              style={{
+                width: 'calc(100% - 10px)',
+                lineHeight: '60px',
+                marginLeft: '10px'
+              }}
+              selectedKeys={[selectedKey]}
+              onSelect={({ key }) => {
+                setSelectedKey(key);        // 更新高亮
+                onMenuSelect?.(key);        // 通知父组件   
+              }}
+            />
+            {/* <Button className='button' type="primary" block>车辆信息</Button>
         <Button className='button' block>数据面板</Button>
         <Button className='button' block>订单信息</Button> */}
+          </div>
         </div>
       </div>
-    </div>
+      <Drawer
+        title="修改车辆信息"
+        width={720}
+        onClose={onClose}
+        open={openDrawer}
+        styles={{
+          header: {
+            backgroundColor: isNightMode ? '#1f2937' : '#ffffff',
+            color: isNightMode ? '#f9fafb' : '#111827',
+          },
+          body: {
+            paddingBottom: 80,
+          },
+          mask: {
+            backdropFilter: 'blur(10px)',
+          },
+        }}
+        extra={
+          <Space>
+            <Button onClick={onClose}>取消</Button>
+            <Button onClick={onClose} type="primary">
+              提交
+            </Button>
+          </Space>
+        }
+      >
+        <DrawerComponent />
+      </Drawer>
+
+    </ConfigProvider>
   )
 }
