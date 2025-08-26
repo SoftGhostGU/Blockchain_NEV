@@ -1,28 +1,27 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useState } from 'react';
 import './index.scss'
-import { Form, Input, Button, Row, Col, Checkbox, message } from 'antd';
-import { UserOutlined, LockOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
+import { Form, Button } from 'antd';
 // import request from '@/api'
-import { useNavigate } from 'react-router-dom'
 import loginBg from "../../assets/login_bg.png"
-import GraphicCode from '../../components/GraphicCode';
+import LoginForm from './components/LoginForm'
+import RegisterForm from './components/RegisterForm'
+import { useNavigate } from 'react-router-dom';
 
-interface GraphicCodeRef {
-  verify: (str: string) => Promise<boolean>
-}
 
 const Login = () => {
-  const navigate = useNavigate()
+  let [isLogin, setIsLogin] = useState(true);
   // 登录按钮loading
   let [loading, setLoading] = useState(false)
-  let title = "车主登录"
-  let [submitLoginName, setSubmitLoginName] = useState('登录')
-  let [form] = Form.useForm();
-  let GraphicCodeRef = useRef<GraphicCodeRef>(null)
+  let title = isLogin ? "车主登录" : "车主注册";
+  const submitLoginName = isLogin ? '登录' : '注册';
+  const toggleForm = () => setIsLogin(!isLogin);
+
+  const navigate = useNavigate()
+
   // 确认登录
   const onFinish = async (userInfo: any) => {
     setLoading(true)
-    setSubmitLoginName('正在登录...')
+    // setSubmitLoginName('正在登录...')
 
     navigate('/dashboard')
 
@@ -47,17 +46,9 @@ const Login = () => {
     // })
   };
 
-  // 验证码校验
-  const validateInputCode = async (rule: any, value: any) => {
-    if (value) {
-      let verify = await GraphicCodeRef.current?.verify(value)
-      if (!verify) throw new Error("验证码错误！")
-    }
-  }
-
   return (
     <div className="login" style={{ backgroundImage: `url(${loginBg})` }}>
-    {/* <div className="login" style={{ 
+      {/* <div className="login" style={{ 
       backgroundImage: `url(${loginBg})`,
       minHeight: '100vh', // 最小高度自适应
       minWidth: '100vw',  // 最小宽度自适应
@@ -75,60 +66,29 @@ const Login = () => {
             </h2>
           </div>
           <div>
+
             <Form
-              name="normal_login"
-              className="login-form"
-              form={form}
-              initialValues={{ remember: true }}
+              className='login-form'
               onFinish={onFinish}
             >
-              <Form.Item
-                name="username"
-                rules={[
-                  { required: true, message: '请输入用户名!' },
-                  { min: 3, message: '最少长度为3位' },
-                  { max: 20, message: '最大长度为20位' },
-                  { pattern: /^[0-9a-zA-Z@~!#$%^&*`.-_]{1,}$/, message: '包含非法字符' },
-                ]}
-              >
-                <Input size="large" placeholder="用户名" prefix={<UserOutlined className="site-form-item-icon" />} allowClear />
-              </Form.Item>
-              <Form.Item
-                name="password"
-                rules={[
-                  { required: true, whitespace: false, message: '请输入登录密码!' },
-                  { min: 5, message: '最少长度为5位' },
-                  { max: 18, message: '最大长度为18位' },
-                  { pattern: /^[0-9a-zA-Z@~!#$%^&*`_]{1,}$/, message: '必须为数字，字母，特殊符号组成' },
-                ]}
-              >
-                <Input.Password
-                  prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="密码" size="large"
-                />
-              </Form.Item>
-              <Form.Item name="inputCode"
-                rules={[
-                  { required: true, message: '请输入验证码!' },
-                  { validator: validateInputCode, }
-                ]}>
-                <Row justify="space-between" style={{ display: 'flex', flexWrap: 'nowrap' }}>
-                  <Col className="yanzhengma">
-                    <Input size="large" placeholder="验证码" prefix={<SafetyCertificateOutlined className="site-form-item-icon" />} />
-                  </Col>
-                  <Col>
-                    <GraphicCode ref={GraphicCodeRef} />
-                  </Col>
-                </Row>
-              </Form.Item>
-              {/* <Checkbox onChange={onChange} checked={checked} >记住密码</Checkbox> */}
+              {isLogin ? <LoginForm /> : <RegisterForm />}
 
               <Form.Item>
-                <Button type="primary" htmlType="submit" className="login-form-button" loading={loading} disabled={loading}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  className={isLogin ? "login-form-button" : "register-form-button"}
+                  loading={loading} disabled={loading}
+                >
                   {submitLoginName}
                 </Button>
               </Form.Item>
+
+              <Form.Item style={{ marginBottom: 0 }}>
+                {isLogin && <>还没有账号？<Button type="link" onClick={toggleForm}>去注册</Button></>}
+                {!isLogin && <>已有账号？<Button type="link" onClick={toggleForm}>去登录</Button></>}
+              </Form.Item>
+
             </Form>
           </div>
         </section>
