@@ -76,13 +76,10 @@ public class FinancialServiceImpl implements FinancialService {
         financialRepository.save(financial);
         
         // 上链操作
-        String financialId = "FIN_RECHARGE_" + userId + "_" + System.currentTimeMillis();
-        long timestamp = System.currentTimeMillis();
-        
         if ("User".equals(role)) {
-            blockchainService.createUserTransactionOnBlockchain(financialId, userId, amount, timestamp);
+            blockchainService.createUserTransactionOnBlockchain(financial);
         } else {
-            blockchainService.createDriverTransactionOnBlockchain(financialId, userId, amount, timestamp);
+            blockchainService.createDriverTransactionOnBlockchain(financial);
         }
     }
     
@@ -129,13 +126,10 @@ public class FinancialServiceImpl implements FinancialService {
         financialRepository.save(financial);
         
         // 上链操作
-        String financialId = "FIN_WITHDRAW_" + userId + "_" + System.currentTimeMillis();
-        long timestamp = System.currentTimeMillis();
-        
         if ("User".equals(role)) {
-            blockchainService.createUserTransactionOnBlockchain(financialId, userId, amount, timestamp);
+            blockchainService.createUserTransactionOnBlockchain(financial);
         } else {
-            blockchainService.createDriverTransactionOnBlockchain(financialId, userId, amount, timestamp);
+            blockchainService.createDriverTransactionOnBlockchain(financial);
         }
     }
     

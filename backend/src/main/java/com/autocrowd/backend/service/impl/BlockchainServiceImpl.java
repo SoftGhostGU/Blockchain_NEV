@@ -36,9 +36,7 @@ import java.security.InvalidKeyException;
 import java.security.PrivateKey;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -188,7 +186,7 @@ public class BlockchainServiceImpl implements BlockchainService {
             String financialId = userFinancial.getFinancialId().toString();
             String userId = userFinancial.getUserId().toString();
             String amount = userFinancial.getAmount().toString();
-            String timestamp = String.valueOf(userFinancial.getTransactionTime());
+            String timestamp = String.valueOf(userFinancial.getTransactionTime().toInstant(ZoneOffset.of("+8")).toEpochMilli());
             // 调用金融链码的CreateAsset方法（用户交易）
             financialContract.submitTransaction("CreateAsset", financialId, userId, "User", "Expenses", amount, timestamp);
             
@@ -208,7 +206,8 @@ public class BlockchainServiceImpl implements BlockchainService {
             String financialId = driverFinancial.getFinancialId().toString();
             String driverId = driverFinancial.getUserId().toString();
             String amount = driverFinancial.getAmount().toString();
-            String timestamp = String.valueOf(driverFinancial.getTransactionTime());
+            // 此处时间使用了北京时间
+            String timestamp = String.valueOf(driverFinancial.getTransactionTime().toInstant(ZoneOffset.of("+8")).toEpochMilli());
 
             // 调用金融链码的CreateAsset方法（车主交易）
             financialContract.submitTransaction("CreateAsset", financialId, driverId, "Driver", "Earnings", amount, timestamp);

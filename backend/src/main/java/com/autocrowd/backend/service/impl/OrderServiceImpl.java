@@ -395,37 +395,7 @@ public class OrderServiceImpl implements OrderService {
             } else {
                 logger.info("[OrderService] 车主财务记录创建成功: ID={}", driverFinancial.getFinancialId());
             }
-            
-            // 将财务记录上链
-            long timestamp = System.currentTimeMillis();
-            String userFinancialId = "FIN_USER_" + order.getOrderId() + "_" + timestamp;
-            String driverFinancialId = "FIN_DRIVER_" + order.getOrderId() + "_" + timestamp;
-            
-            // 用户交易上链
-            boolean userOnChain = blockchainService.createUserTransactionOnBlockchain(
-                userFinancialId, 
-                order.getUserId(), 
-                actualPrice, 
-                timestamp
-            );
-            if (!userOnChain) {
-                logger.error("[OrderService] 用户财务记录上链失败: {}", userFinancialId);
-            } else {
-                logger.info("[OrderService] 用户财务记录上链成功: {}", userFinancialId);
-            }
-            
-            // 车主交易上链
-            boolean driverOnChain = blockchainService.createDriverTransactionOnBlockchain(
-                driverFinancialId, 
-                order.getDriverId(), 
-                actualPrice, 
-                timestamp
-            );
-            if (!driverOnChain) {
-                logger.error("[OrderService] 车主财务记录上链失败: {}", driverFinancialId);
-            } else {
-                logger.info("[OrderService] 车主财务记录上链成功: {}", driverFinancialId);
-            }
+
             
         } catch (Exception e) {
             logger.error("[OrderService] 创建财务记录异常: {}", e.getMessage(), e);

@@ -4,6 +4,7 @@ import com.autocrowd.backend.dto.user.LoginRequest;
 import com.autocrowd.backend.dto.user.RegisterRequest;
 import com.autocrowd.backend.dto.user.UserProfileDTO;
 import com.autocrowd.backend.dto.user.UserProfileUpdateRequest;
+import com.autocrowd.backend.entity.Financial;
 import com.autocrowd.backend.entity.User;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.exception.BusinessException;
@@ -219,15 +220,19 @@ public class UserServiceImpl implements UserService {
             User updatedUser = userRepository.save(user);
             logger.info("[UserServiceImpl] 更新用户资料成功: {}", updatedUser.getUsername());
 
+            /// ////////////////////////////////////////////////////////////////////
+            ///  这里有个小问题，如果不对数据库里面的financial进行更改，不用将更改同步到区块链 ///
+            /// ////////////////////////////////////////////////////////////////////
             // 如果余额有变更，同步到区块链
             if (profileUpdateRequest.getBalance() != null && 
                 (oldBalance == null || oldBalance.compareTo(profileUpdateRequest.getBalance()) != 0)) {
-                blockchainService.createUserTransactionOnBlockchain(
-                    "BALANCE_UPDATE_" + userId + "_" + System.currentTimeMillis(),
-                    userId,
-                    profileUpdateRequest.getBalance(),
-                    System.currentTimeMillis()
-                );
+                Financial userFinancial = new Financial();
+                userFinancial.setUserId(userId);
+                userFinancial.setRole("User");
+                userFinancial.setTransactionType(Financial.TransactionType.Recharge);
+                userFinancial.setAmount(profileUpdateRequest.getBalance());
+                userFinancial.setTransactionTime(LocalDateTime.now());
+                blockchainService.createUserTransactionOnBlockchain(userFinancial);
             }
 
             // 转换为DTO并返回
