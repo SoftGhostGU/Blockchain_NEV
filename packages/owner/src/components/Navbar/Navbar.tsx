@@ -1,13 +1,9 @@
-import './Navbar.scss'
-import logo from '../../assets/logo1.png'
-import { useColorModeStore } from '../../store/store'
-
-import NotificationTooltip from '../NotificationTooltip'
-import DrawerComponent from '../Drawer'
-
-// import * as React from 'react';
-
-import { Badge, Button, ConfigProvider, Drawer, Menu, Space, theme, Tooltip } from 'antd';
+import './Navbar.scss';
+import logo from '../../assets/logo1.png';
+import { useColorModeStore } from '../../store/store';
+import NotificationTooltip from '../NotificationTooltip';
+import DrawerComponent from '../Drawer';
+import { Badge, Button, ConfigProvider, Drawer, Menu, Space, theme, Tooltip, message } from 'antd';
 import {
   SettingOutlined,
   BellOutlined,
@@ -19,13 +15,12 @@ import {
   MoonOutlined
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
 export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) => void }) {
-
   const orders = [
     {
       orderId: 'ORD20250717001',
@@ -33,10 +28,8 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
       orderType: '网约车',
       balance: '+￥180',
       status: '已完成',
-      // operate: '· · ·'
       startLocation: '北京市朝阳区三里屯',
       endLocation: '北京市海淀区中关村',
-      // userAvatar: userAvatar,
       username: '张俊喆',
       commentStar: 0.5,
       commentText: '非常差劲，车子开得太快了，路上堵车，还不及时让行，要价高，简直黑车！投诉！终身静止使用这个平台！',
@@ -47,10 +40,8 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
       orderType: '同城配送',
       balance: '+￥150',
       status: '已完成',
-      // operate: '· · ·'
       startLocation: '北京市朝阳区三里屯',
       endLocation: '北京市海淀区中关村',
-      // userAvatar: userAvatar,
       username: '张俊喆',
       commentStar: 5,
       commentText: '非常好，车子开的很稳，路上没有堵车，车主服务态度很好，很快就送达，很满意！',
@@ -61,10 +52,8 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
       orderType: '同城配送',
       balance: '+￥150',
       status: '已完成',
-      // operate: '· · ·'
       startLocation: '北京市朝阳区三里屯',
       endLocation: '北京市海淀区中关村',
-      // userAvatar: userAvatar,
       username: '张俊喆',
       commentStar: 5,
       commentText: '非常好，车子开的很稳，路上没有堵车，车主服务态度很好，很快就送达，很满意！',
@@ -73,6 +62,7 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
 
   const [selectedKey, setSelectedKey] = useState('0');
   const [openDrawer, setOpenDrawer] = useState(false);
+  const drawerFormRef = useRef<any>(null);
 
   const showDrawer = () => {
     setOpenDrawer(true);
@@ -80,6 +70,13 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
 
   const onClose = () => {
     setOpenDrawer(false);
+  };
+
+  const handleFormSubmit = (formData: any) => {
+    console.log('表单提交数据:', formData);
+    // 这里可以添加API调用或其他处理逻辑
+    setOpenDrawer(false);
+    message.success('车辆信息已更新');
   };
 
   const navigate = useNavigate();
@@ -115,12 +112,10 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
       body.classList.add('night-mode');
       topNavbar?.classList.add('night-mode');
       leftNavbar?.classList.add('night-mode');
-
     } else {
       body.classList.remove('night-mode');
       topNavbar?.classList.remove('night-mode');
       leftNavbar?.classList.remove('night-mode');
-
     }
   }, [isNightMode]);
 
@@ -146,17 +141,6 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
       icon: <SettingOutlined />,
       label: '设置'
     }
-    // {
-    //   key: 'sub1',
-    //   label: 'Navigation One',
-    //   icon: <MailOutlined />,
-    //   children: [
-    //     { key: '5', label: 'Option 5' },
-    //     { key: '6', label: 'Option 6' },
-    //     { key: '7', label: 'Option 7' },
-    //     { key: '8', label: 'Option 8' },
-    //   ],
-    // }
   ];
 
   return (
@@ -175,21 +159,22 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
             <img
               className='logo-image'
               src={logo}
+              alt="Logo"
             />
             <div className='title'>AutoCrowd</div>
           </div>
 
           <div className='right-bar'>
             <Tooltip
-              trigger="hover"                 // 鼠标悬停更适合列表
+              trigger="hover"
               placement="bottomRight"
               color={isNightMode ? '#1f2937' : '#ffffff'}
               styles={{
                 body: {
-                  padding: 12,                  // 让内边距合适
-                  minWidth: 320,                // 和上面 scss 对齐
-                  maxWidth: 420,                // 避免太宽
-                  color: isNightMode ? '#f9fafb' : '#111827'  // 字体颜色
+                  padding: 12,
+                  minWidth: 320,
+                  maxWidth: 420,
+                  color: isNightMode ? '#f9fafb' : '#111827'
                 }
               }}
               title={<NotificationTooltip orders={orders} />}
@@ -221,9 +206,6 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
         </div>
         <div className='main-content'>
           <div className='left-navbar'>
-            {/* <Button type="primary" onClick={toggleCollapsed} style={{ marginBottom: 16 }}>
-          {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-        </Button> */}
             <Menu
               defaultSelectedKeys={['0']}
               defaultOpenKeys={['sub1']}
@@ -238,13 +220,10 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
               }}
               selectedKeys={[selectedKey]}
               onSelect={({ key }) => {
-                setSelectedKey(key);        // 更新高亮
-                onMenuSelect?.(key);        // 通知父组件   
+                setSelectedKey(key);
+                onMenuSelect?.(key);
               }}
             />
-            {/* <Button className='button' type="primary" block>车辆信息</Button>
-        <Button className='button' block>数据面板</Button>
-        <Button className='button' block>订单信息</Button> */}
           </div>
         </div>
       </div>
@@ -268,15 +247,21 @@ export default function Navbar({ onMenuSelect }: { onMenuSelect?: (key: string) 
         extra={
           <Space>
             <Button onClick={onClose}>取消</Button>
-            <Button onClick={onClose} type="primary">
+            <Button 
+              onClick={() => {
+                if (drawerFormRef.current) {
+                  drawerFormRef.current.submit();
+                }
+              }} 
+              type="primary"
+            >
               提交
             </Button>
           </Space>
         }
       >
-        <DrawerComponent />
+        <DrawerComponent ref={drawerFormRef} onSubmit={handleFormSubmit} />
       </Drawer>
-
     </ConfigProvider>
-  )
+  );
 }
