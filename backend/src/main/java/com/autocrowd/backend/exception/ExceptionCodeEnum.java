@@ -60,6 +60,7 @@ public enum ExceptionCodeEnum {
     VEHICLE_UPDATE_ERROR(20015, "车辆更新失败"),
     VEHICLE_DELETE_ERROR(20016, "车辆删除失败"),
     VEHICLE_QUERY_ERROR(20017, "车辆查询失败"),
+    VEHICLE_NOT_AUDITED(20018, "车辆未通过审核"),
 
     // 评价相关异常
     REVIEW_NOT_FOUND(30001, "评价不存在"),

@@ -5,6 +5,7 @@ import com.autocrowd.backend.dto.driver.DriverOrderDetailResponse;
 import com.autocrowd.backend.dto.driver.DriverProfileDTO;
 import com.autocrowd.backend.dto.driver.DriverRegisterRequest;
 import com.autocrowd.backend.dto.driver.TurnoverDTO;
+import com.autocrowd.backend.dto.driver.UpdateBankCardRequest;
 import com.autocrowd.backend.dto.order.AcceptOrderRequest;
 import com.autocrowd.backend.dto.order.CompleteOrderRequest;
 import com.autocrowd.backend.dto.vehicle.VehicleDTO;
@@ -187,7 +188,9 @@ public class DriverController {
             Map<String, Object> response = new HashMap<>();
             Map<String, Object> data = new HashMap<>();
             data.put("order_id", order.getOrderId());
-            data.put("status", "On the way");
+            data.put("driver_id", order.getDriverId());
+            data.put("vehicle_id", order.getVehicleId());
+            data.put("status", order.getStatus());
             response.put("data", data);
             return ResponseEntity.ok(response);
         } catch (BusinessException e) {
@@ -422,6 +425,59 @@ public class DriverController {
             errorResponse.put("message", e.getMessage());
             return ResponseEntity.ok(errorResponse);
         } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误: " + e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+
+    /**
+     * 更新车主银行卡号接口
+     * 接收车主更新银行卡号请求，验证身份后更新银行卡信息
+     * @param request 银行卡号更新请求DTO
+     * @param httpRequest HTTP请求对象，包含用户身份信息
+     * @return 包含更新结果的响应实体
+     */
+    @PostMapping("/bankcard")
+    public ResponseEntity<Map<String, Object>> updateBankCard(@RequestBody UpdateBankCardRequest request, HttpServletRequest httpRequest) {
+        logger.info("[DriverController] 收到更新银行卡号请求");
+        try {
+            // 从请求头获取token
+            String token = httpRequest.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            token = token.substring(7);
+
+            // 解析token获取司机信息
+            Claims claims = jwtUtil.parseToken(token);
+            String driverIdStr = claims.get("userId", String.class);
+            if (driverIdStr == null || driverIdStr.isEmpty()) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含司机ID");
+            }
+            Integer driverId;
+            try {
+                driverId = Integer.valueOf(driverIdStr);
+            } catch (NumberFormatException e) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "司机ID格式错误");
+            }
+
+            // 调用服务层更新银行卡号
+            DriverProfileDTO updatedDriver = driverService.updateBankCard(driverId, request);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 200);
+            response.put("message", "银行卡号更新成功");
+            response.put("data", updatedDriver);
+            return ResponseEntity.ok(response);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            logger.error("[DriverController] 更新银行卡号时发生异常: {}", e.getMessage(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", 500);
             errorResponse.put("message", "服务器内部错误: " + e.getMessage());

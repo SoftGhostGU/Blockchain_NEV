@@ -28,8 +28,8 @@ public class JwtFilter implements Filter {
         // 获取请求路径
         String path = request.getRequestURI();
 
-        // 放行登录和注册接口
-        if (path.contains("/api/user/login") || path.contains("/api/user/register") || path.contains("/api/driver/login") || path.contains("/api/driver/register") || path.contains("/api/order/start")) {
+        // 放行登录和注册接口，以及管理员接口
+        if (path.contains("/api/admin") || path.contains("/api/user/login") || path.contains("/api/user/register") || path.contains("/api/driver/login") || path.contains("/api/driver/register") || path.contains("/api/order/start")) {
             filterChain.doFilter(request, response);
             return;
         }

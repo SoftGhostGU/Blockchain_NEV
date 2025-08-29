@@ -16,11 +16,11 @@ public class Order {
     @Column(name = "order_id")
     @JsonProperty("orderID")
     private String orderId;
-    
+
     @Column(name = "user_id")
     @JsonProperty("userID")
     private Integer userId;
-    
+
     @Column(name = "driver_id")
     @JsonProperty("driverID")
     private Integer driverId;
@@ -31,21 +31,27 @@ public class Order {
 
     @Column(name = "start_location", nullable = false)
     private String startLocation;
-    
+
     @Column(name = "destination", nullable = false)
     private String destination;
-    
+
     @Column(name = "status")
     @JsonProperty("orderStatus")
     private Byte status;
-    
+
     @Column(name = "estimated_price")
     private BigDecimal estimatedPrice;
-    
+
     @Column(name = "actual_price")
     private BigDecimal actualPrice;
+
     
+    @Column(name = "estimated_time")
+    private Integer estimatedTime;
     
+    @Column(name = "actual_time")
+    private Integer actualTime;
+
     @Column(name = "created_at")
     @JsonProperty("createdTime")
     private LocalDateTime createdAt;
@@ -54,6 +60,7 @@ public class Order {
     @JsonProperty("orderType")
     private String type;
     
+
     @Column(name = "updated_at")
     @JsonProperty("updatedTime")
     private LocalDateTime updatedAt;

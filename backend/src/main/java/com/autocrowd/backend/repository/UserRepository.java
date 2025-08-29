@@ -1,6 +1,8 @@
 package com.autocrowd.backend.repository;
 
 import com.autocrowd.backend.entity.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
@@ -39,4 +41,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
      * @return 手机号存在返回true，否则返回false
      */
     boolean existsByPhone(String phone);
+
+    /**
+     * 根据用户名模糊查询（分页支持）
+     * @param username 用户名关键字
+     * @param pageable 分页信息
+     * @return 包含匹配用户的分页结果
+     */
+    Page<User> findByUsernameContaining(String username, Pageable pageable);
 }

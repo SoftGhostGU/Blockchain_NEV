@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -155,12 +156,15 @@ public class OrderController {
             
             Map<String, Object> result = new HashMap<>();
             Order order = orderService.createOrder(request, userId);
-            result.put("data", Map.of(
-                "order_id", order.getOrderId(),
-                "estimated_price", order.getEstimatedPrice(),
-                "distance_km", "5.50公里",
-                "duration_min", "15分钟"
-            ));
+            
+            // 使用HashMap代替Map.of以避免null值导致的NullPointerException
+            Map<String, Object> orderData = new HashMap<>();
+            orderData.put("order_id", order.getOrderId() != null ? order.getOrderId() : "");
+            orderData.put("estimated_price", order.getEstimatedPrice() != null ? order.getEstimatedPrice() : BigDecimal.ZERO);
+            orderData.put("distance_km", "5.50公里");
+            orderData.put("duration_min", "15分钟");
+            
+            result.put("data", orderData);
             logger.debug("[OrderController] 返回创建订单结果: {}", order);
             return ResponseEntity.ok(result);
         } catch (BusinessException e) {
