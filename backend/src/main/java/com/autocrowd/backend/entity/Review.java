@@ -30,6 +30,9 @@ public class Review {
     @Column(name = "comment_star")
     private BigDecimal commentStar;
     
+    @Column(name = "audit_status")
+    private Byte auditStatus = 1; // 默认审核状态为1（待审核）
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     

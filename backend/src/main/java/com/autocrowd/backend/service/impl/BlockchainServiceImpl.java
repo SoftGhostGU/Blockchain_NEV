@@ -106,8 +106,23 @@ public class BlockchainServiceImpl implements BlockchainService {
             logger.info("[BlockchainService] 开始将订单信息上链: 订单ID={}", order.getOrderId());
             
             // 调用订单链码的CreateOrder方法
-            String orderJson = objectMapper.writeValueAsString(order);
-            orderContract.submitTransaction("CreateOrder", orderJson);
+            orderContract.submitTransaction(
+                    "CreateOrder",
+                    order.getOrderId(),                    // orderID
+                    order.getUserId().toString(),          // userID
+                    order.getDriverId().toString(),        // ownerID
+                    order.getStartLocation(),              // startLocation
+                    order.getDestination(),                // endLocation
+                    order.getCreatedAt().toString(),       // startTime
+                    "0",                                   // miles (暂时设置为0)
+                    "COMPLETED",                           // orderStatus
+                    order.getType(),                       // orderType
+                    order.getActualPrice().toString(),     // cost
+                    "5",                                   // rate (默认评分)
+                    "",                                    // comment
+                    order.getEstimatedTime().toString(),   // estimatedTime
+                    order.getActualTime().toString()       // actualTime
+            );
             
             logger.info("[BlockchainService] 订单信息上链成功: 订单ID={}", order.getOrderId());
             return true;

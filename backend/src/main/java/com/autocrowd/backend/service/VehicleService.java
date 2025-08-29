@@ -5,6 +5,7 @@ import java.util.List;
 import com.autocrowd.backend.dto.vehicle.VehicleCreateRequest;
 import com.autocrowd.backend.dto.vehicle.VehicleDTO;
 import com.autocrowd.backend.dto.vehicle.VehicleUpdateRequest;
+import com.autocrowd.backend.entity.VehicleCondition;
 
 /**
  * 车辆服务接口
@@ -30,4 +31,19 @@ public interface VehicleService {
      * @return 删除结果
      */
     boolean deleteVehicle(Integer driverId, Integer vehicleId);
+
+    /**
+     * 验证车辆是否属于指定司机
+     * @param vehicleId 车辆ID
+     * @param driverId 司机ID
+     * @return 如果车辆属于司机返回true，否则返回false
+     */
+    boolean isVehicleBelongsToDriver(Integer vehicleId, Integer driverId);
+    
+    /**
+     * 根据车辆ID获取车辆状况信息
+     * @param vehicleId 车辆ID
+     * @return 车辆状况实体
+     */
+    VehicleCondition getVehicleConditionByVehicleId(Integer vehicleId);
 }

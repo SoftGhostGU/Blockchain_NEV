@@ -27,6 +27,9 @@ public class Vehicle {
     @Column(name = "condition_id", unique = true)
     private Integer conditionId;
     
+    @Column(name = "audit_status")
+    private Byte auditStatus = 1; // 默认审核状态为1（待审核）
+    
     @Column(name = "created_at")
     private LocalDateTime createdAt;
     
