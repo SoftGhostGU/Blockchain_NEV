@@ -5,9 +5,10 @@
 import {Object, Property} from 'fabric-contract-api';
 
 export enum TransactionTYPE {
-    Deposit = 'Deposit',
+    Expenses = 'Expenses',
     Withdrawal = 'Withdrawal',
     Earnings = 'Earnings',
+    Recharge = 'Recharge',
 }
 
 @Object()
@@ -19,7 +20,10 @@ export class Financials {
     public CarOwnerID: string = '';
 
     @Property()
-    public TransactionType: TransactionTYPE = TransactionTYPE.Deposit;
+    public Role: string = '';
+
+    @Property()
+    public TransactionType: TransactionTYPE = TransactionTYPE.Expenses;
 
     @Property()
     public Amount: number = 0;

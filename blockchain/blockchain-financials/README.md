@@ -117,7 +117,7 @@ async function transferAssetAsync(contract: Contract): Promise<void> {
 # deploy this chaincode
 cd ${...}/Blockchain_NEV/blockchain/fabric-example/test-network
 ./network.sh up createChannel -c mychannel
-./network.sh deployCC -ccn basic -ccp ../../blockchain-financials/ -ccl typescript
+./network.sh deployCC -ccn financialsLedger -ccp ../../blockchain-financials/ -ccl typescript
 
 # run the application
 cd ${...}/Blockchain_NEV/blockchain/blockchain-financials/caller_examples

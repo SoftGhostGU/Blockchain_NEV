@@ -6,6 +6,7 @@ import com.autocrowd.backend.dto.driver.DriverProfileUpdateRequest;
 import com.autocrowd.backend.dto.driver.DriverRegisterRequest;
 import com.autocrowd.backend.dto.driver.UpdateBankCardRequest;
 import com.autocrowd.backend.entity.Driver;
+import com.autocrowd.backend.entity.Financial;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.repository.DriverRepository;
@@ -180,15 +181,20 @@ public class DriverServiceImpl implements DriverService {
             Driver updatedDriver = driverRepository.save(driver);
             logger.info("[DriverServiceImpl] 更新车主资料成功: {}", updatedDriver.getUsername());
 
+            /// ////////////////////////////////////////////////////////////////////
+            ///  这里有个小问题，如果不对数据库里面的financial进行更改，不用将更改同步到区块链 ///
+            /// ////////////////////////////////////////////////////////////////////
             // 如果余额有变更，同步到区块链
             if (profileUpdateRequest.getWalletBalance() != null && 
                 (oldWalletBalance == null || oldWalletBalance.compareTo(profileUpdateRequest.getWalletBalance()) != 0)) {
-                blockchainService.createDriverTransactionOnBlockchain(
-                    "BALANCE_UPDATE_" + driverId + "_" + System.currentTimeMillis(),
-                    driverId,
-                    profileUpdateRequest.getWalletBalance(),
-                    System.currentTimeMillis()
-                );
+                Financial driverFinancial = new Financial();
+//                driverFinancial.setFinancialId();
+                driverFinancial.setUserId(driverId);
+                driverFinancial.setRole("Driver");
+                driverFinancial.setTransactionType(Financial.TransactionType.Withdrawal);
+                driverFinancial.setAmount(profileUpdateRequest.getWalletBalance());
+                driverFinancial.setTransactionTime(LocalDateTime.now());
+                blockchainService.createDriverTransactionOnBlockchain(driverFinancial);
             }
 
             // 转换为DTO并返回

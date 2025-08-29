@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/autocrowd?serverTimezone=UTC
     username: root
-    password: root
+    password: 
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     show-sql: true
@@ -46,6 +46,13 @@ jwt:
 fabric:
   mspId: Org1MSP
   channelName: mychannel
-  orderChaincodeName: ordercontract
-  financialChaincodeName: basic
-  cryptoPath: ./blockchain/fabric-example/test-network/organizations/peerOrganizations/org1.example.com
+  orderChaincodeName: ordersLedger
+  financialChaincodeName: financialsLedger
+  cryptoPath: crypto-config/peerOrganizations/org1.example.com
+#  certDirPath: crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts/User1@org1.example.com-cert.pem
+#  keyDirPath: crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore/priv_sk
+  certDirPath: crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/signcerts
+  keyDirPath: crypto-config/peerOrganizations/org1.example.com/users/User1@org1.example.com/msp/keystore
+  tlsCertPath: crypto-config/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt
+  peerEndpoint: localhost:7051
+  peerHostAlias: peer0.org1.example.com
