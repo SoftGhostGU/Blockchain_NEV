@@ -50,6 +50,8 @@ public class DriverServiceImpl implements DriverService {
         profileDTO.setWalletBalance(driver.getWalletBalance());
         profileDTO.setPhone(driver.getPhone());
         profileDTO.setBankCard(driver.getBankCard());
+        profileDTO.setCreatedAt(driver.getCreatedAt());
+        profileDTO.setUpdatedAt(driver.getUpdatedAt());
         return profileDTO;
     }
     
@@ -62,38 +64,26 @@ public class DriverServiceImpl implements DriverService {
      */
     @Override
     public DriverProfileDTO login(DriverLoginRequest loginRequest) {
-        logger.info("[DriverServiceImpl] 处理车主登录请求: {}", loginRequest);
-        try {
-            Driver driver = null;
-            
-            // 使用手机号登录
-            if (loginRequest.getPhone() != null && !loginRequest.getPhone().trim().isEmpty()) {
-                logger.info("[DriverServiceImpl] 尝试使用手机号登录: {}", loginRequest.getPhone());
-                driver = driverRepository.findByPhone(loginRequest.getPhone())
-                        .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "司机不存在"));
-                
-                // 验证密码
-                if (!PasswordEncoderUtil.matches(loginRequest.getPassword(), driver.getPassword())) {
-                    throw new BusinessException(ExceptionCodeEnum.INVALID_PASSWORD, "手机号或密码错误");
-                }
-            } else {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "手机号不能为空");
-            }
+        String phone = loginRequest.getPhone();
+        String rawPassword = loginRequest.getPassword();
+        logger.info("[DriverService] 车主登录 - 手机号: {}", phone);
 
-            DriverProfileDTO profileDTO = new DriverProfileDTO();
-            profileDTO.setUserId(driver.getDriverId());
-            profileDTO.setUsername(driver.getUsername());
-            profileDTO.setCreditScore(driver.getCreditScore());
-            profileDTO.setWalletBalance(driver.getWalletBalance());
-            profileDTO.setPhone(driver.getPhone());
-            profileDTO.setBankCard(driver.getBankCard());
-            logger.info("[DriverServiceImpl] 车主登录成功: {}", driver.getUsername());
-            return profileDTO;
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new BusinessException(ExceptionCodeEnum.DRIVER_LOGIN_ERROR, "司机登录异常: " + e.getMessage());
+        // 检查手机号是否存在
+        Optional<Driver> driverOpt = driverRepository.findByPhone(phone);
+        if (!driverOpt.isPresent()) {
+            logger.warn("[DriverService] 车主登录失败 - 手机号不存在: {}", phone);
+            throw new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "手机号不存在");
         }
+        Driver driver = driverOpt.get();
+
+        // 验证密码
+        if (!PasswordEncoderUtil.matches(rawPassword, driver.getPassword())) {
+            logger.warn("[DriverService] 车主登录失败 - 密码错误: 手机号={}", phone);
+            throw new BusinessException(ExceptionCodeEnum.INVALID_PASSWORD, "密码错误");
+        }
+
+        logger.info("[DriverService] 车主登录成功 - 司机ID: {}, 用户名: {}", driver.getDriverId(), driver.getUsername());
+        return convertToDTO(driver);
     }
 
     /**
@@ -110,15 +100,8 @@ public class DriverServiceImpl implements DriverService {
             Driver driver = driverRepository.findById(driverId)
                     .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "司机不存在"));
 
-            DriverProfileDTO profileDTO = new DriverProfileDTO();
-            profileDTO.setUserId(driver.getDriverId());
-            profileDTO.setUsername(driver.getUsername());
-            profileDTO.setCreditScore(driver.getCreditScore());
-            profileDTO.setWalletBalance(driver.getWalletBalance());
-            profileDTO.setPhone(driver.getPhone());
-            profileDTO.setBankCard(driver.getBankCard());
             logger.info("[DriverServiceImpl] 获取车主资料成功: {}", driver.getUsername());
-            return profileDTO;
+            return convertToDTO(driver);
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
@@ -181,31 +164,27 @@ public class DriverServiceImpl implements DriverService {
             Driver updatedDriver = driverRepository.save(driver);
             logger.info("[DriverServiceImpl] 更新车主资料成功: {}", updatedDriver.getUsername());
 
-            /// ////////////////////////////////////////////////////////////////////
-            ///  这里有个小问题，如果不对数据库里面的financial进行更改，不用将更改同步到区块链 ///
-            /// ////////////////////////////////////////////////////////////////////
+            // ///////////////////////////////////////////////////////////////////////
+            // 根据需求，如果不对数据库里面的financial进行更改，不用将更改同步到区块链
+            // ///////////////////////////////////////////////////////////////////////
             // 如果余额有变更，同步到区块链
             if (profileUpdateRequest.getWalletBalance() != null && 
                 (oldWalletBalance == null || oldWalletBalance.compareTo(profileUpdateRequest.getWalletBalance()) != 0)) {
                 Financial driverFinancial = new Financial();
-//                driverFinancial.setFinancialId();
+                // 生成财务记录ID（可使用UUID或数据库自增ID）
+                // driverFinancial.setFinancialId(UUID.randomUUID().toString());
                 driverFinancial.setUserId(driverId);
                 driverFinancial.setRole("Driver");
                 driverFinancial.setTransactionType(Financial.TransactionType.Withdrawal);
                 driverFinancial.setAmount(profileUpdateRequest.getWalletBalance());
+                // 设置当前余额（如果需要）
+                // driverFinancial.setBalance(updatedDriver.getWalletBalance());
                 driverFinancial.setTransactionTime(LocalDateTime.now());
                 blockchainService.createDriverTransactionOnBlockchain(driverFinancial);
             }
 
             // 转换为DTO并返回
-            DriverProfileDTO profileDTO = new DriverProfileDTO();
-            profileDTO.setUserId(updatedDriver.getDriverId());
-            profileDTO.setUsername(updatedDriver.getUsername());
-            profileDTO.setCreditScore(updatedDriver.getCreditScore());
-            profileDTO.setWalletBalance(updatedDriver.getWalletBalance());
-            profileDTO.setPhone(updatedDriver.getPhone());
-            profileDTO.setBankCard(updatedDriver.getBankCard());
-            return profileDTO;
+            return convertToDTO(updatedDriver);
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {

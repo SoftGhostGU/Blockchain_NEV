@@ -81,14 +81,14 @@ public class JwtUtil {
         claims.put("userId", userId);
         claims.put("username", username);
         claims.put("role", role);
-        return createToken(claims, username);
+        return createToken(claims, userId); // 使用userId作为subject而不是username
     }
 
     /**
      * 生成带自定义声明的token
      */
-    public String generateTokenWithClaims(Map<String, Object> claims, String username) {
-        return createToken(claims, username);
+    public String generateTokenWithClaims(Map<String, Object> claims, String subject) {
+        return createToken(claims, subject);
     }
 
     /**

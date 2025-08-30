@@ -29,9 +29,11 @@ public class Order {
     @JsonProperty("vehicleID")
     private Integer vehicleId;
 
+    // 存储起始位置的密文（前端加密后传入）
     @Column(name = "start_location", nullable = false)
     private String startLocation;
 
+    // 存储目的地的密文（前端加密后传入）
     @Column(name = "destination", nullable = false)
     private String destination;
 
@@ -39,9 +41,11 @@ public class Order {
     @JsonProperty("orderStatus")
     private Byte status;
 
+    // 存储预估价格的密文（前端加密后传入）
     @Column(name = "estimated_price")
     private BigDecimal estimatedPrice;
 
+    // 存储实际价格的密文（前端加密后传入）
     @Column(name = "actual_price")
     private BigDecimal actualPrice;
 
@@ -64,4 +68,8 @@ public class Order {
     @Column(name = "updated_at")
     @JsonProperty("updatedTime")
     private LocalDateTime updatedAt;
+    
+    // CP-ABE访问策略字段
+    @Column(name = "access_policy")
+    private String accessPolicy;
 }
