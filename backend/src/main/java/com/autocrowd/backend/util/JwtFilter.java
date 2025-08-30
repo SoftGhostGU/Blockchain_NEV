@@ -28,8 +28,15 @@ public class JwtFilter implements Filter {
         // 获取请求路径
         String path = request.getRequestURI();
 
-        // 放行登录和注册接口，以及管理员接口
-        if (path.contains("/api/admin") || path.contains("/api/user/login") || path.contains("/api/user/register") || path.contains("/api/driver/login") || path.contains("/api/driver/register") || path.contains("/api/order/start")) {
+        // 放行登录和注册接口，以及管理员接口和部分ABE加密相关接口
+        // 注意：需要身份验证的接口（如set-for-me）不应被排除
+        if (path.contains("api/attribute-authority") || path.contains("api/encryption") || path.contains("/api/admin") ||
+            path.contains("/api/user/login") || path.contains("/api/user/register") || 
+            path.contains("/api/driver/login") || path.contains("/api/driver/register") || 
+            path.contains("/api/order/start") || path.contains("/api/attribute-keys") || 
+            path.contains("/api/encrypted-data") || path.contains("/api/user-attributes/generate") ||
+            path.contains("/api/user-attributes/my-") || path.contains("/api/user-attributes/user/") ||
+            path.contains("/api/user-attributes/access")) {
             filterChain.doFilter(request, response);
             return;
         }

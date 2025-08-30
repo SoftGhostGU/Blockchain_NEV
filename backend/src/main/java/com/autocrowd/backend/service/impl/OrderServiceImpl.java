@@ -9,6 +9,7 @@ import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.*;
 import com.autocrowd.backend.service.BlockchainService;
 import com.autocrowd.backend.service.OrderService;
+import com.autocrowd.backend.util.CPABEUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -73,6 +74,7 @@ public class OrderServiceImpl implements OrderService {
             Order order = new Order();
             order.setOrderId(orderId);
             order.setUserId(Integer.valueOf(userId));
+            // 直接存储前端传来的加密数据
             order.setStartLocation(request.getStartLocation());
             order.setDestination(request.getDestination());
             order.setEstimatedPrice(request.getEstimatedPrice());
@@ -81,6 +83,10 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus((byte) 0); // 0=Pending
             order.setCreatedAt(LocalDateTime.now());
             order.setUpdatedAt(LocalDateTime.now());
+            
+            // 设置访问策略，允许用户访问
+            String accessPolicy = "(USER_" + userId + ")";
+            order.setAccessPolicy(accessPolicy);
 
             // 保存订单
             Order savedOrder = orderRepository.save(order);
@@ -269,6 +275,18 @@ public class OrderServiceImpl implements OrderService {
             order.setVehicleId(vehicleId);
             order.setStatus((byte) 1); // 1=On the way
             order.setUpdatedAt(LocalDateTime.now());
+            
+            // 更新访问策略，允许车主访问
+            String currentPolicy = order.getAccessPolicy();
+            if (currentPolicy != null && !currentPolicy.isEmpty()) {
+                // 将策略从 "(USER_1)" 更新为 "(USER_1) OR (DRIVER_2)" 的形式
+                String updatedPolicy = currentPolicy + " OR (DRIVER_" + driverId + ")";
+                order.setAccessPolicy(updatedPolicy);
+            } else {
+                // 如果没有现有策略，则创建新的策略
+                String newPolicy = "(DRIVER_" + driverId + ")";
+                order.setAccessPolicy(newPolicy);
+            }
 
             // 保存订单
             Order updatedOrder = orderRepository.save(order);
@@ -286,7 +304,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 车主完成订单
      * @param orderId 订单ID
-     * @param actualPrice 实际价格
+     * @param actualPrice 实际价格（已加密）
      * @return 完成的订单
      */
     @Override
@@ -305,6 +323,7 @@ public class OrderServiceImpl implements OrderService {
 
             // 更新订单状态和实际价格
             order.setStatus((byte) 3); // 3 = 已完成
+            // 直接存储前端传来的加密数据
             order.setActualPrice(actualPrice);
             // 这里我们假设实际时间与预计时间相同，实际项目中可能需要根据真实情况设置
             order.setActualTime(order.getEstimatedTime()); 
