@@ -25,12 +25,6 @@
     cursor: pointer;
 }
 
-/* 弹出框标题 */
-.ant-modal-title,
-.ant-drawer-title {
-    color: var(--main-color);
-}
-
 /* 按钮 */
 .ant-btn-primary {
     background-color: var(--main-bg);

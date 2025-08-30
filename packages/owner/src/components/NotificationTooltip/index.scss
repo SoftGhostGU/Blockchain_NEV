@@ -1,0 +1,91 @@
+/* 作用于 Tooltip 内部内容 */
+.notif-tooltip {
+  // min-width: 320px; // 建议在 Tooltip 的 overlayInnerStyle 里再兜底
+  height: 300px;
+  overflow-y: scroll;
+
+  .notif-title {
+    font-size: 14px;
+    font-weight: 600;
+    // color: #333;
+    margin-bottom: 8px;
+  }
+
+  .notif-list {
+    max-height: 360px; /* 让内容可滚动 */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .notif-item {
+    padding: 8px 10px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    background: #fafafa;
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .head {
+      font-size: 12px;
+      color: #666;
+      .order-id { font-weight: 600; color: #444; }
+      .order-time { white-space: nowrap; }
+    }
+
+    .head.night-mode {
+      font-size: 12px;
+      color: #aaa;
+      .order-id { font-weight: 600; color: #bbb; }
+      .order-time { white-space: nowrap; }
+    }
+
+    .route {
+      margin: 6px 0;
+
+      .text {
+        font-size: 14px;
+        color: #333;
+        font-weight: 500;
+      }
+
+      .text.night-mode {
+        font-size: 14px;
+        color: #ccc;
+        font-weight: 500;
+      }
+    }
+
+    .foot {
+      font-size: 13px;
+      .status {
+        &.ok { color: #16a34a; }     /* 绿色 */
+        &.doing { color: #2563eb; }  /* 蓝色 */
+        &.fail { color: #ef4444; }   /* 红色 */
+      }
+      .price { font-weight: 700; }
+    }
+  }
+
+  .notif-item.night-mode {
+    padding: 8px 10px;
+    border: 1px solid #111;
+    border-radius: 6px;
+    background: #050505;
+  }
+
+  .notif-more {
+    margin-top: 10px;
+    color: #666;
+  }
+
+  .notif-more.night-mode {
+    margin-top: 10px;
+    color: #999;
+  }
+}

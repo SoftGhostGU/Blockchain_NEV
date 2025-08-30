@@ -114,10 +114,10 @@ const WeatherDisplay = () => {
     const weatherDescription = document.querySelector('.weather-description');
     if (isNightMode) {
       weatherDescription?.classList.add('night-mode');
-      // console.log("切换到夜间模式");
+      // ;
     } else {
       weatherDescription?.classList.remove('night-mode');
-      // console.log("切换到日间模式");
+      // ;
     }
   }, [isNightMode]);
 
