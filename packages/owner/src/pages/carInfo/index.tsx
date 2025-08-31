@@ -19,7 +19,7 @@ import {
   EllipsisOutlined
 } from '@ant-design/icons';
 import { useColorModeStore } from "../../store/store";
-import { useEffect } from "react";
+import { use, useEffect, useState } from "react";
 
 import type { NotificationArgsProps } from 'antd';
 
@@ -45,6 +45,10 @@ const IconFont = createFromIconfontCN({
 //     {dot}
 //   </Popover>
 // );
+const CarAuditStatus = {
+  Pending: "待审核",
+  Approved: "已通过"
+};
 
 const state = ["正常", "注意", "危险"];
 
@@ -52,7 +56,8 @@ export default function CarInfo() {
   const carLicense = "京8 8888"
   const carType = "特斯拉 Model 3"
   const carImage = "https://tandianji.com/uploads/2023/06/Tesla-Models-3-01.jpg"
-  // const status = "运营中" // or "暂停运营"
+  const carAuditStatus = CarAuditStatus.Approved;
+  const [isRunning, setIsRunning] = useState(true);  // or false
 
   const batteryPercent = 85;
   const milesToGo = "350km";
@@ -93,7 +98,26 @@ export default function CarInfo() {
       onClose: close,
     });
   }
+
   const openNotificationOfCallBackCar = () => {
+    // 校验
+    if (carAuditStatus !== CarAuditStatus.Approved) {
+      api.error({
+        message: "操作失败",
+        description: "车辆未通过审核，无法召回。",
+      });
+      return;
+    }
+    if (!isRunning) {
+      api.error({
+        message: "操作失败",
+        description: "车辆未在运行，无法召回。",
+      });
+      return;
+    }
+
+    // 校验通过 → 弹出确认框
+    setIsRunning(false);
     const key = `open${Date.now()}`;
     const btn = (
       <Space>
@@ -101,8 +125,8 @@ export default function CarInfo() {
           取消
         </Button>
         <Button type="primary" size="small" onClick={() => {
-          api.destroy(key)
-          handleCallBackSuccessfully()
+          api.destroy(key);
+          handleCallBackSuccessfully();
         }}>
           确认
         </Button>
@@ -110,14 +134,32 @@ export default function CarInfo() {
     );
     api.open({
       message: '召回车辆',
-      description:
-        '确定要召回该车辆吗？',
+      description: '确定要召回该车辆吗？',
       btn,
       key,
       onClose: close,
     });
   };
+
   const openNotificationOfCallOutCar = () => {
+    // 校验
+    if (carAuditStatus !== CarAuditStatus.Approved) {
+      api.error({
+        message: "操作失败",
+        description: "车辆未通过审核，无法派出。",
+      });
+      return;
+    }
+    if (isRunning) {
+      api.error({
+        message: "操作失败",
+        description: "车辆正在运行中，无法再次派出。",
+      });
+      return;
+    }
+
+    // 校验通过 → 弹出确认框
+    setIsRunning(true);
     const key = `open${Date.now()}`;
     const btn = (
       <Space>
@@ -125,8 +167,8 @@ export default function CarInfo() {
           取消
         </Button>
         <Button type="primary" size="small" onClick={() => {
-          api.destroy(key)
-          handleCallOutSuccessfully()
+          api.destroy(key);
+          handleCallOutSuccessfully();
         }}>
           确认
         </Button>
@@ -134,13 +176,13 @@ export default function CarInfo() {
     );
     api.open({
       message: '派出车辆',
-      description:
-        '确定要派出该车辆吗？',
+      description: '确定要派出该车辆吗？',
       btn,
       key,
       onClose: close,
     });
   };
+
 
   const handleCallBackCar = () => {
     console.log("点击了召回车辆")
@@ -163,13 +205,13 @@ export default function CarInfo() {
       listItemText.forEach(item => item.classList.add('night-mode'));
       progressLabel.forEach(item => item.classList.add('night-mode'));
       mapContainer?.classList.add('night-mode');
-      
+
     } else {
       blockThree.forEach(item => item.classList.remove('night-mode'));
       listItemText.forEach(item => item.classList.remove('night-mode'));
       progressLabel.forEach(item => item.classList.remove('night-mode'));
       mapContainer?.classList.remove('night-mode');
-      
+
     }
   }, [isNightMode]);
 
@@ -186,6 +228,7 @@ export default function CarInfo() {
               <div className="basic-info">
                 <div className="basic-item">
                   <div className="basic-value bold">{carType}</div>
+                  <div style={carAuditStatus === "已通过" ? { color: "#87d068" } : { color: "#f5222d" }}>{carAuditStatus}</div>
                 </div>
                 <div className="basic-item">
                   <div className="basic-value small">车牌号：{carLicense}</div>

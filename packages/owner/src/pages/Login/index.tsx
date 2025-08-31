@@ -23,7 +23,30 @@ const Login = () => {
     setLoading(true)
     // setSubmitLoginName('正在登录...')
 
-    navigate('/dashboard')
+    try {
+      if (isLogin) {
+        // === 登录逻辑 ===
+        console.log("登录信息：", userInfo);
+
+        // 假设调用登录接口
+        // await request.login(userInfo);
+
+        navigate('/dashboard');
+      } else {
+        // === 注册逻辑 ===
+        console.log("注册信息：", userInfo);
+
+        // 假设调用注册接口
+        // await request.register(userInfo);
+
+        // 注册完成 → 跳转到添加车辆页面
+        navigate('/add-vehicle');
+      }
+    } catch (error) {
+      console.error("操作失败", error);
+    } finally {
+      setLoading(false);
+    }
 
     // 真实登录
     // userInfo.password = passwordEncryption(userInfo.password) //密码加密
