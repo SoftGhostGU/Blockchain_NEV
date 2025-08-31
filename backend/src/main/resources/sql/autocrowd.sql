@@ -97,7 +97,7 @@ CREATE TABLE `orders`
     `updated_at`      timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     `estimated_time`  int NULL DEFAULT NULL,
     `actual_time`     int NULL DEFAULT NULL,
-    `access_policy`   varchar(255) NULL DEFAULT NULL COMMENT 'CP-ABE访问策略',
+    `access_policy`   varchar(255) NULL DEFAULT NULL COMMENT 'IBE访问策略',
     PRIMARY KEY (`order_id`) USING BTREE,
     INDEX             `user_id`(`user_id` ASC) USING BTREE,
     INDEX             `driver_id`(`driver_id` ASC) USING BTREE,
@@ -141,31 +141,15 @@ CREATE TABLE `reviews`
 ) ENGINE = InnoDB AUTO_INCREMENT = 6 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for attribute_authorities
--- ----------------------------
-DROP TABLE IF EXISTS `attribute_authorities`;
-CREATE TABLE `attribute_authorities`
-(
-    `id`             bigint       NOT NULL AUTO_INCREMENT,
-    `authority_name` varchar(255) NOT NULL UNIQUE COMMENT '权威机构名称',
-    `public_key`     text         NOT NULL COMMENT '公钥',
-    `master_key`     text         NOT NULL COMMENT '主密钥',
-    `created_at`     datetime     NOT NULL,
-    `updated_at`     datetime NULL DEFAULT NULL,
-    PRIMARY KEY (`id`) USING BTREE,
-    INDEX            `idx_authority_name`(`authority_name` ASC) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
 -- 测试数据
 -- ----------------------------
 
 -- 插入测试用户数据
 INSERT INTO `users` (`user_id`, `username`, `password`, `phone`, `credit_score`, `wallet_balance`, `balance`,
                      `created_at`)
-VALUES (1, 'testuser', '$2a$10$rOz9HgnsLsy6y5mhhMqiyeQb3IyH2a9.BzDu9dF9w3F29b4rPzJcW', '13800138000', 100, 1000.00,
+VALUES (1, 'testuser', '$2a$10$7JEflYCrLHZLgNKnTBmifebJdUwnqFZt2a4/Z.y65AY9tjvdzXhYe', '13800138000', 100, 1000.00,
         1000.00, '2025-01-01 12:00:00'),
-       (2, 'alice', '$2a$10$rOz9HgnsLsy6y5mhhMqiyeQb3IyH2a9.BzDu9dF9w3F29b4rPzJcW', '13800138001', 95, 500.00, 500.00,
+       (2, 'alice', '$2a$10$7JEflYCrLHZLgNKnTBmifebJdUwnqFZt2a4/Z.y65AY9tjvdzXhYe', '13800138001', 95, 500.00, 500.00,
         '2025-01-01 12:00:00');
 
 -- 插入测试车主数据
@@ -210,10 +194,6 @@ INSERT INTO `reviews` (`review_id`, `order_id`, `user_id`, `driver_id`, `content
                        `audit_status`)
 VALUES (1, 'ORD20250101001', 1, 1, '服务很好，车辆很干净', '2025-01-01 13:00:00', 4.5, 1),
        (2, 'ORD20250101002', 2, 2, '司机很专业，准时到达', '2025-01-01 14:00:00', 5.0, 1);
-
--- 插入属性权威机构测试数据
-INSERT INTO `attribute_authorities` (`id`, `authority_name`, `public_key`, `master_key`, `created_at`)
-VALUES (1, 'MainAuthority', '测试公钥数据', '测试主密钥数据', '2025-01-01 12:00:00');
 
 SET
 FOREIGN_KEY_CHECKS = 1;

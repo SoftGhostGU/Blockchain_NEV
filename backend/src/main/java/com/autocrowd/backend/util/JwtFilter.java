@@ -30,7 +30,7 @@ public class JwtFilter implements Filter {
 
         // 放行登录和注册接口，以及管理员接口和部分ABE加密相关接口
         // 注意：需要身份验证的接口（如set-for-me）不应被排除
-        if (path.contains("api/attribute-authority") || path.contains("api/encryption") || path.contains("/api/admin") ||
+        if (path.contains("api/ibe") || path.contains("api/encryption") || path.contains("/api/admin") ||
             path.contains("/api/user/login") || path.contains("/api/user/register") || 
             path.contains("/api/driver/login") || path.contains("/api/driver/register") || 
             path.contains("/api/order/start") || path.contains("/api/attribute-keys") || 

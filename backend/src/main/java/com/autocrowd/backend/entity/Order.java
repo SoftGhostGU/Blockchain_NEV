@@ -69,7 +69,7 @@ public class Order {
     @JsonProperty("updatedTime")
     private LocalDateTime updatedAt;
     
-    // CP-ABE访问策略字段
+    // IBE访问策略字段
     @Column(name = "access_policy")
     private String accessPolicy;
 }

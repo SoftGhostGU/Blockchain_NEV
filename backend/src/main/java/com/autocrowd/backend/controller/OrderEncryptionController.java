@@ -1,6 +1,7 @@
 package com.autocrowd.backend.controller;
 
 import com.autocrowd.backend.entity.Order;
+import com.autocrowd.backend.service.IbeService;
 import com.autocrowd.backend.service.OrderService;
 import com.autocrowd.backend.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -22,6 +23,9 @@ public class OrderEncryptionController {
 
     @Autowired
     private OrderService orderService;
+    
+    @Autowired
+    private IbeService ibeService;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -40,6 +44,30 @@ public class OrderEncryptionController {
         try {
             // 获取订单详情
             Order order = orderService.getOrderById(orderId);
+            
+            // 从JWT token中获取用户信息
+            String userRole = getUserRoleFromToken(httpRequest);
+            Long userId = getUserIdFromToken(httpRequest);
+            
+            if (userRole == null || userId == null) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("code", 401);
+                response.put("data", null);
+                response.put("message", "用户未授权");
+                return ResponseEntity.status(401).body(response);
+            }
+            
+            // 构造用户属性
+            String userAttribute = userRole.toUpperCase() + "_" + userId;
+            
+            // 检查用户是否有权限访问该订单数据
+            if (!ibeService.checkAccess(order.getAccessPolicy(), userAttribute)) {
+                Map<String, Object> response = new HashMap<>();
+                response.put("code", 403);
+                response.put("data", null);
+                response.put("message", "用户无需要的解密权限");
+                return ResponseEntity.status(403).body(response);
+            }
 
             // 构造响应数据
             Map<String, Object> data = new HashMap<>();
