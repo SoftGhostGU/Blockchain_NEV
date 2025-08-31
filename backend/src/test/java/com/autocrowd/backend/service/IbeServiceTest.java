@@ -88,4 +88,58 @@ public class IbeServiceTest {
         
         System.out.println("Encryption/Decryption with different attributes test passed.");
     }
+
+    @Test
+    public void testFullEncryptionDecryptionProcess() {
+        System.out.println("开始完整的IBE加密解密测试流程");
+
+        IbeService ibeService = new IbeService();
+
+        // 1. 获取公钥
+        System.out.println("步骤1: 获取公钥");
+        String publicKey = ibeService.getPublicKey();
+        assertNotNull(publicKey, "公钥不应为null");
+        assertFalse(publicKey.isEmpty(), "公钥不应为空");
+        System.out.println("公钥获取成功");
+
+        // 2. 生成用户私钥
+        System.out.println("步骤2: 生成用户私钥");
+        String attribute = "USER_123";
+        var privateKeyResult = ibeService.generatePrivateKey(attribute);
+        assertNotNull(privateKeyResult, "私钥生成结果不应为null");
+        assertEquals(attribute, privateKeyResult.get("attribute"), "属性应该匹配");
+        assertNotNull(privateKeyResult.get("private_key"), "私钥不应为null");
+        System.out.println("私钥生成成功，属性: " + privateKeyResult.get("attribute"));
+
+        // 3. 测试加密功能
+        System.out.println("步骤3: 测试加密功能");
+        String plaintext = "这是一条测试消息，用于验证IBE加密解密功能";
+        String ciphertext = ibeService.encrypt(plaintext, attribute);
+        assertNotNull(ciphertext, "密文不应为null");
+        assertNotEquals(plaintext, ciphertext, "密文应该与明文不同");
+        System.out.println("加密成功");
+        System.out.println("明文: " + plaintext);
+        System.out.println("密文: " + ciphertext);
+
+        // 4. 测试解密功能
+        System.out.println("步骤4: 测试解密功能");
+        String decryptedText = ibeService.decrypt(ciphertext, attribute);
+        assertNotNull(decryptedText, "解密结果不应为null");
+        assertEquals(plaintext, decryptedText, "解密后的文本应该与原文相同");
+        System.out.println("解密成功");
+        System.out.println("解密后文本: " + decryptedText);
+
+        // 5. 验证权限检查功能
+        System.out.println("步骤5: 验证权限检查功能");
+        String accessPolicy = "(USER_123) OR (DRIVER_456) OR (ADMIN)";
+        boolean hasAccess = ibeService.checkAccess(accessPolicy, attribute);
+        assertTrue(hasAccess, "用户应该有访问权限");
+
+        String accessPolicy2 = "(DRIVER_456) OR (ADMIN)";
+        boolean hasAccess2 = ibeService.checkAccess(accessPolicy2, attribute);
+        assertFalse(hasAccess2, "用户应该没有访问权限");
+        System.out.println("权限检查功能验证成功");
+
+        System.out.println("完整的IBE加密解密测试流程完成");
+    }
 }

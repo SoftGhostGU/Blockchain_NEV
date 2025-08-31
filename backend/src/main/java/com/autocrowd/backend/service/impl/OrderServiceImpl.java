@@ -9,7 +9,6 @@ import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.*;
 import com.autocrowd.backend.service.BlockchainService;
 import com.autocrowd.backend.service.OrderService;
-import com.autocrowd.backend.util.CPABEUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
