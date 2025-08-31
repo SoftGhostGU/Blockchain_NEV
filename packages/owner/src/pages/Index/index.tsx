@@ -6,6 +6,9 @@ import userHeader from '../../assets/login_user.png'
 import { Navigate, useNavigate } from 'react-router-dom';
 // #95caea  #f5d1d5
 
+// 测试IBE使用
+import TestIBE from '../../components/testIBE';
+
 const Login: React.FC = () => {
   const navigate = useNavigate();
 
@@ -20,6 +23,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="login-page">
+      {/* <TestIBE /> */}
       <div className="login-box">
         <h2>车主登录</h2>
         <img className='owner-header' src={ownerHeader} alt="" />
