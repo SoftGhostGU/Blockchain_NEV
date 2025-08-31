@@ -69,7 +69,7 @@ public class IbeController {
     }
     
     /**
-     * 测试加密功能
+     * 测试加密功能 - 仅供内部测试使用
      * @param request 包含明文和用户属性的请求体
      * @return 加密后的数据
      */
@@ -96,7 +96,7 @@ public class IbeController {
     }
     
     /**
-     * 测试解密功能
+     * 测试解密功能 - 仅供内部测试使用
      * @param request 包含密文和用户属性的请求体
      * @return 解密后的数据
      */

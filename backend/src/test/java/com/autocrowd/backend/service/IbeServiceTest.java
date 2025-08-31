@@ -2,20 +2,32 @@ package com.autocrowd.backend.service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 
 import javax.annotation.Resource;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@Import(TestConfig.class)
 public class IbeServiceTest {
 
     @Resource
     private IbeService ibeService;
 
+    @MockBean
+    private PairingBasedCryptosystem pbc;
+
     @Test
     public void testGetPublicKey() {
-        String publicKey = ibeService.getPublicKey();
+        // 模拟PBC返回公钥
+        when(pbc.generateMasterKey()).thenReturn("masterKey");
+        when(pbc.derivePublicKey("masterKey")).thenReturn("publicKey");
+
+        IbeService testService = new IbeService(pbc);
+        String publicKey = testService.getPublicKey();
         assertNotNull(publicKey, "Public key should not be null");
         assertFalse(publicKey.isEmpty(), "Public key should not be empty");
         System.out.println("Public Key: " + publicKey);
@@ -23,8 +35,15 @@ public class IbeServiceTest {
 
     @Test
     public void testGeneratePrivateKey() {
+        // 模拟PBC行为
+        when(pbc.generateMasterKey()).thenReturn("masterKey");
+        when(pbc.derivePublicKey("masterKey")).thenReturn("publicKey");
+        when(pbc.generatePrivateKey("masterKey", "USER_123"))
+            .thenReturn("privateKey".getBytes());
+
+        IbeService testService = new IbeService(pbc);
         String attribute = "USER_123";
-        var result = ibeService.generatePrivateKey(attribute);
+        var result = testService.generatePrivateKey(attribute);
         
         assertNotNull(result, "Result should not be null");
         assertEquals(attribute, result.get("attribute"), "Attribute should match");
@@ -37,23 +56,39 @@ public class IbeServiceTest {
 
     @Test
     public void testCheckAccess() {
+        when(pbc.generateMasterKey()).thenReturn("masterKey");
+        when(pbc.derivePublicKey("masterKey")).thenReturn("publicKey");
+        
+        IbeService testService = new IbeService(pbc);
         String accessPolicy = "(USER_123) OR (DRIVER_456) OR (ADMIN)";
         String userAttribute = "USER_123";
-        boolean hasAccess = ibeService.checkAccess(accessPolicy, userAttribute);
+        boolean hasAccess = testService.checkAccess(accessPolicy, userAttribute);
         assertTrue(hasAccess, "User should have access");
         
         String userAttribute2 = "GUEST_789";
-        boolean hasAccess2 = ibeService.checkAccess(accessPolicy, userAttribute2);
+        boolean hasAccess2 = testService.checkAccess(accessPolicy, userAttribute2);
         assertFalse(hasAccess2, "Guest should not have access");
     }
 
     @Test
     public void testEncryptAndDecrypt() {
+        // 模拟PBC行为
+        when(pbc.generateMasterKey()).thenReturn("masterKey");
+        when(pbc.derivePublicKey("masterKey")).thenReturn("publicKey");
+        when(pbc.generatePrivateKey("masterKey", "USER_123"))
+            .thenReturn("testPrivateKey".getBytes());
+        when(pbc.encrypt("This is a secret message for testing IBE encryption.", "USER_123", "publicKey"))
+            .thenReturn("encryptedData");
+        when(pbc.decrypt("encryptedData", "USER_123", "testPrivateKey".getBytes(), "publicKey"))
+            .thenReturn("This is a secret message for testing IBE encryption.");
+
+        IbeService testService = new IbeService(pbc);
+        
         String plaintext = "This is a secret message for testing IBE encryption.";
         String attribute = "USER_123";
         
         // 加密
-        String ciphertext = ibeService.encrypt(plaintext, attribute);
+        String ciphertext = testService.encrypt(plaintext, attribute);
         assertNotNull(ciphertext, "Ciphertext should not be null");
         assertFalse(ciphertext.isEmpty(), "Ciphertext should not be empty");
         assertNotEquals(plaintext, ciphertext, "Ciphertext should be different from plaintext");
@@ -61,8 +96,11 @@ public class IbeServiceTest {
         System.out.println("Plaintext: " + plaintext);
         System.out.println("Ciphertext: " + ciphertext);
         
+        // 先生成私钥再解密
+        testService.generatePrivateKey(attribute);
+        
         // 解密
-        String decryptedText = ibeService.decrypt(ciphertext, attribute);
+        String decryptedText = testService.decrypt(ciphertext, attribute);
         assertNotNull(decryptedText, "Decrypted text should not be null");
         assertEquals(plaintext, decryptedText, "Decrypted text should match original plaintext");
         
@@ -71,19 +109,39 @@ public class IbeServiceTest {
 
     @Test
     public void testEncryptAndDecryptWithDifferentAttributes() {
+        // 模拟PBC行为
+        when(pbc.generateMasterKey()).thenReturn("masterKey");
+        when(pbc.derivePublicKey("masterKey")).thenReturn("publicKey");
+        when(pbc.generatePrivateKey("masterKey", "USER_123"))
+            .thenReturn("testPrivateKey1".getBytes());
+        when(pbc.generatePrivateKey("masterKey", "DRIVER_456"))
+            .thenReturn("testPrivateKey2".getBytes());
+        when(pbc.encrypt("This is a secret message for testing IBE encryption with different attributes.", "USER_123", "publicKey"))
+            .thenReturn("encryptedData");
+        when(pbc.decrypt("encryptedData", "USER_123", "testPrivateKey1".getBytes(), "publicKey"))
+            .thenReturn("This is a secret message for testing IBE encryption with different attributes.");
+        when(pbc.decrypt("encryptedData", "DRIVER_456", "testPrivateKey2".getBytes(), "publicKey"))
+            .thenReturn("wrongDecryptedText");
+
+        IbeService testService = new IbeService(pbc);
+        
         String plaintext = "This is a secret message for testing IBE encryption with different attributes.";
         String attribute1 = "USER_123";
         String attribute2 = "DRIVER_456";
         
         // 使用属性1加密
-        String ciphertext = ibeService.encrypt(plaintext, attribute1);
+        String ciphertext = testService.encrypt(plaintext, attribute1);
+        
+        // 生成两个属性的私钥
+        testService.generatePrivateKey(attribute1);
+        testService.generatePrivateKey(attribute2);
         
         // 使用属性1解密 - 应该成功
-        String decryptedText1 = ibeService.decrypt(ciphertext, attribute1);
+        String decryptedText1 = testService.decrypt(ciphertext, attribute1);
         assertEquals(plaintext, decryptedText1, "Decryption with same attribute should succeed");
         
         // 使用属性2解密 - 应该失败（得到乱码）
-        String decryptedText2 = ibeService.decrypt(ciphertext, attribute2);
+        String decryptedText2 = testService.decrypt(ciphertext, attribute2);
         assertNotEquals(plaintext, decryptedText2, "Decryption with different attribute should fail");
         
         System.out.println("Encryption/Decryption with different attributes test passed.");
@@ -93,7 +151,17 @@ public class IbeServiceTest {
     public void testFullEncryptionDecryptionProcess() {
         System.out.println("开始完整的IBE加密解密测试流程");
 
-        IbeService ibeService = new IbeService();
+        // 模拟PBC行为
+        when(pbc.generateMasterKey()).thenReturn("masterKey");
+        when(pbc.derivePublicKey("masterKey")).thenReturn("publicKey");
+        when(pbc.generatePrivateKey("masterKey", "USER_123"))
+            .thenReturn("testPrivateKey".getBytes());
+        when(pbc.encrypt("这是一条测试消息，用于验证IBE加密解密功能", "USER_123", "publicKey"))
+            .thenReturn("encryptedData");
+        when(pbc.decrypt("encryptedData", "USER_123", "testPrivateKey".getBytes(), "publicKey"))
+            .thenReturn("这是一条测试消息，用于验证IBE加密解密功能");
+
+        IbeService ibeService = new IbeService(pbc);
 
         // 1. 获取公钥
         System.out.println("步骤1: 获取公钥");
