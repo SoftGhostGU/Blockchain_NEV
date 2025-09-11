@@ -34,10 +34,10 @@ export const Clock = () => {
     const clock = document.querySelectorAll('.clock');
     if (isNightMode) {
       clock.forEach(item => { item.classList.add('night-mode'); });
-      console.log("切换到夜间模式");
+      ;
     } else {
       clock.forEach(item => { item.classList.remove('night-mode'); });
-      console.log("切换到日间模式");
+      ;
     }
   }, [isNightMode]);
 

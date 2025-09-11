@@ -1,0 +1,118 @@
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f4f6f8;
+  gap: 40px;
+}
+
+.login-box {
+  width: 300px;
+  height: fit-content;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #333;
+  }
+
+  .owner-header {
+    --s: 150px;
+    /* image size */
+    --b: 5px;
+    /* border thickness */
+    --c: #3e0d9f;
+    /* border color */
+    --f: 1;
+    /* initial scale */
+
+    --_g: 50% / calc(100% / var(--f)) 100% no-repeat content-box;
+    --_o: calc((1 / var(--f) - 1) * var(--s) / 2 - var(--b));
+
+    width: var(--s);
+    aspect-ratio: 1;
+    padding-top: calc(var(--s)/5);
+    cursor: pointer;
+    border-radius: 0 0 999px 999px;
+    // outline: var(--b) solid var(--c);
+    outline-offset: var(--_o);
+    background:
+      radial-gradient(circle closest-side,
+        #95caea calc(99% - var(--b)),
+        var(--c) calc(100% - var(--b)) 99%,
+        #0000) var(--_g);
+    mask:
+      linear-gradient(#000 0 0) no-repeat 50% calc(-1 * var(--_o)) / calc(100% / var(--f) - 2 * var(--b)) 50%,
+      radial-gradient(circle closest-side,
+        #000 99%,
+        #0000) var(--_g);
+    transform: scale(var(--f));
+    transition: .5s;
+  }
+
+  .user-header {
+    --s: 150px;
+    /* image size */
+    --b: 5px;
+    /* border thickness */
+    --c: #C02942;
+    /* border color */
+    --f: 1;
+    /* initial scale */
+
+    --_g: 50% / calc(100% / var(--f)) 100% no-repeat content-box;
+    --_o: calc((1 / var(--f) - 1) * var(--s) / 2 - var(--b));
+
+    width: var(--s);
+    aspect-ratio: 1;
+    padding-top: calc(var(--s)/5);
+    cursor: pointer;
+    border-radius: 0 0 999px 999px;
+    // outline: var(--b) solid var(--c);
+    outline-offset: var(--_o);
+    background:
+      radial-gradient(circle closest-side,
+        #f5d1d5 calc(99% - var(--b)),
+        var(--c) calc(100% - var(--b)) 99%,
+        #0000) var(--_g);
+    mask:
+      linear-gradient(#000 0 0) no-repeat 50% calc(-1 * var(--_o)) / calc(100% / var(--f) - 2 * var(--b)) 50%,
+      radial-gradient(circle closest-side,
+        #000 99%,
+        #0000) var(--_g);
+    transform: scale(var(--f));
+    transition: .5s;
+  }
+
+  img:hover {
+    --f: 1.35;
+    /* hover scale */
+  }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    background: #1890ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+
+    &:hover {
+      background: #40a9ff;
+      transition: all 0.3s ease-in-out;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 package com.autocrowd.backend.controller;
 
 import com.autocrowd.backend.dto.vehicle.*;
+import com.autocrowd.backend.entity.VehicleCondition;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.service.VehicleService;
@@ -37,32 +38,24 @@ public class VehicleController {
      * @param httpRequest HTTP请求对象，包含用户身份信息
      * @return 包含新创建车辆DTO的响应实体
      */
-
     @PostMapping
     public ResponseEntity<?> createVehicle(@RequestBody VehicleCreateRequest request, HttpServletRequest httpRequest) {
         try {
-            // 从请求头获取token
+            // 从请求头获取token并解析司机ID
             String token = httpRequest.getHeader("Authorization");
             if (token == null || !token.startsWith("Bearer ")) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
             }
             token = token.substring(7);
-
-            // 解析token获取司机信息
             Claims claims = jwtUtil.parseToken(token);
-            String driverIdStr = claims.get("userId", String.class);
+            String driverIdStr = claims.get("driverId", String.class);
             if (driverIdStr == null || driverIdStr.isEmpty()) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含司机ID");
             }
-            Integer driverId;
-            try {
-                driverId = Integer.valueOf(driverIdStr);
-            } catch (NumberFormatException e) {
-                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "司机ID格式错误");
-            }
-            VehicleDTO createdVehicle = vehicleService.createVehicle(driverId, request);
-            logger.debug("[VehicleController] 车辆创建成功: {}", createdVehicle);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdVehicle);
+            Integer driverId = Integer.valueOf(driverIdStr);
+
+            VehicleDTO vehicleDTO = vehicleService.createVehicle(driverId, request);
+            return ResponseEntity.ok(vehicleDTO);
         } catch (BusinessException e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", e.getCode());
@@ -71,150 +64,120 @@ public class VehicleController {
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", 500);
-            errorResponse.put("message", "服务器内部错误");
+            errorResponse.put("message", "服务器内部错误: " + e.getMessage());
             return ResponseEntity.ok(errorResponse);
         }
     }
 
     /**
      * 删除车辆
-     * 根据车辆ID删除指定车辆，需要验证司机权限
+     * 接收车辆删除请求，验证车主身份，调用服务层完成车辆删除
      * @param vehicleId 车辆ID
-     * @param request HTTP请求对象，包含用户身份信息
+     * @param httpRequest HTTP请求对象，包含用户身份信息
      * @return 删除结果响应实体
      */
     @DeleteMapping("/{vehicleId}")
-    public ResponseEntity<?> deleteVehicle(@PathVariable Integer vehicleId, HttpServletRequest request) {
+    public ResponseEntity<?> deleteVehicle(@PathVariable Integer vehicleId, HttpServletRequest httpRequest) {
         try {
-            // 从请求头获取token
-            String token = request.getHeader("Authorization");
+            // 从请求头获取token并解析司机ID
+            String token = httpRequest.getHeader("Authorization");
             if (token == null || !token.startsWith("Bearer ")) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
             }
             token = token.substring(7);
-
-            // 解析token获取司机信息
             Claims claims = jwtUtil.parseToken(token);
-            String driverIdStr = claims.get("userId", String.class);
+            String driverIdStr = claims.get("driverId", String.class);
             if (driverIdStr == null || driverIdStr.isEmpty()) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含司机ID");
             }
-            Integer driverId;
-            try {
-                driverId = Integer.valueOf(driverIdStr);
-            } catch (NumberFormatException e) {
-                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "司机ID格式错误");
-            }
-            boolean result = vehicleService.deleteVehicle(driverId, vehicleId);
-            if (result) {
-                logger.debug("[VehicleController] 车辆删除成功: vehicleId = {}", vehicleId);
-                Map<String, Object> successResponse = new HashMap<>();
-                successResponse.put("code", 0);
-                successResponse.put("message", "车辆删除成功");
-                return ResponseEntity.ok(successResponse);
-            } else {
-                logger.warn("[VehicleController] 车辆删除失败: vehicleId = {}", vehicleId);
-                Map<String, Object> errorResponse = new HashMap<>();
-                errorResponse.put("code", 500);
-                errorResponse.put("message", "车辆删除失败");
-                return ResponseEntity.ok(errorResponse);
-            }
+            Integer driverId = Integer.valueOf(driverIdStr);
+
+            vehicleService.deleteVehicle(vehicleId, driverId);
+            return ResponseEntity.ok().build();
         } catch (BusinessException e) {
-            logger.warn("[VehicleController] 业务异常: code={}, message={}", e.getCode(), e.getMessage());
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", e.getCode());
             errorResponse.put("message", e.getMessage());
             return ResponseEntity.ok(errorResponse);
         } catch (Exception e) {
-            logger.error("[VehicleController] 服务器内部错误: {}, 消息: {}", e.getClass().getName(), e.getMessage(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", 500);
-            errorResponse.put("message", "服务器内部错误");
+            errorResponse.put("message", "服务器内部错误: " + e.getMessage());
             return ResponseEntity.ok(errorResponse);
         }
     }
 
     /**
      * 更新车辆信息
-     * 根据车辆ID更新指定车辆信息，需要验证司机权限
+     * 接收车辆更新请求，验证车主身份，调用服务层完成车辆信息更新
      * @param vehicleId 车辆ID
-     * @param request 包含更新车辆信息的请求DTO
+     * @param request 包含车辆更新信息的请求DTO
      * @param httpRequest HTTP请求对象，包含用户身份信息
-     * @return 更新后的车辆DTO响应实体
+     * @return 包含更新后车辆DTO的响应实体
      */
     @PutMapping("/{vehicleId}")
-    public ResponseEntity<?> updateVehicle(@PathVariable Integer vehicleId, @RequestBody VehicleUpdateRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> updateVehicle(@PathVariable Integer vehicleId,
+                                          @RequestBody VehicleUpdateRequest request,
+                                          HttpServletRequest httpRequest) {
         try {
-            // 从请求头获取token
+            // 从请求头获取token并解析司机ID
             String token = httpRequest.getHeader("Authorization");
             if (token == null || !token.startsWith("Bearer ")) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
             }
             token = token.substring(7);
-
-            // 解析token获取司机信息
             Claims claims = jwtUtil.parseToken(token);
-            String driverIdStr = claims.get("userId", String.class);
+            String driverIdStr = claims.get("driverId", String.class);
             if (driverIdStr == null || driverIdStr.isEmpty()) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含司机ID");
             }
-            Integer driverId;
-            try {
-                driverId = Integer.valueOf(driverIdStr);
-            } catch (NumberFormatException e) {
-                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "司机ID格式错误");
-            }
+            Integer driverId = Integer.valueOf(driverIdStr);
 
-            // 设置车辆ID到请求对象中
+            // 验证司机ID是否有效
+            if (driverId == null || driverId <= 0) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "司机ID无效");
+            }
+            
+            // 将vehicleId设置到request中，以便服务层使用
             request.setVehicleId(vehicleId);
-            VehicleDTO updatedVehicle = vehicleService.updateVehicle(driverId, request);
-            logger.debug("[VehicleController] 车辆更新成功: {}", updatedVehicle);
-            return ResponseEntity.ok(updatedVehicle);
+            VehicleDTO vehicleDTO = vehicleService.updateVehicle(driverId, request);
+            return ResponseEntity.ok(vehicleDTO);
         } catch (BusinessException e) {
-            logger.warn("[VehicleController] 业务异常: code={}, message={}", e.getCode(), e.getMessage());
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", e.getCode());
             errorResponse.put("message", e.getMessage());
             return ResponseEntity.ok(errorResponse);
         } catch (Exception e) {
-            logger.error("[VehicleController] 服务器内部错误: {}, 消息: {}", e.getClass().getName(), e.getMessage(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", 500);
-            errorResponse.put("message", "服务器内部错误");
+            errorResponse.put("message", "服务器内部错误: " + e.getMessage());
             return ResponseEntity.ok(errorResponse);
         }
     }
 
     /**
-     * 获取司机车辆列表
-     * 根据司机ID获取其名下所有车辆信息
+     * 获取车主车辆列表
+     * 从请求头解析司机ID，调用服务层获取该车主名下的所有车辆信息
      * @param httpRequest HTTP请求对象，包含用户身份信息
-     * @return 车辆DTO列表响应实体
+     * @return 包含车辆列表的响应实体
      */
-    @GetMapping("/list")
+    @GetMapping
     public ResponseEntity<?> getVehicles(HttpServletRequest httpRequest) {
         try {
-            // 从请求头获取token
+            // 从请求头获取token并解析司机ID
             String token = httpRequest.getHeader("Authorization");
             if (token == null || !token.startsWith("Bearer ")) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
             }
             token = token.substring(7);
-
-            // 解析token获取司机信息
             Claims claims = jwtUtil.parseToken(token);
-            String driverIdStr = claims.get("userId", String.class);
+            String driverIdStr = claims.get("driverId", String.class);
             if (driverIdStr == null || driverIdStr.isEmpty()) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含司机ID");
             }
-            Integer driverId;
-            try {
-                driverId = Integer.valueOf(driverIdStr);
-            } catch (NumberFormatException e) {
-                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "司机ID格式错误");
-            }
+            Integer driverId = Integer.valueOf(driverIdStr);
+
             List<VehicleDTO> vehicles = vehicleService.getVehiclesByDriverId(driverId);
-            logger.debug("[VehicleController] 查询到 {} 辆车辆", vehicles.size());
             return ResponseEntity.ok(vehicles);
         } catch (BusinessException e) {
             logger.warn("[VehicleController] 业务异常: code={}, message={}", e.getCode(), e.getMessage());
@@ -227,6 +190,64 @@ public class VehicleController {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", 500);
             errorResponse.put("message", "服务器内部错误");
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+
+    /**
+     * 根据车辆ID获取车辆状况信息
+     * @param vehicleId 车辆ID
+     * @param httpRequest HTTP请求对象，包含用户身份信息
+     * @return 包含车辆状况信息的响应实体
+     */
+    @GetMapping("/{vehicleId}/condition")
+    public ResponseEntity<Map<String, Object>> getVehicleCondition(@PathVariable Integer vehicleId, HttpServletRequest httpRequest) {
+        logger.info("[VehicleController] 收到获取车辆状况请求: vehicleId={}", vehicleId);
+        try {
+            // 从请求头获取token
+            String token = httpRequest.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            token = token.substring(7);
+
+            // 解析token获取司机信息
+            Claims claims = jwtUtil.parseToken(token);
+            String driverIdStr = claims.get("driverId", String.class);
+            if (driverIdStr == null || driverIdStr.isEmpty()) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含司机ID");
+            }
+            Integer driverId;
+            try {
+                driverId = Integer.valueOf(driverIdStr);
+            } catch (NumberFormatException e) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "司机ID格式错误");
+            }
+
+            // 验证车辆是否属于该司机
+            boolean isVehicleBelongsToDriver = vehicleService.isVehicleBelongsToDriver(vehicleId, driverId);
+            if (!isVehicleBelongsToDriver) {
+                throw new BusinessException(ExceptionCodeEnum.PERMISSION_DENIED, "车辆不属于该司机");
+            }
+
+            // 调用服务层获取车辆状况
+            VehicleCondition vehicleCondition = vehicleService.getVehicleConditionByVehicleId(vehicleId);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 200);
+            response.put("message", "获取车辆状况成功");
+            response.put("data", vehicleCondition);
+            return ResponseEntity.ok(response);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            logger.error("[VehicleController] 获取车辆状况时发生异常: {}", e.getMessage(), e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误: " + e.getMessage());
             return ResponseEntity.ok(errorResponse);
         }
     }

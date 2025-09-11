@@ -35,4 +35,12 @@ public interface DriverService {
      * @return 新注册的车主信息DTO
      */
     DriverProfileDTO register(DriverRegisterRequest registerRequest);
+
+    /**
+     * 更新车主银行卡号
+     * @param driverId 车主ID
+     * @param request 银行卡号更新请求
+     * @return 更新后的车主信息
+     */
+    DriverProfileDTO updateBankCard(Integer driverId, UpdateBankCardRequest request);
 }

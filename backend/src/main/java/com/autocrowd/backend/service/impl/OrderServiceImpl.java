@@ -29,11 +29,11 @@ public class OrderServiceImpl implements OrderService {
     private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     private final OrderRepository orderRepository;
-    private final DriverRepository driverRepository;
-    private final VehicleRepository vehicleRepository;
     private final ReviewRepository reviewRepository;
-    private final FinancialRepository financialRepository;
+    private final VehicleRepository vehicleRepository;
+    private final DriverRepository driverRepository;
     private final UserRepository userRepository;
+    private final FinancialRepository financialRepository;
     
     @Autowired
     private BlockchainService blockchainService;
@@ -63,11 +63,8 @@ public class OrderServiceImpl implements OrderService {
             if (request.getDestination() == null || request.getDestination().trim().isEmpty()) {
                 throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "目的地不能为空");
             }
-            if (request.getVehicleType() == null || request.getVehicleType().trim().isEmpty()) {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "车辆类型不能为空");
-            }
 
-            logger.info("[OrderService] 收到创建订单请求: 起点={}, 终点={}, 车辆类型={}", request.getStartLocation(), request.getDestination(), request.getVehicleType());
+            logger.info("[OrderService] 收到创建订单请求: 起点={}, 终点={}, 类型={}", request.getStartLocation(), request.getDestination(), request.getType());
 
             // 生成订单ID (形如 ORD20250717001)
             String orderId = generateOrderId();
@@ -76,16 +73,19 @@ public class OrderServiceImpl implements OrderService {
             Order order = new Order();
             order.setOrderId(orderId);
             order.setUserId(Integer.valueOf(userId));
-            order.setDriverId(request.getDriverId());
-            order.setVehicleId(request.getVehicleId());
+            // 直接存储前端传来的加密数据
             order.setStartLocation(request.getStartLocation());
             order.setDestination(request.getDestination());
-            order.setStatus((byte) 0); // 0=Waiting
-            // 设置预估价格占位符
-            order.setEstimatedPrice(BigDecimal.valueOf(0.0)); // 占位符价格，实际应通过算法计算
-            order.setType(request.getVehicleType());
+            order.setEstimatedPrice(request.getEstimatedPrice());
+            order.setType(request.getType());
+            order.setEstimatedTime(request.getEstimatedTime());
+            order.setStatus((byte) 0); // 0=Pending
             order.setCreatedAt(LocalDateTime.now());
             order.setUpdatedAt(LocalDateTime.now());
+            
+            // 设置访问策略，允许用户访问
+            String accessPolicy = "(USER_" + userId + ")";
+            order.setAccessPolicy(accessPolicy);
 
             // 保存订单
             Order savedOrder = orderRepository.save(order);
@@ -261,11 +261,31 @@ public class OrderServiceImpl implements OrderService {
                 throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法接单");
             }
 
+            // 检查车辆是否通过审核
+            Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆不存在"));
+            
+            if (vehicle.getAuditStatus() == null || vehicle.getAuditStatus() != 2) {
+                throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_AUDITED, "车辆未通过审核，无法接单");
+            }
+
             // 更新订单信息
             order.setDriverId(driverId);
             order.setVehicleId(vehicleId);
             order.setStatus((byte) 1); // 1=On the way
             order.setUpdatedAt(LocalDateTime.now());
+            
+            // 更新访问策略，允许车主访问
+            String currentPolicy = order.getAccessPolicy();
+            if (currentPolicy != null && !currentPolicy.isEmpty()) {
+                // 将策略从 "(USER_1)" 更新为 "(USER_1) OR (DRIVER_2)" 的形式
+                String updatedPolicy = currentPolicy + " OR (DRIVER_" + driverId + ")";
+                order.setAccessPolicy(updatedPolicy);
+            } else {
+                // 如果没有现有策略，则创建新的策略
+                String newPolicy = "(DRIVER_" + driverId + ")";
+                order.setAccessPolicy(newPolicy);
+            }
 
             // 保存订单
             Order updatedOrder = orderRepository.save(order);
@@ -283,7 +303,7 @@ public class OrderServiceImpl implements OrderService {
     /**
      * 车主完成订单
      * @param orderId 订单ID
-     * @param actualPrice 实际价格
+     * @param actualPrice 实际价格（已加密）
      * @return 完成的订单
      */
     @Override
@@ -302,7 +322,10 @@ public class OrderServiceImpl implements OrderService {
 
             // 更新订单状态和实际价格
             order.setStatus((byte) 3); // 3 = 已完成
+            // 直接存储前端传来的加密数据
             order.setActualPrice(actualPrice);
+            // 这里我们假设实际时间与预计时间相同，实际项目中可能需要根据真实情况设置
+            order.setActualTime(order.getEstimatedTime()); 
             order.setUpdatedAt(LocalDateTime.now());
             
             // 保存订单
@@ -434,6 +457,7 @@ public class OrderServiceImpl implements OrderService {
             review.setDriverId(order.getDriverId());
             review.setContent(request.getContent());
             review.setCommentStar(request.getCommentStar());
+            review.setAuditStatus((byte) 1); // 默认审核状态为1（待审核）
             review.setCreatedAt(LocalDateTime.now());
             review.setUpdatedAt(LocalDateTime.now());
 
@@ -614,6 +638,25 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return response;
+    }
+
+    private OrderDTO convertToDTO(Order order) {
+        OrderDTO dto = new OrderDTO();
+        dto.setOrderId(order.getOrderId());
+        dto.setUserId(order.getUserId());
+        dto.setDriverId(order.getDriverId());
+        dto.setVehicleId(order.getVehicleId());
+        dto.setStartLocation(order.getStartLocation());
+        dto.setDestination(order.getDestination());
+        dto.setStatus(order.getStatus());
+        dto.setEstimatedPrice(order.getEstimatedPrice());
+        dto.setActualPrice(order.getActualPrice());
+        dto.setType(order.getType());
+        dto.setEstimatedTime(order.getEstimatedTime());
+        dto.setActualTime(order.getActualTime());
+        dto.setCreatedAt(order.getCreatedAt());
+        dto.setUpdatedAt(order.getUpdatedAt());
+        return dto;
     }
 
     @Override

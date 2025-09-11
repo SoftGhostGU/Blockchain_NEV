@@ -127,6 +127,7 @@ public class BlockchainServiceImpl implements BlockchainService {
             // 调用订单链码的CreateOrder方法
             orderContract.submitTransaction(
                     "CreateOrder",
+
                     order.getOrderId(),
                     order.getUserId().toString(),
                     order.getDriverId().toString(),

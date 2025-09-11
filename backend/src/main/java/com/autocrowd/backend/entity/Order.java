@@ -16,11 +16,11 @@ public class Order {
     @Column(name = "order_id")
     @JsonProperty("orderID")
     private String orderId;
-    
+
     @Column(name = "user_id")
     @JsonProperty("userID")
     private Integer userId;
-    
+
     @Column(name = "driver_id")
     @JsonProperty("driverID")
     private Integer driverId;
@@ -29,23 +29,33 @@ public class Order {
     @JsonProperty("vehicleID")
     private Integer vehicleId;
 
+    // 存储起始位置的密文（前端加密后传入）
     @Column(name = "start_location", nullable = false)
     private String startLocation;
-    
+
+    // 存储目的地的密文（前端加密后传入）
     @Column(name = "destination", nullable = false)
     private String destination;
-    
+
     @Column(name = "status")
     @JsonProperty("orderStatus")
     private Byte status;
-    
+
+    // 存储预估价格的密文（前端加密后传入）
     @Column(name = "estimated_price")
     private BigDecimal estimatedPrice;
-    
+
+    // 存储实际价格的密文（前端加密后传入）
     @Column(name = "actual_price")
     private BigDecimal actualPrice;
+
     
+    @Column(name = "estimated_time")
+    private Integer estimatedTime;
     
+    @Column(name = "actual_time")
+    private Integer actualTime;
+
     @Column(name = "created_at")
     @JsonProperty("createdTime")
     private LocalDateTime createdAt;
@@ -54,7 +64,12 @@ public class Order {
     @JsonProperty("orderType")
     private String type;
     
+
     @Column(name = "updated_at")
     @JsonProperty("updatedTime")
     private LocalDateTime updatedAt;
+    
+    // IBE访问策略字段
+    @Column(name = "access_policy")
+    private String accessPolicy;
 }

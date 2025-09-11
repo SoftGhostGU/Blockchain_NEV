@@ -4,8 +4,10 @@ import com.autocrowd.backend.dto.vehicle.VehicleCreateRequest;
 import com.autocrowd.backend.dto.vehicle.VehicleDTO;
 import com.autocrowd.backend.dto.vehicle.VehicleUpdateRequest;
 import com.autocrowd.backend.entity.Vehicle;
+import com.autocrowd.backend.entity.VehicleCondition;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
+import com.autocrowd.backend.repository.VehicleConditionRepository;
 import com.autocrowd.backend.repository.VehicleRepository;
 import com.autocrowd.backend.service.VehicleService;
 import lombok.AllArgsConstructor;
@@ -29,6 +31,7 @@ public class VehicleServiceImpl implements VehicleService {
     private static final Logger logger = LoggerFactory.getLogger(VehicleServiceImpl.class);
     
     private final VehicleRepository vehicleRepository;
+    private final VehicleConditionRepository vehicleConditionRepository;
 
     /**
      * 根据司机ID获取车辆信息
@@ -82,11 +85,23 @@ public class VehicleServiceImpl implements VehicleService {
                 throw new BusinessException(ExceptionCodeEnum.VEHICLE_LICENSE_PLATE_EXISTS, "车牌号已存在");
             }
 
+            // 创建默认的车辆状况
+            VehicleCondition vehicleCondition = new VehicleCondition();
+            vehicleCondition.setBatteryPercent((byte) 85); // 默认电量85%
+            vehicleCondition.setMilesToGo("300"); // 默认续航300公里
+            vehicleCondition.setBodyState((byte) 0); // 车身状态：0-良好
+            vehicleCondition.setTirePressure((byte) 0); // 轮胎压力：0-正常
+            vehicleCondition.setBrakeState((byte) 1); // 制动系统：1-正常
+            vehicleCondition.setPowerState((byte) 2); // 动力系统：2-良好
+            VehicleCondition savedCondition = vehicleConditionRepository.save(vehicleCondition);
+
             // 创建车辆实体
             Vehicle vehicle = new Vehicle();
             vehicle.setDriverId(driverId);
             vehicle.setLicensePlate(request.getLicensePlate().toUpperCase());
-            vehicle.setFuelLevel(request.getFuelLevel() != null ? request.getFuelLevel() : BigDecimal.valueOf(100));
+            vehicle.setFuelLevel(java.math.BigDecimal.valueOf(100)); // 默认油量为100
+            vehicle.setConditionId(savedCondition.getConditionId()); // 关联车辆状况
+            vehicle.setAuditStatus((byte) 1); // 默认审核状态为1（待审核）
             vehicle.setCreatedAt(LocalDateTime.now());
             vehicle.setUpdatedAt(LocalDateTime.now());
 
@@ -189,6 +204,43 @@ public class VehicleServiceImpl implements VehicleService {
         } catch (Exception e) {
             logger.error("[VehicleServiceImpl] 删除车辆时发生异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.VEHICLE_DELETE_ERROR, "删除车辆失败: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean isVehicleBelongsToDriver(Integer vehicleId, Integer driverId) {
+        return vehicleRepository.existsByVehicleIdAndDriverId(vehicleId, driverId);
+    }
+    
+    @Override
+    public VehicleCondition getVehicleConditionByVehicleId(Integer vehicleId) {
+        logger.info("[VehicleService] 根据车辆ID获取车辆状况: vehicleId={}", vehicleId);
+        try {
+            // 参数验证
+            if (vehicleId == null) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_NULL_ERROR, "车辆ID不能为空");
+            }
+            
+            // 查找车辆
+            Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆不存在"));
+            
+            // 获取车辆状况ID
+            Integer conditionId = vehicle.getConditionId();
+            if (conditionId == null) {
+                throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆未关联状况信息");
+            }
+            
+            // 查找车辆状况
+            VehicleCondition vehicleCondition = vehicleConditionRepository.findById(conditionId)
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "未找到车辆状况信息"));
+            
+            return vehicleCondition;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[VehicleService] 获取车辆状况时发生异常: {}", e.getMessage(), e);
+            throw new BusinessException(ExceptionCodeEnum.VEHICLE_QUERY_ERROR, "查询车辆状况失败: " + e.getMessage());
         }
     }
 
