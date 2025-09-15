@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -163,7 +165,8 @@ def complete_order(order: CompleteOrderInput):
 # -------------------- 返回训练 loss 图 --------------------
 @app.get("/train_loss_plot")
 def train_loss_plot():
-    return FileResponse("plots/fed_loss.png")
+    time = datetime.now().strftime("%Y%m%d")
+    return FileResponse(f"plots/fed_loss_{time}.png")
 
 # -------------------- 打印路由检查 --------------------
 logger.info("FastAPI app loaded, routes:")
