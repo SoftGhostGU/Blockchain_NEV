@@ -14,7 +14,7 @@ data_loader.load_data()
 model_manager = ModelManager(data_loader)
 
 # -------------------- 训练本地模型 --------------------
-model_manager.train_federated(rounds=10, local_epochs=3)
+model_manager.train_federated(rounds=100, local_epochs=5)
 
 # -------------------- 获取本地全局模型权重 --------------------
 weights = model_manager.get_global_model_weights()  # dict of list
