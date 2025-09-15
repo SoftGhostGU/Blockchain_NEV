@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import torch
+from torch.utils.data import DataLoader, TensorDataset
 
 # -------------------- 用户和司机数据 --------------------
 drivers = pd.read_csv("../data/mock_drivers.csv")
@@ -14,7 +16,6 @@ LON_END_RANGE = (121.3, 121.5)
 orders_list = []
 
 def generate_order(order_id, user):
-    """生成一个订单（含司机匹配逻辑）"""
     start_lat = round(np.random.uniform(*LAT_START_RANGE), 6)
     start_lon = round(np.random.uniform(*LON_START_RANGE), 6)
     dest_lat = round(np.random.uniform(*LAT_END_RANGE), 6)
@@ -23,7 +24,7 @@ def generate_order(order_id, user):
 
     # ------------------ 模拟匹配司机 ------------------
     driver_scores = []
-    for idx, driver in drivers.iterrows():
+    for _, driver in drivers.iterrows():
         score_pref = 0
         if user["pref_quiet"] == 1 and driver["driver_service_quality"] >= 4:
             score_pref += 1
@@ -39,6 +40,7 @@ def generate_order(order_id, user):
         total_score = 0.5 * score_pref + 0.3 * score_distance + 0.2 * score_credit
         driver_scores.append((driver["driver_id"], total_score))
 
+    # 选出得分最高的司机
     matched_driver_id = max(driver_scores, key=lambda x: x[1])[0]
 
     return {
@@ -49,29 +51,25 @@ def generate_order(order_id, user):
         "user_pref_quiet": user["pref_quiet"],
         "user_pref_speed": user["pref_speed"],
         "user_pref_car_type": user["pref_car_type"],
-        "order_type": np.random.randint(1, 5),
-        "time_slot": time_slot,
         "start_lat": start_lat,
         "start_lon": start_lon,
         "dest_lat": dest_lat,
         "dest_lon": dest_lon
     }
 
-# ---------------- 保证每个用户至少有 3 个订单 ----------------
+# ---------------- 生成订单 ----------------
 order_id = 1
 for _, user in users.iterrows():
-    for _ in range(3):  # 每人生成3个订单
+    for _ in range(3):
         orders_list.append(generate_order(order_id, user))
         order_id += 1
 
-# ---------------- 分配剩余订单 ----------------
 remaining_orders = NUM_ORDERS - len(orders_list)
 for _ in range(remaining_orders):
     user_idx = np.random.randint(0, len(users))
-    user = users.loc[user_idx]
-    orders_list.append(generate_order(order_id, user))
+    orders_list.append(generate_order(order_id, users.loc[user_idx]))
     order_id += 1
 
 orders = pd.DataFrame(orders_list)
 orders.to_csv("mock_orders.csv", index=False)
-print("✅ 订单数据已生成（保证每个用户 >= 3 个订单）: mock_orders.csv")
+print("✅ 订单数据已生成: mock_orders.csv")
