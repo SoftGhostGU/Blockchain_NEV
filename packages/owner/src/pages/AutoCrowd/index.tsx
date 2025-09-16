@@ -6,7 +6,7 @@ import Calendar from '../../components/calendar'
 import { useEffect, useState, lazy, Suspense, useRef } from 'react';
 import { useColorModeStore } from '../../store/store';
 import outer_img from '../../assets/outer_img.png'
-import video from '../../assets/testmp4.mp4'
+import video from '../../assets/AutoCrowd.mp4'
 // import 'react-clock/dist/Clock.css';
 import { Image } from 'antd';
 
