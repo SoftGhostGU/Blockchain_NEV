@@ -279,7 +279,7 @@
     }
 
     .map {
-      height: 100%;
+      height: calc(100% - 40px);
       overflow: hidden;
 
       .map-img {
