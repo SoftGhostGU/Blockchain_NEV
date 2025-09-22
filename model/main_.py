@@ -9,29 +9,12 @@ import logging
 import requests
 from typing import List
 
-import os
-from dotenv import load_dotenv
-
-# 加载 .env
-load_dotenv()
-
 app = FastAPI(title="去中心化打车平台模型服务")
 
-# 从环境变量里取配置
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
-DB_PORT = os.getenv("DB_PORT", "3306")
-DB_NAME = os.getenv("DB_NAME")
-
-db_url = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
-# 初始化 DataLoader
-data_loader = DataLoader(db_url=db_url)
+data_loader = DataLoader()
 data_loader.load_data()
 model_manager = ModelManager(data_loader)
 
-# 日志配置
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
