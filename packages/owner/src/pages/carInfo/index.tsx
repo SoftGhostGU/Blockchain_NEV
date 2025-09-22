@@ -1,6 +1,7 @@
 import "./index.scss"
 
 import mapTest from '../../assets/map_test.jpg'
+import Map from '../../components/Map'
 
 import { Button, ConfigProvider, notification, Progress, Space, theme, Timeline } from 'antd';
 import type { ProgressProps } from 'antd';
@@ -454,7 +455,8 @@ export default function CarInfo() {
             >派出车辆</button>
           </div>
           <div className="map">
-            <img src={mapTest} alt="" className="map-img" />
+            {/* <img src={mapTest} alt="" className="map-img" /> */}
+            <Map></Map>
           </div>
 
           <div className="order-detail">
