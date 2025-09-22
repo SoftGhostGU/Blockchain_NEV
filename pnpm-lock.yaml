@@ -60,12 +60,18 @@ importers:
 
   packages/owner:
     dependencies:
+      '@amap/amap-jsapi-loader':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@ant-design/icons':
         specifier: ~5.6.1
         version: 5.6.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       '@fortawesome/fontawesome-free':
         specifier: ^7.0.0
         version: 7.0.0
+      '@uiw/react-amap':
+        specifier: ^7.1.12
+        version: 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       antd:
         specifier: ^5.26.5
         version: 5.26.5(date-fns@3.6.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -139,6 +145,9 @@ importers:
 
   packages/user:
     dependencies:
+      '@amap/amap-jsapi-loader':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@ant-design/icons':
         specifier: ~5.6.1
         version: 5.6.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -286,6 +295,9 @@ importers:
         version: 4.5.14(@types/node@24.3.0)(sass@1.89.2)(terser@5.43.1)
 
 packages:
+
+  '@amap/amap-jsapi-loader@1.0.1':
+    resolution: {integrity: sha512-nPyLKt7Ow/ThHLkSvn2etQlUzqxmTVgK7bIgwdBRTg2HK5668oN7xVxkaiRe3YZEzGzfV2XgH5Jmu2T73ljejw==}
 
   '@ampproject/remapping@2.3.0':
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
@@ -3569,6 +3581,198 @@ packages:
   '@typescript-eslint/visitor-keys@8.35.1':
     resolution: {integrity: sha512-VRwixir4zBWCSTP/ljEo091lbpypz57PoeAQ9imjG+vbeof9LplljsL1mos4ccG6H9IjfrVGM359RozUnuFhpw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@uiw/react-amap-api-loader@7.1.12':
+    resolution: {integrity: sha512-ueRMC8Xo9/1cwWJ6NAzJGSdBg6yOMuGIv7sKtNNNngXo4m9ooYjCP84Kd011PG0AOCiCI0FhzX67/pI/5IB7Mg==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-auto-complete@7.1.12':
+    resolution: {integrity: sha512-8HORYKxW1iLGvlIcYiu+tZN2JwlvyuVVnnltjm0/zG6aU0QZ+sLWIA3ajyZEpvk8HE9IAScZTf/Z0AEkG8j9Rg==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-bezier-curve@7.1.12':
+    resolution: {integrity: sha512-pvx5B9kt6tvFGOKNRmvAl0/cY48xRkl5LKK1BslirloIKzF74lP//Bhwx+H/xSRLlI/47gefoTpwq6N8FLgWoQ==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-circle-marker@7.1.12':
+    resolution: {integrity: sha512-0pMH84qNW4ooHzDJioHTvDasDL0/tVmPNfSJvqkrB4cjTXpukFYeV6CM6XkSPW6flWvvWSaWFxoTeKyePITDFQ==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-circle@7.1.12':
+    resolution: {integrity: sha512-PPgbqybktUFZqhTn4QqpmElwEPd7DweGVWd0rdN5J2YDklHdHyJ7kAoqsofJHAIDKr7lrs+S0fH3yRz84q7ryQ==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-context-menu@7.1.12':
+    resolution: {integrity: sha512-y5AjBdGn21NCd2I3eYCR56A4R/+lcYuiMdXrUhtiW/AwTmw+62eX4PBsMwFLVa+MGkb6Ka4XVLCm6XFJCJwWyg==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-control-bar-control@7.1.12':
+    resolution: {integrity: sha512-hmyqzWOTOBFf+vi5+3RMIoajzd4RFVYMb8qFdd+swHRyhk4SUP4kGqNrmFFn0/eODwCNsOXhTdAn022voDx5fg==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-ellipse@7.1.12':
+    resolution: {integrity: sha512-eHa4lbJKzNH4CqsyE5f95XJRO58qaagMS2F0QG4WKlRZLaI/D8PYBZURaxcZGdMzGj5Y9aS3o9ApP5YIYbKqpw==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-geolocation@7.1.12':
+    resolution: {integrity: sha512-OGqU9ap70TBRHcnqHoXmhtNMa7rQrfE1+gcOGFE/+k4YSK2J9N83GFJNpb4IGaScddl04u6Kr5zKCc/wbAYO5g==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-hawk-eye-control@7.1.12':
+    resolution: {integrity: sha512-dQ6pNUcuxbbnzXAPj2xI5AxSnOCOGneFZ44AiFvAODNyUqx74h7nevLNurAiHVCtqS9Tdx3s0wJZP7Ajk1YIYA==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-info-window@7.1.12':
+    resolution: {integrity: sha512-JrIE+iN9NV96jt2A2juCUXWLUbDdXpBQuZOMnp726FisBk/YkbU0vgGV+vPp2NfGgyXf0OqeSNxyNAt1y+4HOA==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-label-marker@7.1.12':
+    resolution: {integrity: sha512-AoizLYnP4ecuTvAKVNIYR0b/OhtiRdplO5nRx3hwFGXQqDErDjPQ0BT7zyv0lBZo7tdrD5t+4j7tJBrbIxEttw==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-map-type-control@7.1.12':
+    resolution: {integrity: sha512-qfoqMEDa0DOOYi54mbTiBdy9B1ipMiMRYtGdGrEBMtjkE9+wjRBq1OBw4i5uJBnlH5EVOm4hvtG8+yaUw0HDoQ==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-map@7.1.12':
+    resolution: {integrity: sha512-V1R/8OHszvgjzSg2DPLxblpQJ599TLX2nB8x0MMX7xa8j8NbzPyzfLXQVFiSkzp+FEhLRt+1bF1MzqUl6c9bzg==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-marker@7.1.12':
+    resolution: {integrity: sha512-C4UxVz6iKPp7n3nR76HF4PC0lRRZ5Inho/wy12cDCi47gTelQsGkjXP3z1TCjChs8Fv0cdY3rnnddK2N5ecK6g==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-mass-marks@7.1.12':
+    resolution: {integrity: sha512-gBWxe5trMd+pUos7PPTR0AUfP+afzKNqKKIwXI5z88BwSLEEMRzoXSk9edSFIXoyg2K0Vn26Nbt1UiocksrTFw==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-mouse-tool@7.1.12':
+    resolution: {integrity: sha512-EOlidIduEObei0YIhQglKfQigyXwIMeyREXYEYdMG5skG+Ct8pXAD0Q+vZd5UVKa4XbSDDoZxBEk2KasoCObvw==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-poly-editor@7.1.12':
+    resolution: {integrity: sha512-OZYmGRyHd/Z+NCSDeCgVLO8BbS3oUosjFtUamCIlWnx5cE9WwseWKGwZXhWb3P71pxn6KXhGvMYTChwF0MRSxw==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-polygon-editor@7.1.12':
+    resolution: {integrity: sha512-1v8lka3OaFUThd61ijU57xz47BHSmmS4PekFK/8gJbyaRODg3Jhj40gUvRYAZ3dL3wKHVu+H7jIYZv6x7RVKWA==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-polygon@7.1.12':
+    resolution: {integrity: sha512-PZcz2zgm+VVULSs6lUs4C+pJvt/M14W0NJYdtUyZjN2RH6PtMO1DWLGb8hYdkMSyJp4PKRIFmQ1bTNsvcgkuKQ==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-polyline-editor@7.1.12':
+    resolution: {integrity: sha512-ddGLKkVuVa4zYMOGv8I38p73OhlR1XMl2alUAs2U5ROGSunAtWtVdZ+cfhxMMkkmNMMUlYRJkYlFgu+nr9YJ1g==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-polyline@7.1.12':
+    resolution: {integrity: sha512-T0J/974ye+l51m9eRpdOynl2HOOusB020tn+LHw0puJCosfg9TCvLTlM2+XS+f5yT6O9bp7Ht9wEOkzM9X54OQ==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-rectangle@7.1.12':
+    resolution: {integrity: sha512-9+cyY97lwZ0eHW0t0/nWWI5U6zBaQC3SAd++m3nlp69W3nEEcUal2yg5OiHPVd5Hc8MkNMqRKgwiV9x5x9SDAg==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-require-script@7.1.12':
+    resolution: {integrity: sha512-LNm0T+xSiQHiNZA3ZzV5hSjMvFAx64RT59N1SwfIxI3/n4NJXpJwknqxFBoyoQMbLDqPjglcnlkcP2jvgpYHrg==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-scale-control@7.1.12':
+    resolution: {integrity: sha512-58bzuwBVpcA4suFrQw0D4w3nqhH35AjPDd3YXMAmj9C4GFGSyuM2GlHysYBhithChVZfCaoJHOUP9BhLQjTLkw==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-text@7.1.12':
+    resolution: {integrity: sha512-EmGhCdsPqWhd1TSXoHM6FmKaGuAi23xtcn9bOm4CHHfaoosEZk7xp00OPpdoVpeQmLlQblo6rZVvbuqExnsviA==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-tile-layer@7.1.12':
+    resolution: {integrity: sha512-yfRtXyl+0JYEv2mrWrMZJjthtiBuL7TuSBQiyaS8sX1gqguuaq7Z/ktm4KB8Xo97xyMeZHzEceMAOnr8XYmgbw==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-tool-bar-control@7.1.12':
+    resolution: {integrity: sha512-WPQ8Og9iYgzP9IYlG2vANww4LgcmdAV4P/7BohwUBVh8mj6MkDwSPWB/UiE8lBn4YXNY4nVIoh4H+4MHorBK2g==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-types@7.1.12':
+    resolution: {integrity: sha512-0OcLDGGQqn6uxxNcDiGqq324InBgdrg15xqwJxxarysCabNpWXojmbwKin+EoR61PiZ0VmmhivaS7Bno6sUA8Q==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-utils@7.1.12':
+    resolution: {integrity: sha512-tTqk1XWfT5x6ZTT1wHtxzhK+GpvIALDc9J+nPxu6y9zI91NGLbEoCxg8WHH2ct2N9Ca7Ldr6WfrEyd+C9VVzyw==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap-weather@7.1.12':
+    resolution: {integrity: sha512-4oZ+Jm2wdH03BDkh28v6Nk/ToBTXDIm+C4s5Yyh+/yGgI9ODElG1picwPOhuDfrIcSYUOYAZzoX8/Uh3oNhn+g==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  '@uiw/react-amap@7.1.12':
+    resolution: {integrity: sha512-0XAM/kviGNuyUT7KHOuE6EEfJhtM/ihpjgGZNUmdrPjjYzqFSV1/QVXsAxDiuVzv4gv6o9sYsW4uKALQ6aF7MQ==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
 
   '@ungap/structured-clone@1.3.0':
     resolution: {integrity: sha512-WmoN8qaIAo7WTYWbAZuG8PYEhn5fkz7dZrqTBZ7dtt//lL2Gwms1IcnQ5yHqjDfX8Ft5j4YzDM23f87zBfDe9g==}
@@ -10910,6 +11114,8 @@ packages:
 
 snapshots:
 
+  '@amap/amap-jsapi-loader@1.0.1': {}
+
   '@ampproject/remapping@2.3.0':
     dependencies:
       '@jridgewell/gen-mapping': 0.3.12
@@ -14952,6 +15158,269 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.35.1
       eslint-visitor-keys: 4.2.1
+
+  '@uiw/react-amap-api-loader@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@amap/amap-jsapi-loader': 1.0.1
+      '@uiw/react-amap-require-script': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-auto-complete@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-bezier-curve@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-circle-marker@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-circle@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-context-menu@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-control-bar-control@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-ellipse@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-geolocation@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-hawk-eye-control@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-info-window@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-label-marker@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-map-type-control@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-map@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-marker@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-mass-marks@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-mouse-tool@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-poly-editor@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-polygon': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-polyline': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-polygon-editor@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-polygon': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-polygon@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-polyline-editor@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-polyline': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-polyline@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-rectangle@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-require-script@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-scale-control@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-text@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-tile-layer@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-tool-bar-control@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-types@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-utils@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap-weather@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
+  '@uiw/react-amap@7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@uiw/react-amap-api-loader': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-auto-complete': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-bezier-curve': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-circle': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-circle-marker': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-context-menu': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-control-bar-control': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-ellipse': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-geolocation': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-hawk-eye-control': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-info-window': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-label-marker': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-map': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-map-type-control': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-marker': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-mass-marks': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-mouse-tool': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-poly-editor': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-polygon': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-polygon-editor': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-polyline': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-polyline-editor': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-rectangle': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-require-script': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-scale-control': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-text': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-tile-layer': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-tool-bar-control': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-types': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-utils': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@uiw/react-amap-weather': 7.1.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
 
   '@ungap/structured-clone@1.3.0': {}
 
