@@ -8,6 +8,18 @@ import matplotlib.pyplot as plt
 import os
 from typing import Dict, Any
 
+FIELD_MAP = {
+    "user_credit": "credit_score",
+    "user_pref_quiet": "quiet_preference",
+    "user_pref_speed": "speed_preference",
+    "user_pref_car_type": "preferred_car_type",
+    "start_lat": "origin_latitude",
+    "start_lon": "origin_longitude",
+    "dest_lat": "destination_latitude",
+    "dest_lon": "destination_longitude",
+    "driver_id": "assigned_driver"
+}
+
 class MLP(nn.Module):
     def __init__(self, input_dim=8, hidden_dim=256, output_dim=50):
         super().__init__()
@@ -41,13 +53,22 @@ class ModelManager:
 
     def _prepare_data(self, user_orders):
         """准备 X, y 并标准化"""
-        X = user_orders[['user_credit', 'user_pref_quiet', 'user_pref_speed', 'user_pref_car_type',
-                         'start_lat', 'start_lon', 'dest_lat', 'dest_lon']].values.astype(np.float32)
+        # X = user_orders[['user_credit', 'user_pref_quiet', 'user_pref_speed', 'user_pref_car_type',
+        #                  'start_lat', 'start_lon', 'dest_lat', 'dest_lon']].values.astype(np.float32)
+        X = user_orders[
+            [FIELD_MAP["user_credit"], FIELD_MAP["user_pref_quiet"], FIELD_MAP["user_pref_speed"],
+             FIELD_MAP["user_pref_car_type"],
+             FIELD_MAP["start_lat"], FIELD_MAP["start_lon"], FIELD_MAP["dest_lat"], FIELD_MAP["dest_lon"]]
+        ].values.astype(np.float32)
+
         # 标准化
         X_mean = X.mean(axis=0)
         X_std = X.std(axis=0) + 1e-6
         X = (X - X_mean) / X_std
-        y = np.array([self.driver2idx[did] for did in user_orders['driver_id']])
+
+        # y 使用 driver_id 映射
+        # y = np.array([self.driver2idx[did] for did in user_orders['driver_id']])
+        y = np.array([self.driver2idx[did] for did in user_orders[FIELD_MAP["driver_id"]]])
         return torch.tensor(X), torch.tensor(y, dtype=torch.long)
 
     def train_local_model(self, user_id, epochs=3, lr=0.001):
