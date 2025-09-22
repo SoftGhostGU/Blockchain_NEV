@@ -1,0 +1,409 @@
+@import '@/styles/variables';
+
+// 颜色定义
+$primary-blue: #1677FF;
+$success-green: #52c41a;
+$warning-orange: #faad14;
+$danger-red: #ff4d4f;
+$purple: #722ed1;
+$background-light-gray: #f5f5f5;
+$card-white: #ffffff;
+$text-primary-black: #000000;
+$text-secondary-gray: #8c8c8c;
+$text-light-gray: #bfbfbf;
+
+// 页面容器
+.home-page {
+  background-color: $background-light-gray;
+  padding: 32rpx;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  min-height: 100vh;
+  opacity: 0;
+  transform: translateY(20rpx);
+  transition: all 0.4s ease;
+
+  &.page-loaded {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 页面标题
+.page-header {
+  text-align: center;
+  margin-bottom: 32rpx;
+  
+  .page-title {
+    font-size: 36rpx;
+    font-weight: 600;
+    color: $text-primary-black;
+    letter-spacing: 1rpx;
+  }
+}
+
+// 通用卡片样式
+.card {
+  background: $card-white;
+  border-radius: 32rpx;
+  padding: 36rpx;
+  margin-bottom: 32rpx;
+  box-shadow: 0 12rpx 32rpx rgba(0, 0, 0, 0.06);
+  border: 1rpx solid rgba(255, 255, 255, 0.8);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:active {
+    transform: translateY(2rpx);
+    box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.04);
+  }
+}
+
+// 卡片头部样式
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28rpx;
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+    
+    .header-icon {
+      color: $primary-blue;
+      margin-right: 16rpx;
+      opacity: 0.9;
+    }
+    
+    .header-title {
+      font-size: 34rpx;
+      color: $text-primary-black;
+      font-weight: 600;
+      letter-spacing: -0.5rpx;
+    }
+  }
+}
+
+// 用户信息卡片
+.user-info-card {
+  background: linear-gradient(135deg, $card-white 0%, rgba(24, 119, 242, 0.02) 100%);
+  
+  .user-info-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  // 左侧：头像 + 用户基础信息
+  .user-left-section {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    
+    .user-basic-info {
+      margin-left: 24rpx;
+      flex: 1;
+      
+      .username {
+        font-size: 40rpx;
+        font-weight: 700;
+        color: $text-primary-black;
+        margin-bottom: 12rpx;
+        letter-spacing: -0.5rpx;
+      }
+      
+      .user-details-row {
+        display: flex;
+        align-items: center;
+        gap: 16rpx;
+        
+        .phone {
+          font-size: 30rpx;
+          color: $text-secondary-gray;
+          font-weight: 500;
+        }
+        
+        .member-badge {
+          padding: 6rpx 16rpx;
+          border-radius: 20rpx;
+          box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+          
+          .member-text {
+            font-size: 22rpx;
+            color: white;
+            font-weight: 700;
+            letter-spacing: 0.5rpx;
+          }
+        }
+      }
+    }
+  }
+  
+  // 右侧：信用分独立区域
+  .user-right-section {
+    .credit-score-container {
+      display: flex;
+      align-items: center;
+      padding: 16rpx 24rpx;
+      background: linear-gradient(135deg, rgba(82, 196, 26, 0.1) 0%, rgba(82, 196, 26, 0.05) 100%);
+      border-radius: 32rpx;
+      border: 2rpx solid rgba(82, 196, 26, 0.2);
+      box-shadow: 0 4rpx 12rpx rgba(82, 196, 26, 0.1);
+      
+      .credit-score-text {
+        font-size: 28rpx;
+        font-weight: 700;
+        margin-left: 10rpx;
+        letter-spacing: 0.5rpx;
+      }
+    }
+  }
+}
+
+// 账户余额卡片
+.balance-card {
+  // 标题栏设计
+  .card-header {
+    .header-left {
+      display: flex;
+      align-items: center;
+      
+      .header-icon {
+        color: $primary-blue;
+        margin-right: 16rpx;
+        opacity: 0.9;
+      }
+      
+      .header-title {
+        font-size: 34rpx;
+        color: $text-primary-black;
+        font-weight: 600;
+        letter-spacing: -0.5rpx;
+      }
+    }
+  }
+  
+  // 主按钮（充值）：实心、品牌色、圆角、阴影效果
+  .recharge-btn {
+    background: linear-gradient(135deg, $primary-blue 0%, #0958d9 100%);
+    color: white;
+    border: none;
+    border-radius: 24rpx;
+    font-size: 26rpx;
+    font-weight: 600;
+    padding: 12rpx 28rpx;
+    box-shadow: 0 6rpx 16rpx rgba(22, 119, 255, 0.3);
+    transition: all 0.2s ease;
+    
+    &:active {
+      transform: translateY(2rpx);
+      box-shadow: 0 4rpx 12rpx rgba(22, 119, 255, 0.2);
+    }
+  }
+  
+  // 余额显示区域
+  .balance-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8rpx;
+    
+    // 主要信息：金额数字（特大字体，深色，左对齐）
+    .balance-amount {
+      font-size: 56rpx;
+      font-weight: 800;
+      color: $text-primary-black;
+      letter-spacing: -1.5rpx;
+      line-height: 1.2;
+    }
+    
+    // 次按钮（明细）：线框样式、较小尺寸、低对比度
+    .balance-detail-btn {
+      border: 2rpx solid rgba(22, 119, 255, 0.3);
+      color: rgba(22, 119, 255, 0.8);
+      border-radius: 20rpx;
+      font-size: 24rpx;
+      font-weight: 500;
+      padding: 8rpx 20rpx;
+      background: transparent;
+      transition: all 0.2s ease;
+      
+      &:active {
+        border-color: rgba(22, 119, 255, 0.5);
+        color: rgba(22, 119, 255, 1);
+        background: rgba(22, 119, 255, 0.05);
+      }
+    }
+  }
+}
+
+// 快捷功能区
+.quick-actions-card {
+  .quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24rpx;
+    
+    .quick-action-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20rpx;
+      border-radius: 20rpx;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      
+      &:active {
+        background: rgba(0, 0, 0, 0.05);
+        transform: scale(0.95);
+      }
+      
+      .action-icon {
+        width: 80rpx;
+        height: 80rpx;
+        border-radius: 20rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12rpx;
+      }
+      
+      .action-name {
+        font-size: 24rpx;
+        color: $text-primary-black;
+        font-weight: 500;
+        text-align: center;
+      }
+    }
+  }
+}
+
+// 统计数据卡片
+.stats-card {
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24rpx;
+    
+    .stat-item {
+      text-align: center;
+      padding: 20rpx;
+      border-radius: 20rpx;
+      background: linear-gradient(135deg, rgba(24, 119, 242, 0.05) 0%, rgba(24, 119, 242, 0.02) 100%);
+      
+      .stat-value {
+        display: block;
+        font-size: 32rpx;
+        font-weight: 700;
+        color: $primary-blue;
+        margin-bottom: 8rpx;
+      }
+      
+      .stat-label {
+        font-size: 24rpx;
+        color: $text-secondary-gray;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// 安全与设置卡片
+.security-card {
+  .security-options {
+    .security-option-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24rpx 0;
+      border-bottom: 1rpx solid rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      
+      &:last-child {
+        border-bottom: none;
+      }
+      
+      &:active {
+        background: rgba(0, 0, 0, 0.02);
+        margin: 0 -36rpx;
+        padding-left: 36rpx;
+        padding-right: 36rpx;
+        border-radius: 16rpx;
+      }
+      
+      .option-left {
+        display: flex;
+        align-items: center;
+        flex: 1;
+        
+        .option-icon {
+          color: $text-secondary-gray;
+          margin-right: 20rpx;
+        }
+        
+        .option-content {
+          flex: 1;
+          
+          .option-name {
+            font-size: 30rpx;
+            color: $text-primary-black;
+            font-weight: 500;
+            margin-bottom: 4rpx;
+            display: block;
+          }
+          
+          .option-desc {
+            font-size: 24rpx;
+            color: $text-secondary-gray;
+          }
+        }
+      }
+      
+      .option-arrow {
+        color: $text-light-gray;
+      }
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 750rpx) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20rpx !important;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+    gap: 16rpx !important;
+  }
+}
+
+// 动画效果
+.card {
+  animation: slideInUp 0.6s ease forwards;
+}
+
+.card:nth-child(1) { animation-delay: 0.1s; }
+.card:nth-child(2) { animation-delay: 0.2s; }
+.card:nth-child(3) { animation-delay: 0.3s; }
+.card:nth-child(4) { animation-delay: 0.4s; }
+.card:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30rpx);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// 悬停效果增强
+.card:hover {
+  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.08);
+  transform: translateY(-4rpx);
+}
+
