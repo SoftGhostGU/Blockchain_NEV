@@ -1,9 +1,9 @@
 # Blockchain_NEV
 
 ## 前端部分 - gyw & zjz
-- 地图api导入以及使用
+- （已完成）地图api导入以及使用
   - npm i @amap/amap-jsapi-loader 
-- 加密字段确定（/package/owner/src/config/sensitiveFields.ts）
+- （已完成）加密字段确定（/package/owner/src/config/sensitiveFields.ts）
 - 与后端的对接（request函数封装+使用）
 
 ## 后端部分 - hcy

@@ -1,3 +1,5 @@
+复制.env.example为.env，并根据实际情况修改相应参数
+
 ```shell
 uvicorn server:app --reload --host 127.0.0.1 --port 5000
 python client.py
