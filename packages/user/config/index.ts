@@ -1,5 +1,5 @@
 import { defineConfig, type UserConfigExport } from '@tarojs/cli'
-
+import path from 'path' // 导入 path 模块
 import devConfig from './dev'
 import prodConfig from './prod'
 
@@ -21,6 +21,9 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
       "@tarojs/plugin-generator"
     ],
     defineConstants: {
+    },
+    alias: { // 添加 alias 配置
+      '@/styles': path.resolve(__dirname, '..', 'src/styles'),
     },
     copy: {
       patterns: [

@@ -176,9 +176,9 @@ const RegisterForm = ({ onBack, onBackToLogin }) => {
             value={formData.password}
             onInput={(e) => handleInputChange('password', e.detail.value)}
           />
-          <View className="password-visible-button" onClick={togglePasswordVisible}>
+          {/* <View className="password-visible-button" onClick={togglePasswordVisible}>
             {passwordVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-          </View>
+          </View> */}
         </View>
         <View className="password-input-container">
           <Input
@@ -189,9 +189,9 @@ const RegisterForm = ({ onBack, onBackToLogin }) => {
             value={formData.checkPassword}
             onInput={(e) => handleInputChange('checkPassword', e.detail.value)}
           />
-          <View className="password-visible-button" onClick={toggleConfirmPasswordVisible}>
+          {/* <View className="password-visible-button" onClick={toggleConfirmPasswordVisible}>
             {confirmPasswordVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-          </View>
+          </View> */}
         </View>
       </View>
       <Spin spinning={loadingVerify} indicator={<LoadingOutlined spin />} size="large">

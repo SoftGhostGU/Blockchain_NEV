@@ -1,5 +1,5 @@
 import { View, Input, Button, Text } from '@tarojs/components';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { login } from '../../../utils/auth';
 import { showToast, navigateTo } from '@tarojs/taro';
 import '../index.scss';
@@ -42,6 +42,10 @@ const LoginForm = ({ onSwitchToRegister }) => {
 
   const [passwordVisible, setPasswordVisible] = useState(false);
 
+  useEffect(() => {
+    console.log('密码可见性变为:', passwordVisible);
+  }, [passwordVisible]);
+
   const togglePasswordVisible = () => {
     setPasswordVisible(!passwordVisible);
   }
@@ -69,11 +73,11 @@ const LoginForm = ({ onSwitchToRegister }) => {
             value={password}
             onInput={(e) => setPassword(e.detail.value)}
           />
-          <View className="password-visible-button" onClick={togglePasswordVisible}>
+          {/* <View className="password-visible-button" onClick={togglePasswordVisible}>
             {
               passwordVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />
             }
-          </View>
+          </View> */}
         </View>
       </View>
 
