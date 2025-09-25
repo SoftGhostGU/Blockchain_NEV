@@ -1,0 +1,378 @@
+/* 地址选择页面样式 - 适配Taro小程序 */
+.address-page {
+  background: #fff;
+  min-height: 100vh;
+  font-size: 28rpx; /* 使用rpx单位适配小程序 */
+  color: #333;
+
+  /* 顶部栏样式 - 包含返回按钮、城市、搜索框和操作按钮 */
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 24rpx;
+    border-bottom: 1rpx solid #f0f0f0;
+    background: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+
+    /* 返回按钮样式 */
+    .back-icon {
+      font-size: 40rpx;
+      margin-right: 24rpx;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 60rpx;
+      height: 60rpx;
+      
+      /* 小程序点击效果 */
+      &:active {
+        opacity: 0.7;
+        transform: scale(0.95);
+      }
+    }
+
+    /* 城市显示样式 */
+    .city {
+      font-weight: bold;
+      margin-right: 20rpx;
+      color: #333;
+      font-size: 30rpx;
+      white-space: nowrap;
+    }
+
+    /* 搜索输入框样式 */
+    .search-input {
+      flex: 1;
+      border: 1rpx solid #ddd;
+      border-radius: 32rpx;
+      padding: 12rpx 20rpx;
+      font-size: 28rpx;
+      margin-right: 20rpx;
+      background: #f8f8f8;
+      height: 64rpx;
+      box-sizing: border-box;
+      
+      /* 小程序输入框聚焦样式 */
+      &:focus {
+        border-color: #00b578;
+        background: #fff;
+      }
+    }
+
+    /* 额外操作按钮区域 */
+    .extra {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+
+      /* 添加途径按钮样式 */
+      .add {
+        margin-right: 16rpx;
+        color: #00b578;
+        font-size: 26rpx;
+        padding: 8rpx 12rpx;
+        border-radius: 8rpx;
+        
+        &:active {
+          opacity: 0.8;
+          background-color: rgba(0, 181, 120, 0.1);
+        }
+      }
+      
+      /* 取消按钮样式 */
+      .cancel {
+        color: #666;
+        font-size: 26rpx;
+        padding: 8rpx 12rpx;
+        border-radius: 8rpx;
+        
+        &:active {
+          opacity: 0.8;
+          background-color: #f5f5f5;
+        }
+      }
+    }
+  }
+
+  /* 快捷地址选择区域样式 */
+  .quick-section {
+    display: flex;
+    justify-content: space-around;
+    padding: 24rpx 0;
+    border-bottom: 16rpx solid #f6f6f6;
+    background: #fff;
+
+    /* 单个快捷地址项样式 */
+    .quick-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 26rpx;
+      color: #333;
+      padding: 16rpx;
+      border-radius: 16rpx;
+      min-width: 120rpx;
+      transition: all 0.2s ease;
+
+      /* 小程序点击效果 */
+      &:active {
+        background-color: #f5f5f5;
+        transform: scale(0.95);
+      }
+
+      /* 快捷地址文本样式 */
+      .quick-text {
+        margin-top: 8rpx;
+        font-weight: 500;
+      }
+
+      /* 快捷地址详细地址样式 */
+      .quick-address {
+        font-size: 22rpx;
+        color: #999;
+        margin-top: 4rpx;
+        text-align: center;
+        max-width: 120rpx;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  /* 位置选择按钮区域 */
+  .location-picker {
+    background: #fff;
+    border-bottom: 16rpx solid #f6f6f6;
+    
+    /* 覆盖taro-ui默认样式 */
+    .at-list__item {
+      padding: 24rpx !important;
+      
+      &:active {
+        background-color: #f5f5f5;
+      }
+    }
+  }
+
+  /* 历史地点区域样式 */
+  .section {
+    padding: 24rpx;
+    background: #fff;
+
+    /* 区域标题样式 */
+    .section-title {
+      font-weight: bold;
+      margin-bottom: 20rpx;
+      font-size: 30rpx;
+      color: #333;
+    }
+
+    /* 使用taro-ui的AtList样式优化 */
+    .at-list {
+      border: none;
+      
+      .at-list__item {
+        padding: 24rpx 0 !important;
+        border-bottom: 1rpx solid #f0f0f0 !important;
+        
+        &:last-child {
+          border-bottom: none !important;
+        }
+        
+        /* 小程序点击效果 */
+        &:active {
+          background-color: #f9f9f9;
+        }
+        
+        /* 标题样式 */
+        .at-list__item-title {
+          font-size: 28rpx !important;
+          font-weight: 500 !important;
+          color: #333 !important;
+          line-height: 1.4 !important;
+        }
+        
+        /* 副标题样式 */
+        .at-list__item-note {
+          font-size: 24rpx !important;
+          color: #888 !important;
+          margin-top: 4rpx !important;
+        }
+        
+        /* 额外文本样式 */
+        .at-list__item-extra-text {
+          font-size: 24rpx !important;
+          color: #666 !important;
+        }
+      }
+    }
+
+    /* 空状态样式 */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80rpx 0;
+      
+      .empty-text {
+        font-size: 26rpx;
+        color: #999;
+        margin-top: 16rpx;
+      }
+    }
+  }
+
+  /* 单个地点项样式（备用，如果不使用AtList） */
+  .place-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24rpx 0;
+    border-bottom: 1rpx solid #f0f0f0;
+    transition: background-color 0.2s;
+
+    /* 小程序点击效果 */
+    &:active {
+      background-color: #f9f9f9;
+    }
+
+    /* 最后一个项目不显示底部边框 */
+    &:last-child {
+      border-bottom: none;
+    }
+
+    /* 左侧内容（图标和地点信息） */
+    .left {
+      display: flex;
+      align-items: center;
+      flex: 1;
+
+      /* 小图标样式 */
+      .icon.small {
+        width: 36rpx;
+        height: 36rpx;
+        margin-right: 16rpx;
+        opacity: 0.6;
+      }
+
+      /* 地点信息容器 */
+      .info {
+        display: flex;
+        flex-direction: column;
+
+        /* 地点名称样式 */
+        .name {
+          font-size: 28rpx;
+          font-weight: 500;
+          color: #333;
+          margin-bottom: 4rpx;
+          line-height: 1.4;
+        }
+        
+        /* 地点附加信息样式（如地铁线路） */
+        .sub {
+          font-size: 24rpx;
+          color: #888;
+          line-height: 1.3;
+        }
+      }
+    }
+
+    /* 右侧内容（距离和分享按钮） */
+    .right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+
+      /* 距离显示样式 */
+      .distance {
+        font-size: 24rpx;
+        color: #666;
+        margin-bottom: 8rpx;
+      }
+      
+      /* 分享按钮样式 */
+      .share {
+        font-size: 24rpx;
+        color: #00b578;
+        padding: 4rpx 8rpx;
+        border-radius: 4rpx;
+        
+        &:active {
+          opacity: 0.8;
+          background-color: rgba(0, 181, 120, 0.1);
+        }
+      }
+    }
+  }
+}
+
+/* 小程序安全区域适配 */
+.address-page {
+  /* 适配iPhone X等有刘海的设备 */
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 小屏幕适配 */
+@media (max-width: 750rpx) {
+  .address-page {
+    .header {
+      padding: 20rpx;
+      
+      .search-input {
+        font-size: 26rpx;
+        height: 60rpx;
+      }
+      
+      .city {
+        font-size: 28rpx;
+      }
+    }
+    
+    .quick-section {
+      padding: 20rpx 0;
+      
+      .quick-item {
+        font-size: 24rpx;
+        padding: 12rpx;
+        min-width: 100rpx;
+        
+        .quick-text {
+          font-size: 24rpx;
+        }
+        
+        .quick-address {
+          font-size: 20rpx;
+          max-width: 100rpx;
+        }
+      }
+    }
+    
+    .section {
+      padding: 20rpx;
+      
+      .section-title {
+        font-size: 28rpx;
+      }
+      
+      .at-list .at-list__item {
+        .at-list__item-title {
+          font-size: 26rpx !important;
+        }
+        
+        .at-list__item-note {
+          font-size: 22rpx !important;
+        }
+        
+        .at-list__item-extra-text {
+          font-size: 22rpx !important;
+        }
+      }
+    }
+  }
+}

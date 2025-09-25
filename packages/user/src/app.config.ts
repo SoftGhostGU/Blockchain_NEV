@@ -5,6 +5,7 @@ export default defineAppConfig({
     'pages/ride/index',
     'pages/order/index',
     'pages/home/index',
+    'pages/address-select/index',
   ],
   window: {
     backgroundTextStyle: 'light',
