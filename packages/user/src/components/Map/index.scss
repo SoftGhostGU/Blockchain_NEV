@@ -3,3 +3,24 @@
   height: 100%;
   background-color: #eee;
 }
+
+// 隐藏高德地图版权信息，避免遮挡地图内容
+#mapContainer {
+  .amap-logo,
+  .amap-copyright {
+    display: none !important;
+  }
+  
+  // 如果上面的方式不生效，使用更强的隐藏方式
+  .amap-logo {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  
+  .amap-copyright {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}

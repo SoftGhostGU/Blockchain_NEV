@@ -26,6 +26,8 @@ const Map = () => {
           rotateEnable: true,
           pitchEnable: true,
           zooms: [2, 20],
+          logoPosition: "RT", // 将logo放到右上角 (Right Top)
+          copyrightPosition: "RT", // 将版权信息放到右上角 (Right Top)
         });
 
         // 示例轨迹点（替换成后端返回的轨迹也行）
@@ -75,7 +77,7 @@ const Map = () => {
           const geolocation = new AMap.Geolocation({
             enableHighAccuracy: true,
             timeout: 10000,
-            offset: [10, 20],
+            offset: [15, 30],
             zoomToAccuracy: true,
             position: "RB",
           });

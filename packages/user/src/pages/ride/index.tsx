@@ -17,6 +17,7 @@ import SpaceIcon from './icons/SpaceIcon'
 import rideService from '../../api/rideService'
 import { Location, PriceEstimateRequest, CreateOrderRequest } from '../../api/type'
 import Fab from '../../components/Fab'
+import Map from '../../components/Map'
 
 // 全局 store（确保路径和文件名和你项目一致： src/store/ride.js 或 src/store/rideStore.js）
 import { useRideStore } from '../../store/ride'
@@ -313,11 +314,7 @@ export default function Ride() {
   return (
     <View className='ride-page'>
       <View className='map-container'>
-        <Image
-          className='map-image'
-          src='https://developers.google.com/static/codelabs/maps-platform/maps-platform-101-js/img/e52623cb8578d625.png?hl=zh-cn'
-          mode='aspectFill'
-        />
+        <Map />
       </View>
 
       <View className={classnames('main-content', { 'loaded': pageLoaded })}>
@@ -329,7 +326,12 @@ export default function Ride() {
             </View>
           </View>
           <View className='address-row destination-location'>
-            <View className='location-dot orange-dot'></View>
+            <View className='location-dot orange-dot animated-dot'>
+              <View className='dot-glow-outer'></View>
+              <View className='dot-glow-inner'></View>
+              <View className='dot-core'></View>
+              <View className='dot-ripple'></View>
+            </View>
             <View className='address-input-container'>
               <Input
                 className='address-input destination-input'

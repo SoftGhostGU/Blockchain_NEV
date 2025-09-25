@@ -62,9 +62,9 @@ export interface RideState {
   orders: Order[]
   activeOrderId: string | null
 
-  // --- setter ---
+  // --- 操作函数 ---
   setCurrentLocation: (loc: Location) => void
-  setDestinationLocation: (loc: Location) => void
+  setDestinationLocation: (loc: Location | null) => void
   setStartAddressInput: (text: string) => void
   setEndAddressInput: (text: string) => void
 
