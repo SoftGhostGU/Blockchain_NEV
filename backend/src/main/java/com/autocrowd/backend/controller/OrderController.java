@@ -275,6 +275,52 @@ public class OrderController {
     }
     
     /**
+     * 用户选择车辆接口
+     */
+    @PostMapping("/select-vehicle")
+    public ResponseEntity<Map<String, Object>> selectVehicle(@RequestBody SelectVehicleRequest request, HttpServletRequest httpRequest) {
+        logger.debug("[OrderController] 收到用户选择车辆请求: {}", request);
+        try {
+            // 从Authorization头获取token并解析用户ID
+            String authHeader = httpRequest.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            String token = authHeader.substring(7);
+            Claims claims = jwtUtil.parseToken(token);
+            // 获取userId
+            String userId = claims.get("userId", String.class);
+
+            if (userId == null) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            
+            Order order = orderService.selectVehicleForOrder(request, Integer.valueOf(userId));
+            
+            Map<String, Object> result = new HashMap<>();
+            result.put("data", Map.of(
+                "order_id", order.getOrderId(),
+                "driver_id", order.getDriverId(),
+                "vehicle_id", order.getVehicleId(),
+                "status", order.getStatus()
+            ));
+            logger.debug("[OrderController] 返回用户选择车辆结果: {}", order);
+            return ResponseEntity.ok(result);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            logger.error("[OrderController] 服务器内部错误", e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误");
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+    
+    /**
      * 添加订单评价
      */
     @PostMapping("/review")
