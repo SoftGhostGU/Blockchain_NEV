@@ -17,7 +17,7 @@ window.envConfig = {
   proxy: true,  // 是否开启代理，允许跨域（只在开发环境有效 true/false)
   ISROUTER: true, // 是否请求后端动态菜单 如不请求请在前端routes/index.jsx配置
   API_BASE_URL: "",    // 地址域名IP等(此处为空禁写，请在switch语句配置地址)
-  API_BASE_PORT: "",    // 二级地址（可为空），用于拼接API_BASE_URL后面
+  API_BASE_PORT: "api",    // 二级地址（可为空），用于拼接API_BASE_URL后面
   API_BASE_TIMEOUT: 10,  // 请求超时时间（单位/s）
 }
 
