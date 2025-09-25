@@ -24,67 +24,115 @@ $text-secondary-gray: #8c8c8c;
 .map-container {
   height: 500rpx;
   width: 100%;
-  .map-image {
+  
+  // 确保Map组件填满容器
+  #mapContainer {
     width: 100%;
     height: 100%;
+    border-radius: 0;
   }
 }
 
 // 主要内容区域
 .main-content {
   position: relative;
-  margin-top: -100rpx;
+  margin-top: -50rpx;
   padding: 0 32rpx;
   z-index: 10;
   flex: 1;
 }
-
 // 地址卡片
 .address-card {
-  background: #f8f9fa;
-  border-radius: 32rpx;
-  padding: 24rpx 28rpx;
-  box-shadow: 0 12rpx 32rpx rgba(0, 0, 0, 0.08), 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
-  margin-bottom: 20rpx;
+  background: white;
+  border-radius: 24rpx;
+  padding: 16rpx 20rpx;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
+  margin-bottom: 16rpx;
   position: relative;
   transition: all 0.3s ease;
   
-  &:hover {
-    box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.12), 0 6rpx 20rpx rgba(0, 0, 0, 0.06);
-    transform: translateY(-2rpx);
-  }
-
   .address-row {
     display: flex;
     align-items: center;
     position: relative;
-    min-height: 40rpx; // 更小的行高
-    margin-bottom: 0; // 让两项更贴近
+    min-height: 40rpx;
+    margin-bottom: 16rpx;
     
-    // 移除最后一行的底部间距
     &:last-child {
       margin-bottom: 0;
-      cursor: pointer;
-      padding: 12rpx 16rpx;
-      margin-left: -16rpx;
-      margin-right: -16rpx;
-      margin-top: 8rpx; // 保持与上一行的间距
-      border-radius: 20rpx;
-      transition: all 0.2s ease;
-      
-      &:hover {
-        background-color: rgba(24, 144, 255, 0.08);
-        transform: translateY(-1rpx);
+    }
+    
+    // 起点行样式
+    &.start-location {
+      .current-location-text {
+        font-size: 30rpx;
+        color: #4CAF50;
+        font-weight: 500;
+        line-height: 1.4;
       }
+    }
+    
+    // 目的地行样式 - 紧凑的输入框
+    &.destination-location {
+      min-height: 52rpx; // 减少高度
       
-      &:active {
-        background-color: rgba(24, 144, 255, 0.15);
-        transform: translateY(0);
+      .address-input-container {
+        flex: 1;
+        
+        .destination-input {
+  font-size: 28rpx !important;        // 略小的字体
+  padding: 6rpx 16rpx !important;     // 缩小内边距（上下6rpx）
+  height: auto !important;            // 自适应高度
+  line-height: 36rpx !important;      // 控制行高，保证不挤压
+  border-radius: 32rpx;               // 圆角适中
+  background: #e8e8e8;
+  border: 2rpx solid #d0d0d0;
+  font-weight: 400;
+  text-align: center;                 // 文字居中
+  box-sizing: border-box;             // 避免 padding 撑开
+
+  &::placeholder {
+    color: #000000 !important;
+    font-size: 30rpx !important;      // 保持 placeholder 稍大
+    font-weight: 700 !important;
+    text-align: center;
+    -webkit-text-stroke: 0.5rpx #000000;
+  }
+
+  &::-webkit-input-placeholder {
+    color: #000000 !important;
+    font-size: 30rpx !important;
+    font-weight: 700 !important;
+    text-align: center;
+    -webkit-text-stroke: 0.5rpx #000000;
+  }
+
+  &::-moz-placeholder {
+    color: #000000 !important;
+    font-size: 30rpx !important;
+    font-weight: 700 !important;
+    text-align: center;
+  }
+
+  &:-ms-input-placeholder {
+    color: #000000 !important;
+    font-size: 30rpx !important;
+    font-weight: 700 !important;
+    text-align: center;
+  }
+
+  &:focus {
+    border-color: #ff8c00;
+    background: #ffffff;
+    box-shadow: 0 4rpx 16rpx rgba(255, 140, 0, 0.15);
+  }
+}
+
       }
     }
   }
 
-  // 新的指示点样式
+  // 修改位置点样式
   .location-dot {
     width: 16rpx;
     height: 16rpx;
@@ -92,113 +140,165 @@ $text-secondary-gray: #8c8c8c;
     margin-right: 28rpx;
     flex-shrink: 0;
     align-self: center;
+    position: relative;
     
     &.green-dot {
       background-color: #4CAF50;
-      box-shadow: 0 0 0 4rpx rgba(76, 175, 80, 0.2);
     }
     
+    // 橙色点带真实光晕效果
     &.orange-dot {
-      background-color: #ff8c00;
-      box-shadow: 0 0 0 4rpx rgba(255, 140, 0, 0.2);
+      &.animated-dot {
+        width: 16rpx;
+        height: 16rpx;
+        position: relative;
+        
+        .dot-core {
+          width: 16rpx;
+          height: 16rpx;
+          background: radial-gradient(circle, #ff8c00 0%, #ff6600 70%, #ff4400 100%);
+          border-radius: 50%;
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 3;
+          box-shadow: 
+            0 0 8rpx rgba(255, 140, 0, 0.8),
+            0 0 16rpx rgba(255, 140, 0, 0.6),
+            0 0 24rpx rgba(255, 140, 0, 0.4);
+          animation: core-glow 2s infinite ease-in-out;
+        }
+        
+        // 内层光晕
+        .dot-glow-inner {
+          width: 32rpx;
+          height: 32rpx;
+          background: radial-gradient(circle, rgba(255, 140, 0, 0.4) 0%, rgba(255, 140, 0, 0.2) 50%, transparent 70%);
+          border-radius: 50%;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 2;
+          animation: inner-glow-pulse 2s infinite ease-in-out;
+        }
+        
+        // 外层光晕
+        .dot-glow-outer {
+          width: 48rpx;
+          height: 48rpx;
+          background: radial-gradient(circle, rgba(255, 140, 0, 0.3) 0%, rgba(255, 140, 0, 0.1) 40%, transparent 70%);
+          border-radius: 50%;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 1;
+          animation: outer-glow-pulse 2s infinite ease-in-out 0.3s;
+        }
+        
+        // 扩散光晕
+        .dot-ripple {
+          width: 16rpx;
+          height: 16rpx;
+          border-radius: 50%;
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: radial-gradient(circle, rgba(255, 140, 0, 0.6) 0%, rgba(255, 140, 0, 0.3) 30%, transparent 70%);
+          animation: ripple-glow 2.5s infinite ease-out;
+        }
+      }
     }
-  }
-
-  // 当前位置文字样式
-  .current-location-text {
-    font-size: 28rpx;
-    color: #4CAF50;
-    font-weight: 600;
-    line-height: 1.4;
   }
 
   .address-info {
     display: flex;
     flex-direction: column;
     flex: 1;
-    justify-content: center; // 垂直居中对齐
-    
-    .address-label {
-      font-size: 28rpx;
-      color: $text-secondary-gray;
-      margin-bottom: 6rpx; // 稍微增加标签和值之间的间距
-      font-weight: bold;
-      line-height: 1.2;
-    }
-    
-    .address-value {
-      font-size: 32rpx;
-      color: $text-primary-black;
-      font-weight: bold;
-      line-height: 1.3;
-      
-      &.placeholder {
-        color: #999999; // 加深占位符颜色
-        font-style: italic;
-      }
-    }
-  }
-
-  // 地址输入框容器
-  .address-input-container {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
     justify-content: center;
-    position: relative;
-    
-    .address-input {
-      font-size: 28rpx;
-      color: $text-primary-black;
-      font-weight: 500;
-      line-height: 1.4;
-      background: #e0e2e6;
-      border: 1rpx solid #b0b3b8;
-      border-radius: 50rpx; // 胶囊形完全圆角
-      outline: none;
-      padding: 12rpx 24rpx;
-      flex: 1;
-      transition: all 0.3s ease;
-      box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
-      text-align: center;
-      
-      &:focus {
-        border-color: $primary-blue;
-        background: #ffffff;
-        box-shadow: 0 4rpx 16rpx rgba(24, 144, 255, 0.12);
-        transform: translateY(-1rpx);
-      }
-      
-      &:hover {
-        border-color: rgba(24, 144, 255, 0.3);
-        background: #fafbfc;
-      }
-      
-      &::placeholder {
-        color: #8c8c8c;
-        font-weight: normal;
+  }
+}
+
+// 核心光晕动画
+@keyframes core-glow {
+  0%, 100% {
+    box-shadow: 
+      0 0 8rpx rgba(255, 140, 0, 0.8),
+      0 0 16rpx rgba(255, 140, 0, 0.6),
+      0 0 24rpx rgba(255, 140, 0, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 
+      0 0 12rpx rgba(255, 140, 0, 1),
+      0 0 24rpx rgba(255, 140, 0, 0.8),
+      0 0 36rpx rgba(255, 140, 0, 0.6);
+    transform: scale(1.1);
+  }
+}
+
+// 内层光晕脉冲
+@keyframes inner-glow-pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+// 外层光晕脉冲
+@keyframes outer-glow-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1.3);
+  }
+}
+
+// 扩散光晕动画
+@keyframes ripple-glow {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(2.5);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(4);
+    opacity: 0;
+  }
+}
+
+// 响应式适配
+@media screen and (max-width: 480px) {
+  .address-card {
+    .address-row {
+      &.destination-location {
+        min-height: 70rpx;
+        
+        .address-input-container {
+          .destination-input {
+            font-size: 30rpx !important;
+            padding: 18rpx 24rpx !important;
+            height: 56rpx;
+            
+            &::placeholder {
+              font-size: 30rpx !important;
+            }
+          }
+        }
       }
     }
-  }
-
-  // 优化：选择图标位置调整
-  .select-icon {
-    color: $text-secondary-gray;
-    margin-left: 16rpx;
-    align-self: center; // 确保图标垂直居中
-    transform: translateY(2rpx); // 微调下移
-    flex-shrink: 0; // 防止图标被压缩
-  }
-
-  // 连接指示点的虚线
-  .dot-line {
-    width: 2rpx;
-    height: 16rpx;
-    margin-left: 36rpx; // 对齐指示点中心 (16rpx/2 + 28rpx)
-    margin-top: 2rpx;
-    margin-bottom: 2rpx;
-    border-left: 2rpx dashed rgba(0, 0, 0, 0.15);
-    position: relative;
   }
 }
 
@@ -304,18 +404,6 @@ $text-secondary-gray: #8c8c8c;
       .car-price {
         color: $primary-blue;
       }
-    }
-  }
-
-  // 目的地输入框特殊样式
-  .destination-input {
-    font-size: 36rpx !important;
-    padding: 16rpx 24rpx !important;
-    
-    &::placeholder {
-      color: #111111 !important;
-      font-weight: 700 !important;
-      font-size: 44rpx !important;
     }
   }
 }
@@ -1053,6 +1141,8 @@ $text-secondary-gray: #8c8c8c;
   }
 }
 
+// 旧的光晕动画已被新的真实光晕效果替代
+
 @keyframes scale-fade-in {
   to {
     transform: scale(1);
@@ -1093,3 +1183,4 @@ $text-secondary-gray: #8c8c8c;
     transform: scale(1);
   }
 }
+
