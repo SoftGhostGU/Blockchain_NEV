@@ -1,5 +1,5 @@
 
-// src/pages/ride/index.tsx  （或你当前的路径）
+// src/pages/ride/index.tsx  
 import { View, Text, Image, Button, Input } from '@tarojs/components'
 import { useState, useEffect, useRef } from 'react'
 import { useLoad, showToast, showLoading, hideLoading, navigateTo, showModal } from '@tarojs/taro'
@@ -10,9 +10,9 @@ import './index.scss'
 import EconomyIcon from './icons/EconomyIcon'
 import ComfortIcon from './icons/ComfortIcon'
 import LuxuryIcon from './icons/LuxuryIcon'
-import CleanIcon from './icons/CleanIcon'
 import QuietIcon from './icons/QuietIcon'
-import SpaceIcon from './icons/SpaceIcon'
+import FastIcon from './icons/FastIcon'
+import SlowIcon from './icons/SlowIcon'
 
 import rideService from '../../api/rideService'
 import { Location, PriceEstimateRequest, CreateOrderRequest } from '../../api/type'
@@ -60,13 +60,19 @@ export default function Ride() {
   const [isPriceLoading, setIsPriceLoading] = useState(false)
   const [isOrderCreating, setIsOrderCreating] = useState(false)
   const [lastPriceUpdate, setLastPriceUpdate] = useState('')
-  const priceTimerRef = useRef<any>(null) // 使用 ref 保存定时器（不触发渲染）
 
   const [isActionSheetOpened, setIsActionSheetOpened] = useState(false)
   const [showPreferencePopup, setShowPreferencePopup] = useState(false)
   const [showTimePopup, setShowTimePopup] = useState(false)
+  
+  // 地图展开状态管理
+  const [isMapExpanded, setIsMapExpanded] = useState(false)
 
   useLoad(() => {
+    // 清空上次的目的地输入
+    setDestinationLocation(null)
+    setEndAddressInput('')
+    
     // 页面分阶段动画
     setTimeout(() => setElementsLoaded(prev => ({ ...prev, map: true })), 100)
     setTimeout(() => setElementsLoaded(prev => ({ ...prev, address: true })), 300)
@@ -79,14 +85,11 @@ export default function Ride() {
   })
 
   // 清理定时器（组件卸载）
-  useEffect(() => {
-    return () => {
-      if (priceTimerRef.current) {
-        clearTimeout(priceTimerRef.current)
-        priceTimerRef.current = null
-      }
-    }
-  }, [])
+
+
+  // 添加新的状态管理
+  const [showPricing, setShowPricing] = useState(false) // 控制是否显示价格和时间
+  const [carTypePricing, setCarTypePricing] = useState<{[key: string]: {time: string, price: number}}>({}) // 存储各车型的动态价格和时间
 
   // ------ 车类型与时间选项数据（UI） ------
   const carTypes = [
@@ -113,31 +116,29 @@ export default function Ride() {
     }
 
     setIsPriceLoading(true)
-    const request: PriceEstimateRequest = {
-      startLocation: currentLocation as Location,
-      endLocation: destinationLocation as Location,
-      carTypeId,
-      // 这里暂用页面估算或后端要求字段
-      estimatedDistance: 12,
-      estimatedDuration: 30,
-    }
-
+    
     try {
+      // 模拟异步加载，延迟1-2秒
+      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000))
+      
+      const request: PriceEstimateRequest = {
+        startLocation: currentLocation,
+        endLocation: destinationLocation as Location,
+        carType: carTypeId,
+        departureTime: selectedTimeOption,
+        preference: travelPreference
+      }
+
       const resp = await rideService.estimatePrice(request)
-      if (resp && resp.success && resp.data) {
+      if (resp.success) {
         setPriceData(resp.data)
         setLastPriceUpdate(new Date().toLocaleTimeString('zh-CN', {
           hour: '2-digit',
           minute: '2-digit'
         }))
-
-        // 清理之前定时器并创建新的自动更新定时器（5 分钟）
-        if (priceTimerRef.current) {
-          clearTimeout(priceTimerRef.current)
-        }
-        priceTimerRef.current = setTimeout(() => {
-          estimatePrice(carTypeId)
-        }, 5 * 60 * 1000)
+        
+        // 更新所有车型的价格和时间信息
+        updateAllCarTypesPricing()
       } else {
         showToast({ title: resp.error || '获取价格失败', icon: 'none' })
       }
@@ -149,10 +150,57 @@ export default function Ride() {
     }
   }
 
+  // 更新所有车型的价格和时间信息
+  const updateAllCarTypesPricing = () => {
+    const basePricing = {
+      economy: { basePrice: 28, baseTime: 15 },
+      comfort: { basePrice: 35, baseTime: 12 },
+      luxury: { basePrice: 45, baseTime: 8 }
+    }
+    
+    const newPricing: {[key: string]: {time: string, price: number}} = {}
+    
+    Object.keys(basePricing).forEach(carType => {
+      const base = basePricing[carType as keyof typeof basePricing]
+      let timeMultiplier = 1
+      let priceMultiplier = 1
+      
+      // 根据出行偏好调整时间（快车/慢车）
+      if (travelPreference === 'fast') {
+        timeMultiplier = 0.8 // 快车时间减少20%
+        priceMultiplier = 1.2 // 快车价格增加20%
+      } else if (travelPreference === 'slow') {
+        timeMultiplier = 1.3 // 慢车时间增加30%
+        priceMultiplier = 0.9 // 慢车价格减少10%
+      }
+      // quiet选项不影响时间和价格
+      
+      const finalTime = Math.round(base.baseTime * timeMultiplier)
+      const finalPrice = Math.round(base.basePrice * priceMultiplier)
+      
+      newPricing[carType] = {
+        time: `${finalTime}分钟`,
+        price: finalPrice
+      }
+    })
+    
+    setCarTypePricing(newPricing)
+    setShowPricing(true) // 显示价格信息
+  }
+
   // 处理车型切换（写入 store 并重新估价）
   const handleCarTypeChange = (carTypeId: string) => {
     setSelectedCarType(carTypeId)
     estimatePrice(carTypeId)
+  }
+
+  // 地图展开相关事件处理
+  const handleMapExpand = () => {
+    setIsMapExpanded(!isMapExpanded)
+  }
+
+  const handleMapCollapse = () => {
+    setIsMapExpanded(!isMapExpanded)
   }
 
   
@@ -170,7 +218,9 @@ export default function Ride() {
     setDestinationLocation(selected)
     setEndAddressInput(selected.landmark || selected.address)
     // 立刻用 known dest 估价（不用等 store 异步）
-    estimatePrice(selectedCarType)
+    if (currentLocation) {
+      estimatePrice(selectedCarType)
+    }
     setIsActionSheetOpened(false)
   }
 
@@ -180,21 +230,36 @@ export default function Ride() {
     // 当用户输入目的地时，创建一个基本的Location对象
     if (value.trim()) {
       const destinationObj: Location = {
-        latitude: 22.5431, // 使用默认坐标（实际应用中可以通过地理编码获取）
-        longitude: 114.0579,
-        address: value.trim(),
-        landmark: value.trim()
+        latitude: currentLocation?.latitude || 0,
+        longitude: currentLocation?.longitude || 0,
+        address: value,
+        landmark: value
       }
       setDestinationLocation(destinationObj)
+      
+      // 开始异步加载价格
+      if (currentLocation) {
+        estimatePrice(selectedCarType)
+      }
     } else {
       setDestinationLocation(null)
+      setShowPricing(false) // 隐藏价格信息
+      setCarTypePricing({}) // 清空价格数据
     }
   }
 
   // 出行偏好选择
   const handlePreferenceSelect = (preference: string) => {
-    if (travelPreference === preference) setTravelPreference('')
-    else setTravelPreference(preference)
+    if (travelPreference === preference) {
+      setTravelPreference('')
+    } else {
+      setTravelPreference(preference)
+    }
+    
+    // 如果有目的地，重新计算价格和时间（快慢车会影响时间）
+    if (destinationLocation && showPricing && (preference === 'fast' || preference === 'slow')) {
+      updateAllCarTypesPricing()
+    }
   }
 
   // 手动刷新价格（UI 按钮）
@@ -301,7 +366,20 @@ export default function Ride() {
   // ---------- 价格显示辅助 ----------
   const getDisplayPrice = () => {
     if (isPriceLoading) return '估算中...'
-    return priceData ? priceData.estimatedPrice : (carTypes.find(c => c.id === selectedCarType)?.price || 0)
+    if (!showPricing) return '--' // 没有目的地时不显示价格
+    return priceData ? priceData.estimatedPrice : (carTypePricing[selectedCarType]?.price || '--')
+  }
+
+  const getDisplayTime = (carTypeId: string) => {
+    if (isPriceLoading && selectedCarType === carTypeId) return '计算中...'
+    if (!showPricing) return '--' // 没有目的地时不显示时间
+    return carTypePricing[carTypeId]?.time || '--'
+  }
+
+  const getDisplayCarPrice = (carTypeId: string) => {
+    if (isPriceLoading && selectedCarType === carTypeId) return '估算中...'
+    if (!showPricing) return '--' // 没有目的地时不显示价格
+    return carTypePricing[carTypeId]?.price || '--'
   }
 
   const getPriceUpdateText = () => {
@@ -312,12 +390,23 @@ export default function Ride() {
 
   // ---------- 渲染（保留原有 UI 结构，替换数据来源） ----------
   return (
-    <View className='ride-page'>
-      <View className='map-container'>
+    <View className={classnames('ride-page', { 'map-expanded': isMapExpanded })}>
+      <View 
+        className={classnames('map-container', { 'expanded': isMapExpanded })}
+        onTouchMove={!isMapExpanded ? handleMapExpand : undefined}
+      >
         <Map />
+        
+        {/* 地图展开时的返回箭头 */}
+        {isMapExpanded && (
+          <View className='map-back-arrow' onClick={handleMapCollapse}>
+            <AtIcon value='chevron-left' size='24' color='#000' />
+          </View>
+        )}
       </View>
 
       <View className={classnames('main-content', { 'loaded': pageLoaded })}>
+        {/* 地址卡片 - 在地图展开时仍然可见 */}
         <View className={classnames('address-card', { 'loaded': elementsLoaded.address })}>
           <View className='address-row start-location'>
             <View className='location-dot green-dot'></View>
@@ -336,14 +425,16 @@ export default function Ride() {
               <Input
                 className='address-input destination-input'
                 value={endAddressInput || ''}
-                placeholder='请输入目的地'
+                placeholder='您要去哪儿？'
                 onInput={(e) => handleDestinationInput(e.detail.value)}
               />
             </View>
           </View>
         </View>
 
-        <View className='car-type-selector'>
+        {/* 其他组件 - 在地图展开时隐藏 */}
+        <View className={classnames('other-content', { 'hidden': isMapExpanded })}>
+          <View className='car-type-selector'>
           {carTypes.map((car, index) => {
             const IconComponent = car.icon
             return (
@@ -361,13 +452,6 @@ export default function Ride() {
                   <IconComponent className='custom-car-icon' />
                 </View>
                 <Text className='car-name'>{car.name}</Text>
-                <View className='car-details'>
-                  <AtIcon value='clock' size='14' className='time-icon' />
-                  <Text className='car-time'>{car.time}</Text>
-                </View>
-                <Text className='car-price'>
-                  ¥{selectedCarType === car.id ? getDisplayPrice() : car.price}
-                </Text>
               </View>
             )
           })}
@@ -384,8 +468,8 @@ export default function Ride() {
               <Text className='preference-subtext'>
                 {travelPreference === '' && '未选择'}
                 {travelPreference === 'quiet' && '更安静'}
-                {travelPreference === 'clean' && '更干净'}
-                {travelPreference === 'spacious' && '空间更大'}
+                {travelPreference === 'fast' && '速度快'}
+                {travelPreference === 'slow' && '速度慢'}
               </Text>
             </View>
             {showPreferencePopup && (
@@ -399,18 +483,18 @@ export default function Ride() {
                     <Text className='option-text'>更安静</Text>
                   </View>
                   <View
-                    className={`preference-option clean ${travelPreference === 'clean' ? 'selected' : ''}`}
-                    onClick={() => handlePreferenceSelect('clean')}
+                    className={`preference-option fast ${travelPreference === 'fast' ? 'selected' : ''}`}
+                    onClick={() => handlePreferenceSelect('fast')}
                   >
-                    <CleanIcon className='option-icon' />
-                    <Text className='option-text'>更干净</Text>
+                    <FastIcon className='option-icon' />
+                    <Text className='option-text'>速度快</Text>
                   </View>
                   <View
-                    className={`preference-option space ${travelPreference === 'spacious' ? 'selected' : ''}`}
-                    onClick={() => handlePreferenceSelect('spacious')}
+                    className={`preference-option slow ${travelPreference === 'slow' ? 'selected' : ''}`}
+                    onClick={() => handlePreferenceSelect('slow')}
                   >
-                    <SpaceIcon className='option-icon' />
-                    <Text className='option-text'>空间更大</Text>
+                    <SlowIcon className='option-icon' />
+                    <Text className='option-text'>速度慢</Text>
                   </View>
                 </View>
               </View>
@@ -453,7 +537,7 @@ export default function Ride() {
           </View>
 
           <Text className='price-subtext'>
-            预计行程 {priceData?.estimatedDistance || actualDistance} 公里
+            预计行程 {priceData?.estimatedDistance || actualDistance} 公里 · 预计时间 {isPriceLoading ? '...' : getDisplayTime(selectedCarType)}
             {priceData?.blockchainFee ? ` · 手续费 ¥${priceData.blockchainFee}` : ''}
           </Text>
 
@@ -484,6 +568,8 @@ export default function Ride() {
             <Text className='info-text'>燃油费指数: 低</Text>
           </View>
         </View>
+
+        </View> {/* 关闭 other-content */}
 
         <View className='action-button-container'>
           <Button

@@ -24,12 +24,33 @@ $text-secondary-gray: #8c8c8c;
 .map-container {
   height: 500rpx;
   width: 100%;
+  position: relative; // 添加相对定位，为渐变蒙版提供定位基准
   
   // 确保Map组件填满容器
   #mapContainer {
     width: 100%;
     height: 100%;
     border-radius: 0;
+  }
+  
+  // 添加渐变蒙版，实现地图到白色背景的自然过渡
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120rpx; // 渐变区域高度
+    background: linear-gradient(
+      to bottom,
+      rgba(245, 245, 245, 0) 0%,        // 完全透明（地图可见）
+      rgba(245, 245, 245, 0.3) 30%,     // 轻微白色蒙版
+      rgba(245, 245, 245, 0.6) 60%,     // 中等白色蒙版
+      rgba(245, 245, 245, 0.85) 80%,    // 较强白色蒙版
+      rgba(245, 245, 245, 1) 100%       // 完全白色（与背景色一致）
+    );
+    pointer-events: none; // 确保蒙版不影响地图交互
+    z-index: 1; // 确保蒙版在地图之上
   }
 }
 
@@ -80,12 +101,12 @@ $text-secondary-gray: #8c8c8c;
         flex: 1;
         
         .destination-input {
-  font-size: 28rpx !important;        // 略小的字体
+  font-size: 30rpx !important;        // 略小的字体
   padding: 6rpx 16rpx !important;     // 缩小内边距（上下6rpx）
   height: auto !important;            // 自适应高度
   line-height: 36rpx !important;      // 控制行高，保证不挤压
-  border-radius: 32rpx;               // 圆角适中
-  background: #e8e8e8;
+  border-radius: 38rpx;               // 圆角适中
+  background: #efeeee;
   border: 2rpx solid #d0d0d0;
   font-weight: 400;
   text-align: center;                 // 文字居中
@@ -311,10 +332,10 @@ $text-secondary-gray: #8c8c8c;
 
   .car-type-option {
     flex: 1;
-    height: 200rpx;
+    height: 160rpx;
     background: $card-white;
     border-radius: 24rpx;
-    padding: 32rpx 16rpx;
+    padding: 24rpx 12rpx;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -533,17 +554,17 @@ $text-secondary-gray: #8c8c8c;
           }
         }
 
-        &.clean {
-          background: #e6fffa;
+        &.fast {
+          background: #fef3c7;
           .option-icon, .option-text {
-            color: #047857;
+            color: #d97706;
           }
         }
 
-        &.space {
-          background: #fff7e6;
+        &.slow {
+          background: #e0f2fe;
           .option-icon, .option-text {
-            color: #b45309;
+            color: #0369a1;
           }
         }
       }
@@ -812,7 +833,7 @@ $text-secondary-gray: #8c8c8c;
     
     .car-type-option {
       padding: 24rpx 12rpx;
-      height: 180rpx;
+      height: 140rpx;
       
       .car-name {
         font-size: 26rpx;
@@ -906,7 +927,7 @@ $text-secondary-gray: #8c8c8c;
   }
   
   .car-type-option {
-    height: 160rpx;
+    height: 130rpx;
     padding: 20rpx 12rpx;
   }
   
@@ -1177,6 +1198,117 @@ $text-secondary-gray: #8c8c8c;
   from {
     opacity: 0;
     transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+// 地图展开状态样式
+.ride-page.map-expanded {
+  .map-container {
+    height: 100vh; // 展开到全屏高度
+    z-index: 1000; // 确保在最上层
+    position: relative;
+    
+    // 移除渐变效果，展开时不需要
+    &::after {
+      display: none;
+    }
+    
+    // 展开状态下的地图样式
+    &.expanded {
+      height: 100vh;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+    }
+  }
+  
+  // 返回箭头样式
+  .map-back-arrow {
+    position: absolute;
+    top: 60rpx; // 状态栏下方
+    left: 30rpx;
+    z-index: 1001; // 在地图之上
+    width: 80rpx;
+    height: 80rpx;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: scale(1.05);
+    }
+    
+    .at-icon {
+      font-size: 32rpx;
+      color: #333;
+    }
+  }
+  
+  // 主内容区域调整
+  .main-content {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+    background: white;
+    border-radius: 24rpx 24rpx 0 0;
+    padding: 32rpx 32rpx 0;
+    box-shadow: 0 -8rpx 24rpx rgba(0, 0, 0, 0.1);
+    
+    // 地址卡片在展开时的样式
+    .address-card {
+      margin-bottom: 0;
+      padding-bottom: 32rpx;
+    }
+    
+    // 隐藏其他组件
+    .other-content.hidden {
+      display: none;
+    }
+  }
+}
+
+// 动画过渡效果
+.map-container {
+  transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-content {
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.other-content {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  
+  &.hidden {
+    opacity: 0;
+    transform: translateY(20rpx);
+    pointer-events: none;
+  }
+}
+
+.map-back-arrow {
+  animation: fadeInScale 0.3s ease;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
   }
   to {
     opacity: 1;
