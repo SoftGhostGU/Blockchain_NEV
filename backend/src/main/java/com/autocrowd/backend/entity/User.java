@@ -28,6 +28,9 @@ public class User {
     @Column(name = "credit_score")
     private Integer creditScore;
     
+    @Column(name = "wallet_balance")
+    private BigDecimal walletBalance;
+    
     @Column(name = "balance")
     private BigDecimal balance;
     
@@ -36,6 +39,16 @@ public class User {
     
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    // 用户偏好设置
+    @Column(name = "pref_quiet")
+    private Byte prefQuiet;
+    
+    @Column(name = "pref_speed")
+    private Byte prefSpeed;
+    
+    @Column(name = "pref_car_type")
+    private Byte prefCarType;
     
     // Constructors, getters and setters are handled by Lombok @Data annotation
 }

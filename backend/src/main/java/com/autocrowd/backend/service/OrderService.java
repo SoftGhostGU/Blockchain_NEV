@@ -5,6 +5,7 @@ import com.autocrowd.backend.dto.order.CreateOrderRequest;
 import com.autocrowd.backend.dto.order.CurrentOrderResponse;
 import com.autocrowd.backend.dto.driver.DriverOrderDetailResponse;
 import com.autocrowd.backend.dto.order.EstimatePriceRequest;
+import com.autocrowd.backend.dto.order.SelectVehicleRequest;
 import com.autocrowd.backend.dto.driver.TurnoverDTO;
 import com.autocrowd.backend.dto.order.UserOrderDetailResponse;
 import com.autocrowd.backend.entity.Order;
@@ -19,6 +20,8 @@ import java.util.Map;
  */
 public interface OrderService {
     Order createOrder(CreateOrderRequest request, String userId);
+    
+    Order selectVehicleForOrder(SelectVehicleRequest request, Integer userId);
     
     Order getOrderById(String orderId);
     

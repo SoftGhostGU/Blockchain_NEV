@@ -151,8 +151,8 @@ public class DriverController {
     }
 
     /**
-     * 车主接单接口
-     * 从请求头获取JWT令牌，解析车主ID，接收订单并更新订单状态
+     * 车主接单接口（已废弃）
+     * 新流程：用户创建订单后，通过外部接口获取匹配的车辆列表，然后用户主动选择车辆
      * @param request 接单请求DTO，包含订单ID和车辆ID
      * @param httpRequest HTTP请求对象，包含用户身份信息
      * @return 包含接单结果的响应实体
@@ -161,6 +161,9 @@ public class DriverController {
     public ResponseEntity<Map<String, Object>> acceptOrder(@RequestBody AcceptOrderRequest request, HttpServletRequest httpRequest) {
         logger.info("[DriverController] 收到接单请求: 订单ID={}", request.getOrder_id());
         try {
+            // 为了保持向后兼容，保留此接口但添加警告日志
+            logger.warn("[DriverController] 使用了已废弃的车主接单接口，建议使用用户主动选择车辆的新流程");
+            
             // 从请求头获取token
             String token = httpRequest.getHeader("Authorization");
             if (token == null || !token.startsWith("Bearer ")) {

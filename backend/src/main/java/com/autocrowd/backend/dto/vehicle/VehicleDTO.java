@@ -9,7 +9,7 @@ public class VehicleDTO {
     private Integer vehicleId;
     private String licensePlate;
     private Integer driverId;
-    private BigDecimal fuelLevel;
+    private Integer fuelLevel;
     private Integer conditionId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -99,7 +99,7 @@ public class VehicleServiceImpl implements VehicleService {
             Vehicle vehicle = new Vehicle();
             vehicle.setDriverId(driverId);
             vehicle.setLicensePlate(request.getLicensePlate().toUpperCase());
-            vehicle.setFuelLevel(java.math.BigDecimal.valueOf(100)); // 默认油量为100
+            vehicle.setFuelLevel(100); // 默认油量为100
             vehicle.setConditionId(savedCondition.getConditionId()); // 关联车辆状况
             vehicle.setAuditStatus((byte) 1); // 默认审核状态为1（待审核）
             vehicle.setCreatedAt(LocalDateTime.now());
@@ -156,7 +156,7 @@ public class VehicleServiceImpl implements VehicleService {
 
             // 更新车辆信息
             if (request.getFuelLevel() != null) {
-                existingVehicle.setFuelLevel(BigDecimal.valueOf(request.getFuelLevel()));
+                existingVehicle.setFuelLevel(request.getFuelLevel());
             }
             existingVehicle.setUpdatedAt(LocalDateTime.now());
 

@@ -242,6 +242,83 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
+     * 用户选择车辆来接单
+     * @param request 选择车辆请求DTO
+     * @param userId 用户ID
+     * @return 更新后的订单
+     */
+    @Override
+    public Order selectVehicleForOrder(SelectVehicleRequest request, Integer userId) {
+        logger.info("[OrderService] 收到用户选择车辆请求: 订单ID={}, 车辆ID={}", request.getOrderId(), request.getVehicleId());
+        try {
+            // 查找订单
+            Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+
+            // 检查订单是否属于该用户
+            if (!order.getUserId().equals(userId)) {
+                throw new BusinessException(ExceptionCodeEnum.PERMISSION_DENIED, "订单不属于当前用户");
+            }
+
+            // 检查订单状态
+            if (order.getStatus() != 0) {
+                throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法选择车辆");
+            }
+
+            // 检查车辆是否通过审核
+            Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆不存在"));
+            
+            if (vehicle.getAuditStatus() == null || vehicle.getAuditStatus() != 2) {
+                throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_AUDITED, "车辆未通过审核，无法选择");
+            }
+
+            // 获取车主信息
+            Driver driver = driverRepository.findById(vehicle.getDriverId())
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "车主不存在"));
+
+            // 更新订单信息
+            order.setDriverId(driver.getDriverId());
+            order.setVehicleId(request.getVehicleId());
+            order.setStatus((byte) 1); // 1=On the way
+            order.setUpdatedAt(LocalDateTime.now());
+            
+            // 设置用户偏好和位置信息
+            order.setUserCredit(request.getUserCredit());
+            order.setUserPrefQuiet(request.getUserPrefQuiet());
+            order.setUserPrefSpeed(request.getUserPrefSpeed());
+            order.setUserPrefCarType(request.getUserPrefCarType());
+            order.setStartLat(request.getStartLat());
+            order.setStartLon(request.getStartLon());
+            order.setDestLat(request.getDestLat());
+            order.setDestLon(request.getDestLon());
+            
+            // 更新访问策略，允许车主访问
+            String currentPolicy = order.getAccessPolicy();
+            if (currentPolicy != null && !currentPolicy.isEmpty()) {
+                // 将策略从 "(USER_1)" 更新为 "(USER_1) OR (DRIVER_2)" 的形式
+                String updatedPolicy = currentPolicy + " OR (DRIVER_" + driver.getDriverId() + ")";
+                order.setAccessPolicy(updatedPolicy);
+            } else {
+                // 如果没有现有策略，则创建新的策略
+                String newPolicy = "(DRIVER_" + driver.getDriverId() + ")";
+                order.setAccessPolicy(newPolicy);
+            }
+
+            // 保存订单
+            Order updatedOrder = orderRepository.save(order);
+            logger.info("[OrderService] 用户选择车辆成功: {}", updatedOrder.getOrderId());
+
+            return updatedOrder;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[OrderService] 用户选择车辆异常: {}", e.getMessage(), e);
+            throw new BusinessException(ExceptionCodeEnum.ORDER_ACCEPT_FAILED, "选择车辆失败: " + e.getMessage());
+        }
+    }
+
+    /**
      * 车主接单
      * @param orderId 订单ID
      * @param driverId 车主ID
