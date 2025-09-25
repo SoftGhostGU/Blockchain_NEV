@@ -22,13 +22,26 @@ public class Vehicle {
     private Integer driverId;
     
     @Column(name = "fuel_level")
-    private BigDecimal fuelLevel;
+    private Integer fuelLevel;
     
     @Column(name = "condition_id", unique = true)
     private Integer conditionId;
     
     @Column(name = "audit_status")
     private Byte auditStatus = 1; // 默认审核状态为1（待审核）
+    
+    // 新增的4个字段
+    @Column(name = "car_cleanliness")
+    private Byte carCleanliness;
+    
+    @Column(name = "car_type")
+    private Byte carType;
+    
+    @Column(name = "lat", precision = 10, scale = 8)
+    private BigDecimal lat;
+    
+    @Column(name = "lon", precision = 11, scale = 8)
+    private BigDecimal lon;
     
     @Column(name = "created_at")
     private LocalDateTime createdAt;

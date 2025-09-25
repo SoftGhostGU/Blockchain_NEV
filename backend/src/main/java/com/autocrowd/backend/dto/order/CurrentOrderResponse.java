@@ -26,6 +26,6 @@ public class CurrentOrderResponse {
     @Data
     public static class VehicleInfoDTO {
         private String licensePlate;
-        private BigDecimal fuelLevel;
+        private Integer fuelLevel;
     }
 }

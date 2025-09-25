@@ -72,4 +72,29 @@ public class Order {
     // IBE访问策略字段
     @Column(name = "access_policy")
     private String accessPolicy;
+    
+    // 用户偏好设置和位置信息
+    @Column(name = "user_credit")
+    private Integer userCredit;
+    
+    @Column(name = "user_pref_quiet")
+    private Byte userPrefQuiet;
+    
+    @Column(name = "user_pref_speed")
+    private Byte userPrefSpeed;
+    
+    @Column(name = "user_pref_car_type")
+    private Byte userPrefCarType;
+    
+    @Column(name = "start_lat", precision = 10, scale = 8)
+    private BigDecimal startLat;
+    
+    @Column(name = "start_lon", precision = 11, scale = 8)
+    private BigDecimal startLon;
+    
+    @Column(name = "dest_lat", precision = 10, scale = 8)
+    private BigDecimal destLat;
+    
+    @Column(name = "dest_lon", precision = 11, scale = 8)
+    private BigDecimal destLon;
 }

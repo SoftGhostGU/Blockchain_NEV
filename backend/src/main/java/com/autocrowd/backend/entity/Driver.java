@@ -41,5 +41,17 @@ public class Driver {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
     
+    @Column(name = "driver_service_quality")
+    private Byte driverServiceQuality;
+    
+    @Column(name = "driver_punctuality")
+    private Byte driverPunctuality;
+    
+    @Column(name = "driver_rating_avg", precision = 3, scale = 2)
+    private BigDecimal driverRatingAvg;
+    
+    @Column(name = "driver_order_count")
+    private Integer driverOrderCount;
+    
     // Constructors, getters and setters are handled by Lombok @Data annotation
 }
