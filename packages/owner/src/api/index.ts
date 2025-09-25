@@ -1,15 +1,29 @@
 import { axios } from './methods';
-import { service } from './service';
+import {
+  service,
+  getVehicleInfoUrl
+} from './service';
 import { notification, message } from 'antd'
 
 // 统一导出供调用  请勿重复命名
 
 const request = {
-  // 登录注册
-  getLogin: (params: any) => { return axios('post', service.login, params) }, //登录
-  logout: (params: any) => { return axios('post', service.logout, params) }, //登出
-  getUserInfo: (params: any) => { return axios('get', service.getUserInfo, params) }, //菜单路由
+  // 用户端
+  register: (params: any) => { return axios('post', service.register, params) }, // 车主注册
+  login: (params: any) => { return axios('post', service.login, params) }, // 车主登录
+  addVehicle: (params: any) => { return axios('post', service.addVehicle, params) }, // 添加用户车辆
+  acceptOrder: (params: any) => { return axios('post', service.acceptOrder, params) }, // 车主接单
+  completeOrder: (params: any) => { return axios('post', service.completeOrder, params) }, // 车主完成订单
+  orderHistory: (params: any) => { return axios('get', service.orderHistory, params) }, // 订单历史
+  recent7dayTurn: (params: any) => { return axios('get', service.recent7dayTurn, params) }, // 最近7日财务数据
+  recent7MonTurn: (params: any) => { return axios('get', service.recent7MonTurn, params) }, // 最近7月财务数据
+  uploadBankcard: (params: any) => { return axios('post', service.uploadBankcard, params) }, // 上传银行卡
+  getVehicleInfo: (params: any) => { return axios('get', getVehicleInfoUrl(params.vehicleId)) }, // 获取车辆信息
   
+  // 财务接口
+  withdrawFinance: (params: any) => { return axios('post', service.withdrawFinance, params) }, // 提现
+  getFinanceInfo: (params: any) => { return axios('get', service.getFinanceInfo, params) }, // 财务记录
+
   // 文件
   /** 
   * 上传文件 - 接口上传 post 
