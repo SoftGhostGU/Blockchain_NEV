@@ -1,378 +1,837 @@
-/* 地址选择页面样式 - 适配Taro小程序 */
-.address-page {
-  background: #fff;
+
+
+// index.scss — 适用于 Taro 小程序页面
+// 设计目标：卡片化组件、粘性头部（sticky）、动画 spinner、移动端友好
+
+// -----------------------------
+// 变量（基于UI设计图优化）
+// 主色调 - 基于图片中的蓝色主题
+$primary: #007AFF;
+$accent: #FF6B35;
+$success: #34C759;
+$warning: #FF9500;
+
+// 文字颜色 - 更贴近iOS设计规范
+$text: #000000;
+$text-secondary: #8E8E93;
+$text-tertiary: #C7C7CC;
+$muted: #C7C7CC;
+
+// 背景颜色
+$bg: #F2F2F7;
+$card-bg: #FFFFFF;
+$bg-tertiary: #F9F9F9;
+
+// 边框和分割线
+$border-color: #E5E5EA;
+$separator-color: #C6C6C8;
+
+// 圆角和间距
+$radius: 16px;
+$radius-sm: 12px;
+$radius-lg: 20px;
+$radius-xl: 24px;
+$gap: 12px;
+
+// 阴影效果 - 更轻量化
+$shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
+
+// -----------------------------
+.modern-address-page {
+  background: $bg;
   min-height: 100vh;
-  font-size: 28rpx; /* 使用rpx单位适配小程序 */
-  color: #333;
+  padding-bottom: 30px;
+  font-family: -apple-system, "Helvetica Neue", "PingFang SC", "Microsoft YaHei", "Arial";
 
-  /* 顶部栏样式 - 包含返回按钮、城市、搜索框和操作按钮 */
-  .header {
+  // 动画出场效果（可选）
+  &.show-animation {
+    .sticky-header { transform: translateY(0); opacity: 1; transition: all 360ms ease; }
+  }
+}
+
+/* ============ 头部导航栏 - 基于图片设计优化 ============ */
+.modern-header {
+  background: $card-bg;
+  padding: 8px 16px;
+  border-bottom: 0.5px solid $separator-color;
+  
+  .header-content {
     display: flex;
     align-items: center;
-    padding: 24rpx;
-    border-bottom: 1rpx solid #f0f0f0;
-    background: #fff;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-
-    /* 返回按钮样式 */
-    .back-icon {
-      font-size: 40rpx;
-      margin-right: 24rpx;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 60rpx;
-      height: 60rpx;
-      
-      /* 小程序点击效果 */
-      &:active {
-        opacity: 0.7;
-        transform: scale(0.95);
-      }
-    }
-
-    /* 城市显示样式 */
-    .city {
-      font-weight: bold;
-      margin-right: 20rpx;
-      color: #333;
-      font-size: 30rpx;
-      white-space: nowrap;
-    }
-
-    /* 搜索输入框样式 */
-    .search-input {
-      flex: 1;
-      border: 1rpx solid #ddd;
-      border-radius: 32rpx;
-      padding: 12rpx 20rpx;
-      font-size: 28rpx;
-      margin-right: 20rpx;
-      background: #f8f8f8;
-      height: 64rpx;
-      box-sizing: border-box;
-      
-      /* 小程序输入框聚焦样式 */
-      &:focus {
-        border-color: #00b578;
-        background: #fff;
-      }
-    }
-
-    /* 额外操作按钮区域 */
-    .extra {
-      display: flex;
-      align-items: center;
-      flex-shrink: 0;
-
-      /* 添加途径按钮样式 */
-      .add {
-        margin-right: 16rpx;
-        color: #00b578;
-        font-size: 26rpx;
-        padding: 8rpx 12rpx;
-        border-radius: 8rpx;
-        
-        &:active {
-          opacity: 0.8;
-          background-color: rgba(0, 181, 120, 0.1);
-        }
-      }
-      
-      /* 取消按钮样式 */
-      .cancel {
-        color: #666;
-        font-size: 26rpx;
-        padding: 8rpx 12rpx;
-        border-radius: 8rpx;
-        
-        &:active {
-          opacity: 0.8;
-          background-color: #f5f5f5;
-        }
-      }
-    }
-  }
-
-  /* 快捷地址选择区域样式 */
-  .quick-section {
-    display: flex;
-    justify-content: space-around;
-    padding: 24rpx 0;
-    border-bottom: 16rpx solid #f6f6f6;
-    background: #fff;
-
-    /* 单个快捷地址项样式 */
-    .quick-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      font-size: 26rpx;
-      color: #333;
-      padding: 16rpx;
-      border-radius: 16rpx;
-      min-width: 120rpx;
-      transition: all 0.2s ease;
-
-      /* 小程序点击效果 */
-      &:active {
-        background-color: #f5f5f5;
-        transform: scale(0.95);
-      }
-
-      /* 快捷地址文本样式 */
-      .quick-text {
-        margin-top: 8rpx;
-        font-weight: 500;
-      }
-
-      /* 快捷地址详细地址样式 */
-      .quick-address {
-        font-size: 22rpx;
-        color: #999;
-        margin-top: 4rpx;
-        text-align: center;
-        max-width: 120rpx;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-    }
-  }
-
-  /* 位置选择按钮区域 */
-  .location-picker {
-    background: #fff;
-    border-bottom: 16rpx solid #f6f6f6;
-    
-    /* 覆盖taro-ui默认样式 */
-    .at-list__item {
-      padding: 24rpx !important;
-      
-      &:active {
-        background-color: #f5f5f5;
-      }
-    }
-  }
-
-  /* 历史地点区域样式 */
-  .section {
-    padding: 24rpx;
-    background: #fff;
-
-    /* 区域标题样式 */
-    .section-title {
-      font-weight: bold;
-      margin-bottom: 20rpx;
-      font-size: 30rpx;
-      color: #333;
-    }
-
-    /* 使用taro-ui的AtList样式优化 */
-    .at-list {
-      border: none;
-      
-      .at-list__item {
-        padding: 24rpx 0 !important;
-        border-bottom: 1rpx solid #f0f0f0 !important;
-        
-        &:last-child {
-          border-bottom: none !important;
-        }
-        
-        /* 小程序点击效果 */
-        &:active {
-          background-color: #f9f9f9;
-        }
-        
-        /* 标题样式 */
-        .at-list__item-title {
-          font-size: 28rpx !important;
-          font-weight: 500 !important;
-          color: #333 !important;
-          line-height: 1.4 !important;
-        }
-        
-        /* 副标题样式 */
-        .at-list__item-note {
-          font-size: 24rpx !important;
-          color: #888 !important;
-          margin-top: 4rpx !important;
-        }
-        
-        /* 额外文本样式 */
-        .at-list__item-extra-text {
-          font-size: 24rpx !important;
-          color: #666 !important;
-        }
-      }
-    }
-
-    /* 空状态样式 */
-    .empty-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 80rpx 0;
-      
-      .empty-text {
-        font-size: 26rpx;
-        color: #999;
-        margin-top: 16rpx;
-      }
-    }
-  }
-
-  /* 单个地点项样式（备用，如果不使用AtList） */
-  .place-item {
-    display: flex;
     justify-content: space-between;
+    height: 44px;
+  }
+
+  .header-left {
+    display: flex;
     align-items: center;
-    padding: 24rpx 0;
-    border-bottom: 1rpx solid #f0f0f0;
-    transition: background-color 0.2s;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
 
-    /* 小程序点击效果 */
     &:active {
-      background-color: #f9f9f9;
+      opacity: 0.6;
     }
 
-    /* 最后一个项目不显示底部边框 */
-    &:last-child {
-      border-bottom: none;
+    .at-icon {
+      color: $text;
+      font-size: 18px;
     }
+  }
 
-    /* 左侧内容（图标和地点信息） */
-    .left {
+  .header-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: $text;
+    letter-spacing: -0.4px;
+    text-align: center;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .header-action {
       display: flex;
       align-items: center;
-      flex: 1;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
 
-      /* 小图标样式 */
-      .icon.small {
-        width: 36rpx;
-        height: 36rpx;
-        margin-right: 16rpx;
+      &:active {
         opacity: 0.6;
       }
 
-      /* 地点信息容器 */
-      .info {
-        display: flex;
-        flex-direction: column;
-
-        /* 地点名称样式 */
-        .name {
-          font-size: 28rpx;
-          font-weight: 500;
-          color: #333;
-          margin-bottom: 4rpx;
-          line-height: 1.4;
-        }
-        
-        /* 地点附加信息样式（如地铁线路） */
-        .sub {
-          font-size: 24rpx;
-          color: #888;
-          line-height: 1.3;
-        }
+      .at-icon {
+        color: $text;
+        font-size: 16px;
       }
     }
+  }
+}
 
-    /* 右侧内容（距离和分享按钮） */
-    .right {
+/* ============ 粘性头部 ============ */
+/* 将当前城市、搜索框和分类标签合并为一个可粘性头部 */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.95);
+  /* 在支持的环境添加毛玻璃效果 */
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 18px rgba(16, 24, 40, 0.06);
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+
+  // 可选：针对 iPhone notch 的安全区顶部填充
+  padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+
+    .header-left, .header-right {
       display: flex;
-      flex-direction: column;
-      align-items: flex-end;
+      align-items: center;
+    }
 
-      /* 距离显示样式 */
-      .distance {
-        font-size: 24rpx;
-        color: #666;
-        margin-bottom: 8rpx;
+    .header-left {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: $text;
+    }
+
+    .header-right {
+      gap: 6px;
+
+      .header-action {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: background 180ms;
+        &:active { background: rgba(0,0,0,0.04); }
       }
-      
-      /* 分享按钮样式 */
-      .share {
-        font-size: 24rpx;
-        color: #00b578;
-        padding: 4rpx 8rpx;
-        border-radius: 4rpx;
-        
+    }
+  }
+
+  .search-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .location-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 10px;
+      background: lighten($primary, 48%);
+      color: $accent;
+      border-radius: 999px;
+      font-size: 14px;
+      flex-shrink: 0;
+      box-shadow: $shadow-sm;
+    }
+
+    .search-card {
+      flex: 1;
+      background: transparent;
+
+      .search-input-container {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 14px;
+        background: #F3F6FA;
+        box-shadow: none;
+        border: 1px solid rgba(16,24,40,0.03);
+        transition: background-color 0.2s ease;
+
+        &:focus-within {
+          background: rgba(0, 122, 255, 0.05);
+        }
+
+        .search-icon { 
+          flex-shrink: 0; 
+          opacity: 0.9;
+          color: $text-secondary;
+          font-size: 14px;
+        }
+        .search-input {
+          font-size: 15px;
+          line-height: 20px;
+          height: 36px;
+          flex: 1;
+          color: $text;
+          background: transparent;
+          border: none;
+          outline: none;
+
+          &::placeholder {
+            color: $muted;
+          }
+        }
+        .clear-btn { 
+          flex-shrink: 0; 
+          padding: 4px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 20px;
+          height: 20px;
+        }
+      }
+    }
+  }
+
+  .category-row {
+    margin-top: 8px;
+    .category-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 6px;
+
+      .category-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: $card-bg;
+        box-shadow: $shadow-sm;
+        font-size: 14px;
+        color: $text-secondary;
+        border: 1px solid $border-color;
+        white-space: nowrap;
+        transition: all 180ms;
+        cursor: pointer;
+
         &:active {
-          opacity: 0.8;
-          background-color: rgba(0, 181, 120, 0.1);
+          opacity: 0.7;
+        }
+
+        &.active {
+          color: $primary;
+          background: rgba(0, 122, 255, 0.1);
+          border-color: $primary;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(0, 122, 255, 0.15);
         }
       }
     }
   }
 }
 
-/* 小程序安全区域适配 */
-.address-page {
-  /* 适配iPhone X等有刘海的设备 */
-  padding-bottom: constant(safe-area-inset-bottom);
-  padding-bottom: env(safe-area-inset-bottom);
+/* ========== 主内容区域 ========== */
+.modern-content {
+  flex: 1;
+  overflow-y: auto;
+  background: $bg;
+  padding: 0 12px;
+
+  .content-section {
+    background: $card-bg;
+    margin-bottom: 12px;
+    border-radius: $radius-lg;
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: $text;
+      padding: 16px 16px 8px 16px;
+      margin: 0;
+      background: $card-bg;
+      border-bottom: 0.5px solid $separator-color;
+    }
+  }
+
+  // 推荐地点标题样式
+  .recommended-title {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background: $card-bg;
+    margin-bottom: 0;
+
+    .title-icon {
+      margin-right: 8px;
+      color: $text;
+      font-size: 16px;
+    }
+
+    .title-text {
+      font-size: 16px;
+      font-weight: 600;
+      color: $text;
+    }
+  }
+
+  .content-card {
+    background: $card-bg;
+    border-radius: 24px; // 更新圆角
+    padding: 16px 20px; // 更新内边距
+    margin-bottom: 16px; // 更新外边距
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); // 更新阴影
+    overflow: hidden;
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+
+      .card-title {
+        font-weight: 600;
+        font-size: 15px;
+        color: $text;
+      }
+    }
+
+    .card-body {
+      // 列表间距
+    }
+  }
+
+  // 空白提示卡
+  .empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 18px;
+    color: $muted;
+
+    .empty-text { margin-top: 8px; font-size: 14px; }
+  }
 }
 
-/* 小屏幕适配 */
-@media (max-width: 750rpx) {
-  .address-page {
-    .header {
-      padding: 20rpx;
-      
+/* ============ 搜索加载区（使用 spinner） ============ */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 8px;
+}
+
+.loading-spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 4px solid rgba(0, 0, 0, 0.06);
+  border-top-color: $primary;
+  box-sizing: border-box;
+  animation: spin 900ms linear infinite;
+  flex-shrink: 0;
+}
+
+/* 文字微动效果以表明仍在等待 */
+.loading-text {
+  font-size: 14px;
+  color: $muted;
+  animation: pulse 1400ms ease-in-out infinite;
+}
+
+/* Spinner 动画 */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0% { opacity: 1; transform: translateY(0); }
+  50% { opacity: 0.65; transform: translateY(1px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ============ 搜索卡片 - 基于图片设计优化 ============ */
+.modern-search-card {
+  background: $card-bg;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid $separator-color;
+  border-radius: $radius-lg;
+
+  .search-section {
+    margin-bottom: 12px;
+
+    .search-input-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      background: $bg-tertiary;
+      border: none;
+      border-radius: $radius;
+      padding: 0 12px;
+      height: 36px;
+      transition: background-color 0.2s ease;
+
+      &:focus-within {
+        background: rgba(0, 122, 255, 0.05);
+      }
+
+      .search-icon {
+        margin-right: 8px;
+        color: $text-secondary;
+        font-size: 14px;
+      }
+
       .search-input {
-        font-size: 26rpx;
-        height: 60rpx;
+        flex: 1;
+        font-size: 16px;
+        color: $text;
+        background: transparent;
+        border: none;
+        outline: none;
+        height: 100%;
+
+        &::placeholder {
+          color: $muted;
+        }
       }
-      
-      .city {
-        font-size: 28rpx;
+
+      .search-placeholder {
+        color: $muted !important;
+      }
+
+      .clear-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 20px;
+        height: 20px;
+        margin-left: 8px;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: opacity 0.2s ease;
+
+        &:hover {
+          opacity: 1;
+        }
+     }
+   }
+   .locate-btn-container {
+     position: absolute;
+     right: 12px;
+     top: 50%;
+     transform: translateY(-50%);
+     cursor: pointer;
+     padding: 4px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+   }
+   }
+
+   .category-section {
+     .category-tabs {
+       display: flex;
+       gap: 12px;
+       align-items: center;
+     }
+
+     .category-tab {
+       display: flex;
+       align-items: center;
+       gap: 6px;
+       padding: 8px 12px;
+       border-radius: $radius;
+       background: $bg-tertiary;
+       border: 1px solid transparent;
+       cursor: pointer;
+       transition: all 0.2s ease;
+
+       .category-label {
+         font-size: 14px;
+         font-weight: 400;
+         color: $text-secondary;
+       }
+
+       .at-icon {
+         color: $text-secondary;
+         font-size: 14px;
+       }
+
+       &:active {
+         opacity: 0.7;
+       }
+
+       &.active {
+         background: rgba(0, 122, 255, 0.1);
+         border-color: $primary;
+
+         .category-label {
+           color: $primary;
+           font-weight: 500;
+         }
+
+         .at-icon {
+           color: $primary !important;
+         }
+       }
+     }
+   }
+ }
+
+/* ============ 当前位置显示 - 基于图片设计优化 ============ */
+.modern-location {
+  background: $card-bg;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid $separator-color;
+
+  .location-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .location-info {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .location-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+    }
+
+    .location-text {
+      font-size: 16px;
+      font-weight: 400;
+      color: $accent;
+    }
+
+    .at-icon {
+      color: $text-secondary;
+      font-size: 12px;
+    }
+  }
+
+  .location-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .location-btn {
+      padding: 6px 12px;
+      font-size: 14px;
+      border-radius: $radius;
+      border: none;
+      background: transparent;
+      transition: opacity 0.2s ease;
+      cursor: pointer;
+
+      &.locate {
+        color: $success;
+        background: rgba(52, 199, 89, 0.1);
+      }
+
+      &.cancel {
+        color: $text-secondary;
+        background: rgba(142, 142, 147, 0.1);
+      }
+
+      &:active {
+        opacity: 0.6;
       }
     }
-    
-    .quick-section {
-      padding: 20rpx 0;
-      
-      .quick-item {
-        font-size: 24rpx;
-        padding: 12rpx;
-        min-width: 100rpx;
-        
-        .quick-text {
-          font-size: 24rpx;
-        }
-        
-        .quick-address {
-          font-size: 20rpx;
-          max-width: 100rpx;
-        }
+  }
+}
+
+/* ============ 地址列表项卡片风格 - 基于图片设计优化 ============ */
+.modern-address-item {
+  background: $card-bg;
+  margin-bottom: 0;
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+
+  &:active {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .address-item-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    position: relative;
+  }
+
+  .address-icon-wrapper {
+    margin-right: 12px;
+    flex-shrink: 0;
+
+    .address-icon-bg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, $primary 0%, lighten($primary, 10%) 100%);
+      border-radius: $radius;
+      box-shadow: 0 2px 6px rgba(0, 122, 255, 0.2);
+    }
+  }
+
+  .address-info {
+    flex: 1;
+    min-width: 0;
+    margin-right: 12px;
+
+    .address-name {
+      display: block;
+      font-size: 20px; // 放大字体
+      font-weight: 600; // 加粗字体
+      color: $text;
+      line-height: 1.4;
+      margin-bottom: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .address-detail {
+      display: block;
+      font-size: 18px; // 放大字体
+      color: $text-secondary;
+      line-height: 1.4;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .address-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    flex-shrink: 0;
+
+    .distance-badge {
+      background: rgba(0, 122, 255, 0.1);
+      padding: 4px 8px;
+      border-radius: $radius-sm;
+      border: 1px solid rgba(0, 122, 255, 0.2);
+
+      .distance-text {
+        font-size: 12px;
+        font-weight: 500;
+        color: $primary;
       }
     }
-    
-    .section {
-      padding: 20rpx;
-      
-      .section-title {
-        font-size: 28rpx;
+
+    .share-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(142, 142, 147, 0.1);
+      transition: opacity 0.2s ease;
+
+      &:active {
+        opacity: 0.6;
       }
-      
-      .at-list .at-list__item {
-        .at-list__item-title {
-          font-size: 26rpx !important;
+
+      .at-icon {
+        color: $text-secondary;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .address-item-divider {
+    height: 0.5px;
+    background: $separator-color;
+    margin: 0 16px;
+  }
+
+  &:last-child .address-item-divider {
+    display: none;
+  }
+}
+
+/* ========== 页面底部安全区域 ========== */
+.modern-content {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* ========== 响应式设计 - 针对375*651小屏幕优化 ========== */
+@media (max-width: 375px) {
+  .modern-address-page {
+    .modern-header {
+      padding: 14px;
+
+      .header-title {
+        font-size: 19px;
+        font-weight: 600;
+      }
+    }
+
+    .modern-location {
+      padding: 14px;
+
+      .location-text {
+        font-size: 16px;
+      }
+    }
+
+    .modern-search-card {
+      margin: 0 10px 12px;
+      padding: 14px;
+      border-radius: $radius-lg;
+    }
+
+    .modern-content {
+      padding: 0 10px;
+
+      .content-section {
+        margin-bottom: 10px;
+        border-radius: $radius-lg;
+
+        .section-title {
+          padding: 14px 14px 8px 14px;
+          font-size: 17px;
+          font-weight: 600;
         }
-        
-        .at-list__item-note {
-          font-size: 22rpx !important;
+      }
+
+      .modern-address-item {
+        .address-item-content {
+          padding: 16px 14px;
         }
-        
-        .at-list__item-extra-text {
-          font-size: 22rpx !important;
+
+        .address-info {
+          .address-name {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 5px;
+          }
+
+          .address-detail {
+            font-size: 17px;
+          }
+        }
+
+        .address-meta {
+          .distance-badge {
+            padding: 6px 10px;
+            border-radius: $radius-sm;
+
+            .distance-text {
+              font-size: 13px;
+              font-weight: 600;
+            }
+          }
         }
       }
     }
   }
+}
+
+/* ========== 触摸设备优化 ========== */
+@media (hover: none) and (pointer: coarse) {
+  .modern-address-item {
+    &:hover {
+      background: $card-bg;
+    }
+
+    &:active {
+      background: rgba(0, 0, 0, 0.05);
+    }
+  }
+
+  .share-btn {
+    &:hover {
+      background: rgba(142, 142, 147, 0.1);
+    }
+
+    &:active {
+      opacity: 0.6;
+    }
+  }
+
+  .category-tab {
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    &:active {
+      background: rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+/* 小屏幕视图微调（可选） */
+@media (max-width: 360px) {
+  .sticky-header { padding-left: 10px; padding-right: 10px; }
+  .search-input { font-size: 14px; }
 }

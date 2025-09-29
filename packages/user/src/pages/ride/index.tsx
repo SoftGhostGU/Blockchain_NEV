@@ -1,4 +1,3 @@
-
 // src/pages/ride/index.tsx  
 import { View, Text, Image, Button, Input } from '@tarojs/components'
 import { useState, useEffect, useRef } from 'react'
@@ -83,9 +82,6 @@ export default function Ride() {
     // 初次加载时估价（如已存在选择）
     estimatePrice(selectedCarType)
   })
-
-  // 清理定时器（组件卸载）
-
 
   // 添加新的状态管理
   const [showPricing, setShowPricing] = useState(false) // 控制是否显示价格和时间

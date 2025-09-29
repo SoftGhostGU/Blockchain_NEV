@@ -1,73 +1,191 @@
-// 导入Taro相关的组件和API
-import { View, Text, Input } from '@tarojs/components'
+// src/pages/address-detail/index.tsx
+import { View, Text, Input, Button } from '@tarojs/components'
 import { useState, useEffect } from 'react'
-import { useLoad, navigateBack, showToast, chooseLocation } from '@tarojs/taro'
-import { AtIcon, AtList, AtListItem } from 'taro-ui'
+import { useLoad, navigateBack, showToast } from '@tarojs/taro'
+import { AtIcon } from 'taro-ui'
+import classnames from 'classnames'
 import './index.scss'
 
-/**
- * 地址选择页面组件 - 适配Taro小程序
- * 功能包括：
- * 1. 顶部搜索栏，包含返回按钮、城市显示、搜索输入框和额外操作
- * 2. 快捷地址选择（家、公司、固定地址）
- * 3. 历史地点列表显示
- * 4. 小程序位置选择功能
- */
-export default function AddressSelect() {
-  // 状态管理
-  const [searchValue, setSearchValue] = useState('') // 搜索输入值
-  const [currentCity, setCurrentCity] = useState('上海') // 当前城市
-  const [isLoading, setIsLoading] = useState(false) // 加载状态
+// 地址数据接口定义
+interface AddressItem {
+  id: string
+  name: string
+  address: string
+  distance: string
+  latitude: number
+  longitude: number
+  type?: 'home' | 'company' | 'history' | 'recommend'
+}
 
-  // 历史地点数据，包含地点名称、地铁线路信息和距离
-  const [historyPlaces, setHistoryPlaces] = useState([
+// 地址分类标签配置 - 现代化设计
+const ADDRESS_CATEGORIES = [
+  { id: 'home', label: '家', icon: 'home', color: '#FF6B35' },
+  { id: 'company', label: '公司', icon: 'bookmark', color: '#1677FF' },
+  { id: 'favorite', label: '收藏', icon: 'star-2', color: '#FFD700' }
+]
+
+export default function ModernAddressDetail() {
+  // ========== 状态管理 ==========
+  const [searchValue, setSearchValue] = useState('') // 搜索输入值
+  const [activeCategory, setActiveCategory] = useState<string>('') // 当前选中的地址分类
+  const [isSearching, setIsSearching] = useState(false) // 是否正在搜索
+  const [searchResults, setSearchResults] = useState<AddressItem[]>([]) // 搜索结果
+  const [isLoading, setIsLoading] = useState(false) // 加载状态
+  const [showAnimation, setShowAnimation] = useState(false) // 动画状态
+
+  // 历史地点数据（模拟数据）
+  const [historyLocations] = useState<AddressItem[]>([
     {
-      id: 1,
-      name: "国家会展中心(17号线)地铁站16号口",
-      sub: "17号线",
-      distance: "11.28km",
-      latitude: 31.1478,
-      longitude: 121.3147
+      id: 'history_1',
+      name: '国家会展中心(17号线)地铁站16号口',
+      address: '17号线',
+      distance: '11.28km',
+      latitude: 31.1573,
+      longitude: 121.3070,
+      type: 'history'
     },
     {
-      id: 2,
-      name: "上海虹桥国际机场T2航站楼",
-      sub: "地铁2号线",
-      distance: "8.5km",
+      id: 'history_2',
+      name: '上海虹桥国际机场T2航站楼',
+      address: '虹桥路2550号',
+      distance: '8.95km',
       latitude: 31.1979,
-      longitude: 121.3364
+      longitude: 121.3365,
+      type: 'history'
     }
   ])
 
-  // 快捷地址数据
-  const [quickAddresses, setQuickAddresses] = useState([
-    { type: 'home', name: '家', icon: 'home', address: '' },
-    { type: 'company', name: '公司', icon: 'briefcase', address: '' },
-    { type: 'fixed', name: '固定', icon: 'map-pin', address: '' }
+  // 推荐地点数据（模拟数据）
+  const [recommendLocations] = useState<AddressItem[]>([
+    {
+      id: 'recommend_1',
+      name: '太平洋·中环广场',
+      address: '南京东路南京东路交口',
+      distance: '19.00km',
+      latitude: 31.2359,
+      longitude: 121.4881,
+      type: 'recommend'
+    },
+    {
+      id: 'recommend_2',
+      name: '鹊巢嘉定海洋世界',
+      address: '阿克苏路63-66弄',
+      distance: '16.44km',
+      latitude: 31.3728,
+      longitude: 121.2644,
+      type: 'recommend'
+    },
+    {
+      id: 'recommend_3',
+      name: '上海大学附属仁和医院',
+      address: '长江西路1999号1座20楼总裁办968号2号门口行',
+      distance: '12.07km',
+      latitude: 31.3097,
+      longitude: 121.3931,
+      type: 'recommend'
+    },
+    {
+      id: 'recommend_4',
+      name: '瑞明大厦',
+      address: '福脸路11号',
+      distance: '10.44km',
+      latitude: 31.2891,
+      longitude: 121.4658,
+      type: 'recommend'
+    },
+    {
+      id: 'recommend_5',
+      name: '东亚银行金融大厦',
+      address: '花园石桥路66号',
+      distance: '9.56km',
+      latitude: 31.2455,
+      longitude: 121.5015,
+      type: 'recommend'
+    }
   ])
 
-  // 页面加载时的初始化
+  // ========== 生命周期 ==========
   useLoad(() => {
-    console.log('地址选择页面加载')
-    // 可以在这里获取用户的历史地址数据
-    loadUserAddresses()
+    console.log('现代化地址详情页面已加载')
+    // 页面加载动画
+    setTimeout(() => {
+      setShowAnimation(true)
+    }, 100)
   })
 
+  // ========== 事件处理函数 ==========
+  
   /**
-   * 加载用户地址数据
+   * 处理返回按钮点击
    */
-  const loadUserAddresses = async () => {
+  const handleBack = () => {
+    navigateBack()
+  }
+
+  /**
+   * 处理搜索输入变化
+   * @param e - 输入事件对象
+   */
+  const handleSearchInput = (e: any) => {
+    const value = e.detail.value
+    setSearchValue(value)
+    
+    // 实时搜索逻辑
+    if (value.trim()) {
+      performSearch(value.trim())
+    } else {
+      setSearchResults([])
+      setIsSearching(false)
+    }
+  }
+
+  /**
+   * 执行搜索功能
+   * @param query - 搜索关键词
+   */
+  const performSearch = async (query: string) => {
+    setIsSearching(true)
+    setIsLoading(true)
+
     try {
-      setIsLoading(true)
-      // 这里可以调用API获取用户的历史地址和快捷地址
-      // const addresses = await addressService.getUserAddresses()
-      // setHistoryPlaces(addresses.history)
-      // setQuickAddresses(addresses.quick)
+      // 模拟API搜索延迟
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // 模拟搜索结果（实际项目中应调用真实API）
+      const mockResults: AddressItem[] = [
+        {
+          id: 'search_1',
+          name: `${query}购物中心`,
+          address: `包含${query}的详细地址信息，位于市中心繁华地段`,
+          distance: '2.5km',
+          latitude: 31.2304,
+          longitude: 121.4737,
+        },
+        {
+          id: 'search_2',
+          name: `${query}地铁站`,
+          address: `${query}地铁站A出口，交通便利`,
+          distance: '5.8km',
+          latitude: 31.2431,
+          longitude: 121.5012,
+        },
+        {
+          id: 'search_3',
+          name: `${query}商务大厦`,
+          address: `${query}商务区核心位置，现代化办公环境`,
+          distance: '3.2km',
+          latitude: 31.2567,
+          longitude: 121.4892,
+        }
+      ]
+      
+      setSearchResults(mockResults)
     } catch (error) {
-      console.error('加载地址数据失败:', error)
+      console.error('搜索失败:', error)
       showToast({
-        title: '加载地址失败',
-        icon: 'error'
+        title: '搜索失败，请重试',
+        icon: 'none',
+        duration: 2000
       })
     } finally {
       setIsLoading(false)
@@ -75,214 +193,258 @@ export default function AddressSelect() {
   }
 
   /**
-   * 返回按钮点击处理
+   * 处理地址分类选择
+   * @param categoryId - 分类ID
    */
-  const handleBack = () => {
-    navigateBack()
-  }
-
-  /**
-   * 搜索输入变化处理
-   */
-  const handleSearchChange = (e) => {
-    setSearchValue(e.detail.value)
-    // 可以在这里实现搜索防抖和地址搜索功能
-    if (e.detail.value.length > 0) {
-      // debounceSearch(e.detail.value)
-    }
-  }
-
-  /**
-   * 添加途径点击处理
-   */
-  const handleAddWaypoint = () => {
-    showToast({
-      title: '添加途径功能开发中',
-      icon: 'none'
-    })
-  }
-
-  /**
-   * 取消按钮点击处理
-   */
-  const handleCancel = () => {
-    navigateBack()
-  }
-
-  /**
-   * 快捷地址点击处理
-   */
-  const handleQuickAddressClick = (type: string) => {
-    const address = quickAddresses.find(item => item.type === type)
-    if (address?.address) {
-      // 如果已设置地址，直接选择
-      handleAddressSelect({
-        name: address.name,
-        address: address.address
-      })
+  const handleCategorySelect = (categoryId: string) => {
+    if (activeCategory === categoryId) {
+      setActiveCategory('') // 取消选中
     } else {
-      // 如果未设置，跳转到设置页面或使用位置选择
-      handleLocationPicker(type)
-    }
-  }
-
-  /**
-   * 使用小程序位置选择器
-   */
-  const handleLocationPicker = (type?: string) => {
-    chooseLocation({
-      success: (res) => {
-        const selectedAddress = {
-          name: res.name,
-          address: res.address,
-          latitude: res.latitude,
-          longitude: res.longitude
-        }
-        
-        if (type) {
-          // 更新快捷地址
-          setQuickAddresses(prev => 
-            prev.map(item => 
-              item.type === type 
-                ? { ...item, address: res.address }
-                : item
-            )
-          )
-        }
-        
-        handleAddressSelect(selectedAddress)
-      },
-      fail: (err) => {
-        console.error('选择位置失败:', err)
-        showToast({
-          title: '选择位置失败',
-          icon: 'error'
+      setActiveCategory(categoryId) // 选中新分类
+      
+      // 添加触觉反馈
+      const category = ADDRESS_CATEGORIES.find(cat => cat.id === categoryId)
+      if (category) {
+        showToast({ 
+          title: `已选择${category.label}`, 
+          icon: 'none',
+          duration: 1000
         })
       }
-    })
+    }
   }
 
   /**
-   * 历史地点点击处理
+   * 处理地址项选择
+   * @param address - 选择的地址对象
    */
-  const handleHistoryPlaceClick = (place) => {
-    handleAddressSelect({
-      name: place.name,
-      address: place.name,
-      latitude: place.latitude,
-      longitude: place.longitude
-    })
-  }
-
-  /**
-   * 地址选择处理
-   */
-  const handleAddressSelect = (address) => {
-    console.log('选择的地址:', address)
-    
-    // 这里可以通过事件或store将选择的地址传递给调用页面
-    // 例如：使用Taro的事件总线或全局状态管理
+  const handleAddressSelect = (address: AddressItem) => {
+    console.log('选中地址:', address)
     
     showToast({
-      title: '地址已选择',
-      icon: 'success'
+      title: `已选择: ${address.name}`,
+      icon: 'success',
+      duration: 1500
     })
-    
-    // 延迟返回，让用户看到成功提示
+
+    // 延迟返回上一页
     setTimeout(() => {
-      navigateBack()
-    }, 1000)
+      navigateBack({
+        delta: 1
+      })
+    }, 1500)
   }
 
   /**
-   * 分享地址处理
+   * 清空搜索内容
    */
-  const handleShareAddress = (place) => {
-    // 小程序分享功能
-    showToast({
-      title: '分享功能开发中',
-      icon: 'none'
-    })
+  const handleClearSearch = () => {
+    setSearchValue('')
+    setSearchResults([])
+    setIsSearching(false)
   }
 
-  return (
-    <View className="address-page">
-      {/* 顶部栏 - 包含返回按钮、城市、搜索框和操作按钮 */}
-      <View className="header">
-        {/* 返回按钮 */}
-        <View className="back-icon" onClick={handleBack}>
-          <AtIcon value="chevron-left" size="20" color="#333" />
-        </View>
-        
-        {/* 当前城市显示 */}
-        <View className="city">{currentCity}</View>
-        
-        {/* 地址搜索输入框 */}
-        <Input
-          className="search-input"
-          placeholder="您要到哪里"
-          value={searchValue}
-          onInput={handleSearchChange}
-          confirmType="search"
-        />
-        
-        {/* 额外操作按钮区域 */}
-        <View className="extra">
-          <Text className="add" onClick={handleAddWaypoint}>+途径</Text>
-          <Text className="cancel" onClick={handleCancel}>取消</Text>
-        </View>
-      </View>
+  /**
+   * 处理定位按钮点击
+   */
+  const handleLocate = () => {
+    showToast({
+      title: '正在定位...',
+      icon: 'loading',
+      duration: 2000
+    })
+    
+    // 模拟定位过程
+    setTimeout(() => {
+      showToast({
+        title: '定位成功',
+        icon: 'success',
+        duration: 1500
+      })
+    }, 2000)
+  }
 
-      {/* 快捷地址选择区域 - 提供家、公司、固定地址的快速选择 */}
-      <View className="quick-section">
-        {quickAddresses.map((item) => (
-          <View 
-            className="quick-item" 
-            key={item.type}
-            onClick={() => handleQuickAddressClick(item.type)}
-          >
-            <AtIcon value={item.icon} size="24" color="#666" />
-            <Text className="quick-text">{item.name}</Text>
-            {item.address && <Text className="quick-address">{item.address}</Text>}
+  // ========== 渲染函数 ==========
+  
+  /**
+   * 渲染地址列表项
+   * @param address - 地址对象
+   * @param showDistance - 是否显示距离
+   */
+  const renderAddressItem = (address: AddressItem, showDistance: boolean = true) => (
+    <View
+      key={address.id}
+      className="modern-address-item"
+      onClick={() => handleAddressSelect(address)}
+    >
+      <View className="address-item-content">
+        <View className="address-icon-wrapper">
+          <View className="address-icon-bg">
+            <AtIcon value="map-pin" size="14" color="#fff" />
           </View>
-        ))}
-      </View>
-
-      {/* 位置选择按钮 */}
-      <View className="location-picker">
-        <AtListItem
-          title="选择位置"
-          arrow="right"
-          iconInfo={{ value: 'map-pin', color: '#00b578' }}
-          onClick={() => handleLocationPicker()}
-        />
-      </View>
-
-      {/* 历史地点区域 - 显示用户之前选择过的地址 */}
-      <View className="section">
-        <Text className="section-title">历史地点</Text>
+        </View>
         
-        {/* 使用AtList组件优化列表显示 */}
-        <AtList>
-          {historyPlaces.map((item) => (
-            <AtListItem
-              key={item.id}
-              title={item.name}
-              note={item.sub}
-              extraText={item.distance}
-              arrow="right"
-              iconInfo={{ value: 'map-pin', color: '#999' }}
-              onClick={() => handleHistoryPlaceClick(item)}
-              onSwitchChange={() => handleShareAddress(item)}
+        <View className="address-info">
+          <Text className="address-name">{address.name}</Text>
+          <Text className="address-detail">{address.address}</Text>
+        </View>
+        
+        {showDistance && (
+          <View className="address-meta">
+            <View className="distance-badge">
+              <Text className="distance-text">{address.distance}</Text>
+            </View>
+            <View className="share-btn">
+              <AtIcon value="share" size="12" color="#999" />
+            </View>
+          </View>
+        )}
+      </View>
+      
+      <View className="address-item-divider" />
+    </View>
+  )
+
+  // ========== 主渲染 ==========
+  return (
+    <View className={classnames('modern-address-page', { 'show-animation': showAnimation })}>
+      {/* 现代化头部导航栏 */}
+      <View className="modern-header">
+        <View className="header-content">
+          <View className="header-left" onClick={handleBack}>
+            <AtIcon value="chevron-left" size="20" color="#1F2937" />
+          </View>
+          
+          <Text className="header-title">选择地址</Text>
+          
+          <View className="header-right">
+            <View className="header-action" onClick={handleLocate}>
+              <AtIcon value="navigation" size="16" color="#1F2937" />
+            </View>
+            <View className="header-action">
+              <AtIcon value="more" size="16" color="#1F2937" />
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* 优化的当前位置显示 */}
+      <View className="modern-location">
+        <View className="location-content">
+          <View className="location-info">
+            <View className="location-icon">
+              <AtIcon value="map-pin" size="14" color="#FF6B35" />
+            </View>
+            <View className="location-text">
+              <Text>上海</Text>
+              <Text className="arrow-down"></Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* 现代化搜索卡片 */}
+      <View className="modern-search-card">
+        {/* 搜索输入区域 */}
+        <View className="search-section">
+          <View className="search-input-container">
+            <AtIcon value="search" size="16" color="#9CA3AF" className="search-icon" />
+            <Input
+              className="search-input"
+              placeholder="你要到哪里"
+              value={searchValue}
+              onInput={handleSearchInput}
+              placeholderClass="search-placeholder"
             />
-          ))}
-        </AtList>
-        
-        {/* 如果没有历史地点 */}
-        {historyPlaces.length === 0 && (
-          <View className="empty-state">
-            <AtIcon value="map" size="48" color="#ccc" />
-            <Text className="empty-text">暂无历史地点</Text>
+            {searchValue && (
+              <View className="clear-btn" onClick={handleClearSearch}>
+                <AtIcon value="close-circle" size="16" color="#D1D5DB" />
+              </View>
+            )}
+            <View className="locate-btn-container" onClick={handleLocate}>
+              <AtIcon value="navigation" size="16" color="#1F2937" />
+            </View>
+          </View>
+        </View>
+
+        {/* 现代化分类标签 */}
+        <View className="category-section">
+          <View className="category-tabs">
+            {ADDRESS_CATEGORIES.map((category) => (
+              <View
+                key={category.id}
+                className={classnames('category-tab', {
+                  'active': activeCategory === category.id
+                })}
+                onClick={() => handleCategorySelect(category.id)}
+                style={{
+                  '--category-color': category.color
+                } as any}
+              >
+                <AtIcon value={category.icon} size="14" />
+                <Text className="category-label">{category.label}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      </View>
+
+      {/* 主要内容区域 */}
+      <View className="modern-content">
+        {/* 搜索结果 */}
+        {isSearching && (
+          <View className="content-card search-results">
+            <View className="card-header">
+              <AtIcon value="search" size="16" color="#1677FF" />
+              <Text className="card-title">搜索结果</Text>
+            </View>
+            
+            {isLoading ? (
+              <View className="loading-container">
+                <View className="loading-spinner" />
+                <Text className="loading-text">搜索中...</Text>
+              </View>
+            ) : (
+              <View className="card-body">
+                {searchResults.length > 0 ? (
+                  searchResults.map((address) => renderAddressItem(address))
+                ) : (
+                  <View className="empty-state">
+                    <AtIcon value="search" size="32" color="#D1D5DB" />
+                    <Text className="empty-text">没有找到相关地址</Text>
+                  </View>
+                )}
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* 非搜索状态下的内容 */}
+        {!isSearching && (
+          <View className="default-content">
+            {/* 历史地点卡片 */}
+            {historyLocations.length > 0 && (
+              <View className="content-card history-card">
+                <View className="card-header">
+                  <AtIcon value="clock" size="16" color="#FF6B35" />
+                  <Text className="card-title">历史地点</Text>
+                </View>
+                <View className="card-body">
+                  {historyLocations.map((address) => renderAddressItem(address))}
+                </View>
+              </View>
+            )}
+
+            {/* 推荐地点卡片 */}
+            <View className="content-card recommend-card">
+              <View className="card-header">
+                <AtIcon value="bookmark" size="16" color="#1677FF" />
+                <Text className="card-title">推荐地点</Text>
+              </View>
+              <View className="card-body">
+                {recommendLocations.map((address) => renderAddressItem(address))}
+              </View>
+            </View>
           </View>
         )}
       </View>
