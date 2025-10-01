@@ -16,14 +16,6 @@ export const service = {
   getFinanceInfo: "financial/records",        // 获取财务信息
 };
 
-// 自动拼接二级地址
-for (let key in service) {
-  if (service.hasOwnProperty(key)) {
-    const serviceKey = key as keyof typeof service;
-    service[serviceKey] = `${window.envConfig.API_BASE_URL}${window.envConfig.API_BASE_PORT ? window.envConfig.API_BASE_PORT + '/' : ""}${service[serviceKey]}`;
-  }
-}
-
 export function getVehicleInfoUrl(vehicleId: string) {
   return `${service.getVehicleInfo.replace("{vehicleId}", vehicleId)}`;
 }
