@@ -60,7 +60,7 @@ public class FinancialController {
             } else if (driverIdStr != null && !driverIdStr.isEmpty()) {
                 userId = Integer.valueOf(driverIdStr);
                 // 车主的role应该是"driver"（小写）
-                if (role == null || (!"DRIVER".equals(role) && !"driver".equals(role))) {
+                if (role == null || !"driver".equals(role)) {
                     role = "driver";
                 }
             } else {
@@ -118,7 +118,7 @@ public class FinancialController {
             } else if (driverIdStr != null && !driverIdStr.isEmpty()) {
                 userId = Integer.valueOf(driverIdStr);
                 // 车主的role应该是"driver"（小写）
-                if (role == null || (!"DRIVER".equals(role) && !"driver".equals(role))) {
+                if (role == null || !"driver".equals(role)) {
                     role = "driver";
                 }
             } else {
@@ -179,7 +179,7 @@ public class FinancialController {
             } else if (driverIdStr != null && !driverIdStr.isEmpty()) {
                 userId = Integer.valueOf(driverIdStr);
                 // 车主的role应该是"driver"（小写）
-                if (role == null || (!"DRIVER".equals(role) && !"driver".equals(role))) {
+                if (role == null || !"driver".equals(role)) {
                     role = "driver";
                 }
             } else {
