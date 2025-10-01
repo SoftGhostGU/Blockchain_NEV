@@ -174,7 +174,7 @@ public class DriverServiceImpl implements DriverService {
                 // 生成财务记录ID（可使用UUID或数据库自增ID）
                 // driverFinancial.setFinancialId(UUID.randomUUID().toString());
                 driverFinancial.setUserId(driverId);
-                driverFinancial.setRole("Driver");
+                driverFinancial.setRole("driver");
                 driverFinancial.setTransactionType(Financial.TransactionType.Withdrawal);
                 driverFinancial.setAmount(profileUpdateRequest.getWalletBalance());
                 // 设置当前余额（如果需要）
