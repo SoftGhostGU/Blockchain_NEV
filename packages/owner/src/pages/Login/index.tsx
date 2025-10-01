@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import './index.scss'
-import { Form, Button } from 'antd';
-// import request from '@/api'
+import { Form, Button, message } from 'antd';
 import loginBg from "../../assets/login_bg.png"
 import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegisterForm'
 import { useNavigate } from 'react-router-dom';
 
+import request from '../../api/index.ts';
+import { testApiConnection, testRegisterApi } from '../../utils/apiTest';
 
 const Login = () => {
   let [isLogin, setIsLogin] = useState(true);
@@ -21,29 +22,95 @@ const Login = () => {
   // 确认登录
   const onFinish = async (userInfo: any) => {
     setLoading(true)
-    // setSubmitLoginName('正在登录...')
+    
+    // 添加 API 连接测试（仅在开发环境）
+    if (process.env.NODE_ENV === 'development') {
+      console.log('🔍 开发模式：测试 API 连接...');
+      await testApiConnection();
+    }
 
     try {
       if (isLogin) {
         // === 登录逻辑 ===
         console.log("登录信息：", userInfo);
 
-        // 假设调用登录接口
-        // await request.login(userInfo);
+        // 构建符合后端接口要求的参数
+        const loginParams = {
+          phone: userInfo.phone, // 将前端的 username 映射为后端的 phone
+          password: userInfo.password
+        };
 
-        navigate('/dashboard');
+        // 调用登录接口
+        const result = await request.login(loginParams);
+        
+        console.log("登录响应：", result);
+
+        // 判断登录是否成功
+        if (result && ((result as any).code === 200 || (result as any).code === 0)) {
+          message.success("登录成功！");
+          
+          // 保存登录信息到本地存储
+          if ((result as any).data && (result as any).data.token) {
+            const appInfo = {
+              token: (result as any).data.token,
+              userInfo: (result as any).data.driver,
+              driverId: (result as any).data.driver.driver_id,
+              username: (result as any).data.driver.username,
+              creditScore: (result as any).data.driver.credit_score,
+              walletBalance: (result as any).data.driver.wallet_balance
+            };
+            localStorage.setItem("ROOT_APP_INFO", JSON.stringify(appInfo));
+            console.log("已保存用户信息到本地存储：", appInfo);
+          }
+
+          // 延迟跳转到仪表板
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 300);
+        } else {
+          const errorMsg = (result as any)?.message || "登录失败，请检查用户名和密码";
+          message.error(errorMsg);
+        }
       } else {
         // === 注册逻辑 ===
         console.log("注册信息：", userInfo);
 
-        // 假设调用注册接口
-        // await request.register(userInfo);
+        // 构建符合后端接口要求的注册参数
+        const registerParams = {
+          phone: userInfo.phone,
+          password: userInfo.password,
+          username: userInfo.username
+        };
 
-        // 注册完成 → 跳转到添加车辆页面
-        navigate('/add-vehicle');
+        console.log('📤 发送注册请求:', registerParams);
+
+        // 调用注册接口 - 添加错误处理
+        let result;
+        try {
+          result = await request.register(registerParams);
+        } catch (apiError) {
+          console.error('❌ 注册 API 调用失败:', apiError);
+          // 尝试使用测试函数
+          result = await testRegisterApi(registerParams);
+        }
+        
+        console.log("注册响应：", result);
+
+        // 判断注册是否成功
+        if (result && ((result as any).code === 200 || (result as any).code === 0)) {
+          message.success("注册成功！请登录");
+          
+          setTimeout(() => {
+            navigate('/add-vehicle');
+          }, 300);
+        } else {
+          const errorMsg = (result as any)?.message || "注册失败，请检查输入信息";
+          message.error(errorMsg);
+        }
       }
     } catch (error) {
       console.error("操作失败", error);
+      message.error(error instanceof Error ? error.message : "操作失败，请稍后重试");
     } finally {
       setLoading(false);
     }
