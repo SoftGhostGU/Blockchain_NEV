@@ -465,7 +465,7 @@ public class OrderServiceImpl implements OrderService {
             // 为用户创建支出记录
             Financial userFinancial = new Financial();
             userFinancial.setUserId(order.getUserId());
-            userFinancial.setRole("User");
+            userFinancial.setRole("user");
             userFinancial.setTransactionType(Financial.TransactionType.Expenses);
             userFinancial.setAmount(actualPrice);
             userFinancial.setTransactionTime(LocalDateTime.now());
@@ -482,7 +482,7 @@ public class OrderServiceImpl implements OrderService {
             // 为车主创建收入记录
             Financial driverFinancial = new Financial();
             driverFinancial.setUserId(order.getDriverId());
-            driverFinancial.setRole("Driver");
+            driverFinancial.setRole("driver");
             driverFinancial.setTransactionType(Financial.TransactionType.Earnings);
             driverFinancial.setAmount(actualPrice);
             driverFinancial.setTransactionTime(LocalDateTime.now());
@@ -743,7 +743,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 从financial表中查询类型为Earnings的数据
         List<Financial> earnings = financialRepository.findByRoleAndUserIdAndTransactionTypeAndTransactionTimeBetween(
-                "Driver", driverId, Financial.TransactionType.Earnings, sevenDaysAgo, now);
+                "driver", driverId, Financial.TransactionType.Earnings, sevenDaysAgo, now);
 
         // 计算总营业额
         BigDecimal totalTurnover = BigDecimal.ZERO;
@@ -765,7 +765,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 从financial表中查询类型为Earnings的数据
         List<Financial> earnings = financialRepository.findByRoleAndUserIdAndTransactionTypeAndTransactionTimeBetween(
-                "Driver", driverId, Financial.TransactionType.Earnings, sixMonthsAgo, now);
+                "driver", driverId, Financial.TransactionType.Earnings, sixMonthsAgo, now);
 
         // 计算总营业额
         BigDecimal totalTurnover = BigDecimal.ZERO;
@@ -787,7 +787,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 从financial表中查询类型为Earnings的数据
         List<Financial> earnings = financialRepository.findByRoleAndUserIdAndTransactionTypeAndTransactionTimeBetween(
-                "Driver", driverId, Financial.TransactionType.Earnings, sevenDaysAgo, now);
+                "driver", driverId, Financial.TransactionType.Earnings, sevenDaysAgo, now);
 
         // 创建包含最近7天的Map
         Map<String, BigDecimal> dailyTurnover = new HashMap<>();
@@ -831,7 +831,7 @@ public class OrderServiceImpl implements OrderService {
 
             // 从financial表中查询类型为Earnings的数据
             List<Financial> earnings = financialRepository.findByRoleAndUserIdAndTransactionTypeAndTransactionTimeBetween(
-                    "Driver", driverId, Financial.TransactionType.Earnings, monthStart, monthEnd);
+                    "driver", driverId, Financial.TransactionType.Earnings, monthStart, monthEnd);
 
             BigDecimal monthlyTurnover = BigDecimal.ZERO;
             for (Financial financial : earnings) {

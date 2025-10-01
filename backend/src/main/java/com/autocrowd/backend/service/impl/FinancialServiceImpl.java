@@ -44,7 +44,7 @@ public class FinancialServiceImpl implements FinancialService {
         }
         
         // 更新用户余额
-        if ("User".equals(role)) {
+        if ("user".equals(role)) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "用户不存在"));
             
@@ -54,7 +54,7 @@ public class FinancialServiceImpl implements FinancialService {
             user.setBalance(user.getBalance().add(amount));
             user.setUpdatedAt(LocalDateTime.now());
             userRepository.save(user);
-        } else if ("Driver".equals(role)) {
+        } else if ("driver".equals(role)) {
             Driver driver = driverRepository.findById(userId)
                     .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "车主不存在"));
             
@@ -76,7 +76,7 @@ public class FinancialServiceImpl implements FinancialService {
         financialRepository.save(financial);
         
         // 上链操作
-        if ("User".equals(role)) {
+        if ("user".equals(role)) {
             blockchainService.createUserTransactionOnBlockchain(financial);
         } else {
             blockchainService.createDriverTransactionOnBlockchain(financial);
@@ -92,7 +92,7 @@ public class FinancialServiceImpl implements FinancialService {
         }
         
         // 检查余额是否充足
-        if ("User".equals(role)) {
+        if ("user".equals(role)) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "用户不存在"));
             
@@ -103,7 +103,7 @@ public class FinancialServiceImpl implements FinancialService {
             user.setBalance(user.getBalance().subtract(amount));
             user.setUpdatedAt(LocalDateTime.now());
             userRepository.save(user);
-        } else if ("Driver".equals(role)) {
+        } else if ("driver".equals(role)) {
             Driver driver = driverRepository.findById(userId)
                     .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "车主不存在"));
             
@@ -126,7 +126,7 @@ public class FinancialServiceImpl implements FinancialService {
         financialRepository.save(financial);
         
         // 上链操作
-        if ("User".equals(role)) {
+        if ("user".equals(role)) {
             blockchainService.createUserTransactionOnBlockchain(financial);
         } else {
             blockchainService.createDriverTransactionOnBlockchain(financial);
