@@ -45,16 +45,25 @@ public class FinancialController {
             // 解析token获取用户信息
             Claims claims = jwtUtil.parseToken(token);
             String userIdStr = claims.get("userId", String.class);
+            String driverIdStr = claims.get("driverId", String.class);
             String role = claims.get("role", String.class);
             
-            if (userIdStr == null || userIdStr.isEmpty()) {
-                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含用户ID");
+            // 兼容处理：车主使用driverId，普通用户使用userId
+            if (userIdStr == null && driverIdStr == null) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含用户ID或车主ID");
             }
             
+            // 优先使用存在的ID（车主使用driverId，用户使用userId）
             Integer userId;
-            try {
+            if (userIdStr != null && !userIdStr.isEmpty()) {
                 userId = Integer.valueOf(userIdStr);
-            } catch (NumberFormatException e) {
+            } else if (driverIdStr != null && !driverIdStr.isEmpty()) {
+                userId = Integer.valueOf(driverIdStr);
+                // 车主的role应该是"driver"（小写）
+                if (role == null || (!"DRIVER".equals(role) && !"driver".equals(role))) {
+                    role = "driver";
+                }
+            } else {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "用户ID格式错误");
             }
             
@@ -94,16 +103,25 @@ public class FinancialController {
             // 解析token获取用户信息
             Claims claims = jwtUtil.parseToken(token);
             String userIdStr = claims.get("userId", String.class);
+            String driverIdStr = claims.get("driverId", String.class);
             String role = claims.get("role", String.class);
             
-            if (userIdStr == null || userIdStr.isEmpty()) {
-                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含用户ID");
+            // 兼容处理：车主使用driverId，普通用户使用userId
+            if (userIdStr == null && driverIdStr == null) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含用户ID或车主ID");
             }
             
+            // 优先使用存在的ID（车主使用driverId，用户使用userId）
             Integer userId;
-            try {
+            if (userIdStr != null && !userIdStr.isEmpty()) {
                 userId = Integer.valueOf(userIdStr);
-            } catch (NumberFormatException e) {
+            } else if (driverIdStr != null && !driverIdStr.isEmpty()) {
+                userId = Integer.valueOf(driverIdStr);
+                // 车主的role应该是"driver"（小写）
+                if (role == null || (!"DRIVER".equals(role) && !"driver".equals(role))) {
+                    role = "driver";
+                }
+            } else {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "用户ID格式错误");
             }
             
@@ -146,16 +164,25 @@ public class FinancialController {
             // 解析token获取用户信息
             Claims claims = jwtUtil.parseToken(token);
             String userIdStr = claims.get("userId", String.class);
+            String driverIdStr = claims.get("driverId", String.class);
             String role = claims.get("role", String.class);
             
-            if (userIdStr == null || userIdStr.isEmpty()) {
-                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含用户ID");
+            // 兼容处理：车主使用driverId，普通用户使用userId
+            if (userIdStr == null && driverIdStr == null) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含用户ID或车主ID");
             }
             
+            // 优先使用存在的ID（车主使用driverId，用户使用userId）
             Integer userId;
-            try {
+            if (userIdStr != null && !userIdStr.isEmpty()) {
                 userId = Integer.valueOf(userIdStr);
-            } catch (NumberFormatException e) {
+            } else if (driverIdStr != null && !driverIdStr.isEmpty()) {
+                userId = Integer.valueOf(driverIdStr);
+                // 车主的role应该是"driver"（小写）
+                if (role == null || (!"DRIVER".equals(role) && !"driver".equals(role))) {
+                    role = "driver";
+                }
+            } else {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "用户ID格式错误");
             }
             

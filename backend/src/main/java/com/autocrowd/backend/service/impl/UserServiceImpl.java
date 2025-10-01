@@ -228,7 +228,7 @@ public class UserServiceImpl implements UserService {
                 (oldBalance == null || oldBalance.compareTo(profileUpdateRequest.getBalance()) != 0)) {
                 Financial userFinancial = new Financial();
                 userFinancial.setUserId(userId);
-                userFinancial.setRole("User");
+                userFinancial.setRole("user");
                 userFinancial.setTransactionType(Financial.TransactionType.Recharge);
                 userFinancial.setAmount(profileUpdateRequest.getBalance());
                 userFinancial.setTransactionTime(LocalDateTime.now());
