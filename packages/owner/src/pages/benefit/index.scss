@@ -21,6 +21,8 @@
       position: relative;
       // border: #c5c5c5 solid 1px;
       box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
+      max-width: 100%; // 限制最大宽度
+      overflow: hidden; // 防止内容溢出
       // background: linear-gradient(to bottom, #f5f5f5, #fff);
       // background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
       // transition: all 0.3s ease-in-out;
@@ -132,10 +134,13 @@
 
     .table-row {
       margin-bottom: 0;
+      overflow: hidden; // 防止内容溢出
     }
 
     .table-row:hover {
-      transform: scale(1.02);
+      // 移除可能导致无限放大的transform
+      // transform: scale(1.02);
+      box-shadow: 4px 8px 15px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease-in-out;
     }
   }

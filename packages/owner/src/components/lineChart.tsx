@@ -18,7 +18,7 @@ const lineChart: React.FC<LineChartProps> = ({ data }) => {
   const minValue = Math.min(...data.map((item: { value: any; }) => item.value));
   const transformedData = data.map((item: { value: number; day: string }) => ({
     ...item,
-    value: item.value - minValue + 50,
+    value: item.value - minValue,
   }));
 
   const [width, setWidth] = useState(0);
@@ -27,7 +27,7 @@ const lineChart: React.FC<LineChartProps> = ({ data }) => {
   useEffect(() => {
     const handleResize = () => {
       const newWidth = Math.max((window.innerWidth * 0.84 - 30) / 4 - 70, 100);
-      const newHeight = Math.max((window.innerHeight * 0.32 - 112), 100);
+      const newHeight = Math.max((window.innerHeight * 0.32 - 132), 100);
       setWidth(newWidth);
       setHeight(newHeight);
     };

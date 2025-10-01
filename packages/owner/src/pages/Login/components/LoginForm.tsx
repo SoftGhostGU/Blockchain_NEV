@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import GraphicCode from '../../../components/GraphicCode';
 
 interface GraphicCodeRef {
-  verify: (str: string) => Promise<boolean>
+  verify: (str: string) => boolean;
 }
 
 const LoginForm = () => {
@@ -56,15 +56,15 @@ const LoginForm = () => {
   return (
     <>
       <Form.Item
-        name="username"
+        name="phone"
         rules={[
-          { required: true, message: '请输入用户名!' },
-          { min: 3, message: '最少长度为3位' },
-          { max: 20, message: '最大长度为20位' },
+          { required: true, message: '请输入电话号码!' },
+          { min: 11, message: '电话长度应为11位' },
+          { max: 11, message: '电话长度应为11位' },
           { pattern: /^[0-9a-zA-Z@~!#$%^&*`.-_]{1,}$/, message: '包含非法字符' },
         ]}
       >
-        <Input size="large" placeholder="用户名" prefix={<UserOutlined className="site-form-item-icon" />} allowClear />
+        <Input size="large" placeholder="电话号码" prefix={<UserOutlined className="site-form-item-icon" />} allowClear />
       </Form.Item>
       <Form.Item
         name="password"

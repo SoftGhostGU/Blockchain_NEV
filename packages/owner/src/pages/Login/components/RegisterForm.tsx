@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import GraphicCode from '../../../components/GraphicCode';
 
 interface GraphicCodeRef {
-  verify: (str: string) => Promise<boolean>
+  verify: (str: string) => boolean;
 }
 
 const RegisterForm = () => {

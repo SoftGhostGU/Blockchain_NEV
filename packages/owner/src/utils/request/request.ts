@@ -4,7 +4,7 @@ import { notification, Modal } from "antd";
 
 // axios 实例
 const request = axios.create({
-  baseURL: `${window.envConfig.API_BASE_URL || ""}${window.envConfig.API_BASE_PORT || ""}`,
+  baseURL: window.envConfig.API_BASE_URL || "",
   timeout: (window.envConfig.API_BASE_TIMEOUT || 10) * 1000, // 秒转毫秒
   headers: {
     "Content-Type": "application/json; charset=utf-8",

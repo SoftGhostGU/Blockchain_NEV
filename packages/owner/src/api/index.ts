@@ -17,6 +17,8 @@ const request = {
   orderHistory: (params: any) => { return axios('get', service.orderHistory, params) }, // 订单历史
   recent7dayTurn: (params: any) => { return axios('get', service.recent7dayTurn, params) }, // 最近7日财务数据
   recent7MonTurn: (params: any) => { return axios('get', service.recent7MonTurn, params) }, // 最近7月财务数据
+  getTurnoverDays: (params: any) => { return axios('get', service.recent7dayTurn, params) }, // 获取每日营业额数据
+  getTurnoverMonths: (params: any) => { return axios('get', service.recent7MonTurn, params) }, // 获取月度收入数据
   uploadBankcard: (params: any) => { return axios('post', service.uploadBankcard, params) }, // 上传银行卡
   getVehicleInfo: (params: any) => { return axios('get', getVehicleInfoUrl(params.vehicleId)) }, // 获取车辆信息
   

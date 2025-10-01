@@ -33,6 +33,8 @@ import {
 } from 'antd-style';
 import { useColorModeStore } from '../../store/store';
 
+import request from '../../api';
+
 const { Search } = Input;
 // type SearchProps = GetProps<typeof Input.Search>;
 
@@ -65,28 +67,122 @@ interface DataType {
   operate: string;
 }
 
+// 后端返回的财务记录数据类型
+interface BackendFinancialRecord {
+  financialId: number;
+  userId: number;
+  role: string;
+  transactionType: string;
+  amount: number;
+  transactionTime: string;
+}
+
+// 后端API响应类型
+interface FinancialApiResponse {
+  code: number;
+  data: BackendFinancialRecord[];
+}
+
 export default function benefit() {
 
-  const current_turnover = [
-    { day: '2025-7-13', value: 220 },
-    { day: '2025-7-14', value: 170 },
-    { day: '2025-7-15', value: 210 },
-    { day: '2025-7-16', value: 230 },
-    { day: '2025-7-17', value: 200 },
-    { day: '2025-7-18', value: 250 },
-    { day: '2025-7-19', value: 240 },
-  ]
+  // const current_turnover = [
+  //   { day: '2025-7-13', value: 220 },
+  //   { day: '2025-7-14', value: 170 },
+  //   { day: '2025-7-15', value: 210 },
+  //   { day: '2025-7-16', value: 230 },
+  //   { day: '2025-7-17', value: 200 },
+  //   { day: '2025-7-18', value: 250 },
+  //   { day: '2025-7-19', value: 240 },
+  // ]
 
+  // const current_balance = [
+  //   { month: '2025/01', value: 5820 },
+  //   { month: '2025/02', value: 5250 },
+  //   { month: '2025/03', value: 5720 },
+  //   { month: '2025/04', value: 6870 },
+  //   { month: '2025/05', value: 6610 },
+  //   { month: '2025/06', value: 6240 },
+  //   { month: '2025/07', value: 6300 },
+  // ]
 
-  const current_balance = [
-    { month: '2025/01', value: 5820 },
-    { month: '2025/02', value: 5250 },
-    { month: '2025/03', value: 5720 },
-    { month: '2025/04', value: 6870 },
-    { month: '2025/05', value: 6610 },
-    { month: '2025/06', value: 6240 },
-    { month: '2025/07', value: 6300 },
-  ]
+  // 使用API获取数据，初始状态使用默认数据
+  const [current_turnover, setCurrent_turnover] = useState([
+    { day: '2025-7-13', value: 0 },
+    { day: '2025-7-14', value: 0 },
+    { day: '2025-7-15', value: 0 },
+    { day: '2025-7-16', value: 0 },
+    { day: '2025-7-17', value: 0 },
+    { day: '2025-7-18', value: 0 },
+    { day: '2025-7-19', value: 0 },
+  ]);
+
+  const [current_balance, setCurrent_balance] = useState([
+    { month: '2025/01', value: 0 },
+    { month: '2025/02', value: 0 },
+    { month: '2025/03', value: 0 },
+    { month: '2025/04', value: 0 },
+    { month: '2025/05', value: 0 },
+    { month: '2025/06', value: 0 },
+    { month: '2025/07', value: 0 },
+  ]);
+
+  const [loading, setLoading] = useState(false);
+
+  // 获取API数据
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // 并行调用三个API
+      const [turnoverResponse, balanceResponse, financeResponse] = await Promise.all([
+        request.getTurnoverDays({}),
+        request.getTurnoverMonths({}),
+        request.getFinanceInfo({})
+      ]);
+
+      console.log('API响应 - 营业额数据:', turnoverResponse);
+      console.log('API响应 - 收入数据:', balanceResponse);
+      console.log('API响应 - 财务记录数据:', financeResponse);
+
+      // 根据API响应格式更新数据
+      if (turnoverResponse) {
+        // 根据实际API响应结构调整
+        const turnoverData = turnoverResponse.data || turnoverResponse;
+        setCurrent_turnover(Array.isArray(turnoverData) ? turnoverData : []);
+      }
+      
+      if (balanceResponse) {
+        // 根据实际API响应结构调整
+        const balanceData = balanceResponse.data || balanceResponse;
+        setCurrent_balance(Array.isArray(balanceData) ? balanceData : []);
+      }
+
+      // 处理财务记录数据
+      if (financeResponse) {
+        const financeData = financeResponse.data || financeResponse;
+        if (Array.isArray(financeData)) {
+          const mappedData = mapBackendDataToFrontend(financeData);
+          setTableData(mappedData);
+        } else {
+          setTableData([]);
+        }
+      }
+
+    } catch (error) {
+      console.error('API调用失败:', error);
+      // API失败时设置为空数组
+      setCurrent_turnover([]);
+      setCurrent_balance([]);
+      setTableData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 组件挂载时获取数据
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const current_order = [
     { type: '网约车', value: 18 },
@@ -105,114 +201,177 @@ export default function benefit() {
   const [balance_to_withdraw, set_balance_to_withdraw] = useState(5370);
   const bank_card_number = '6222026000000000001';
 
-  const [tableData, setTableData] = useState<DataType[]>([
-    {
-      key: '1',
-      orderId: 'ORD001',
-      orderTime: '2025-07-12 14:30:00',
-      orderType: "订单收入",
-      balance: '+￥38',
-      status: '已完成',
-      operate: '· · ·',
-    },
-    {
-      key: '2',
-      orderId: 'ORD002',
-      orderTime: '2025-07-13 16:15:00',
-      orderType: "订单收入",
-      balance: '+￥25',
-      status: '已完成',
-      operate: '· · ·',
-    },
-    {
-      key: '3',
-      orderId: 'ORD003',
-      orderTime: '2025-07-13 19:23:00',
-      orderType: "提现",
-      balance: '-￥1000',
-      status: '处理中',
-      operate: '· · ·',
-    },
-    {
-      key: '4',
-      orderId: 'ORD004',
-      orderTime: '2025-07-14 10:52:00',
-      orderType: "订单收入",
-      balance: '+￥84',
-      status: '已完成',
-      operate: '· · ·',
-    },
+  // 示例数据（已注释）
+  // const [tableData, setTableData] = useState<DataType[]>([
+  //   {
+  //     key: '1',
+  //     orderId: 'ORD001',
+  //     orderTime: '2025-07-12 14:30:00',
+  //     orderType: "订单收入",
+  //     balance: '+￥38',
+  //     status: '已完成',
+  //     operate: '· · ·',
+  //   },
+  //   {
+  //     key: '2',
+  //     orderId: 'ORD002',
+  //     orderTime: '2025-07-13 16:15:00',
+  //     orderType: "订单收入",
+  //     balance: '+￥25',
+  //     status: '已完成',
+  //     operate: '· · ·',
+  //   },
+  //   {
+  //     key: '3',
+  //     orderId: 'ORD003',
+  //     orderTime: '2025-07-13 19:23:00',
+  //     orderType: "提现",
+  //     balance: '-￥1000',
+  //     status: '处理中',
+  //     operate: '· · ·',
+  //   },
+  //   {
+  //     key: '4',
+  //     orderId: 'ORD004',
+  //     orderTime: '2025-07-14 10:52:00',
+  //     orderType: "订单收入",
+  //     balance: '+￥84',
+  //     status: '已完成',
+  //     operate: '· · ·',
+  //   },
+  //   {
+  //     key: '5',
+  //     orderId: 'ORD005',
+  //     orderTime: '2025-07-14 10:52:00',
+  //     orderType: "订单收入",
+  //     balance: '+￥84',
+  //     status: '已完成',
+  //     operate: '· · ·',
+  //   },
+  //   {
+  //     key: '6',
+  //     orderId: 'ORD006',
+  //     orderTime: '2025-07-14 10:52:00',
+  //     orderType: "订单收入",
+  //     balance: '+￥84',
+  //     status: '已完成',
+  //     operate: '· · ·',
+  //   },
+  //   {
+  //     key: '7',
+  //     orderId: 'ORD007',
+  //     orderTime: '2025-07-14 10:52:00',
+  //     orderType: "订单收入",
+  //     balance: '+￥84',
+  //     status: '已完成',
+  //     operate: '· · ·',
+  //   },
+  //   {
+  //     key: '8',
+  //     orderId: 'ORD008',
+  //     orderTime: '2025-07-14 10:52:00',
+  //     orderType: "订单收入",
+  //     balance: '+￥84',
+  //     status: '已完成',
+  //     operate: '· · ·',
+  //   },
+  //   {
+  //     key: '9',
+  //     orderId: 'ORD009',
+  //     orderTime: '2025-07-14 10:52:00',
+  //     orderType: "订单收入",
+  //     balance: '+￥84',
+  //     status: '已完成',
+  //     operate: '· · ·',
+  //   },
+  //   {
+  //     key: '10',
+  //     orderId: 'ORD010',
+  //     orderTime: '2025-07-14 10:52:00',
+  //     orderType: "订单收入",
+  //     balance: '+￥84',
+  //     status: '已完成',
+  //     operate: '· · ·',
+  //   },
+  //   {
+  //     key: '11',
+  //     orderId: 'ORD011',
+  //     orderTime: '2025-07-14 10:52:00',
+  //     orderType: "订单收入",
+  //     balance: '+￥84',
+  //     status: '已完成',
+  //     operate: '· · ·',
+  //   },
+  // ]);
 
-    {
-      key: '5',
-      orderId: 'ORD005',
-      orderTime: '2025-07-14 10:52:00',
-      orderType: "订单收入",
-      balance: '+￥84',
-      status: '已完成',
-      operate: '· · ·',
-    },
-    {
-      key: '6',
-      orderId: 'ORD006',
-      orderTime: '2025-07-14 10:52:00',
-      orderType: "订单收入",
-      balance: '+￥84',
-      status: '已完成',
-      operate: '· · ·',
-    },
-    {
-      key: '7',
-      orderId: 'ORD007',
-      orderTime: '2025-07-14 10:52:00',
-      orderType: "订单收入",
-      balance: '+￥84',
-      status: '已完成',
-      operate: '· · ·',
-    },
-    {
-      key: '8',
-      orderId: 'ORD008',
-      orderTime: '2025-07-14 10:52:00',
-      orderType: "订单收入",
-      balance: '+￥84',
-      status: '已完成',
-      operate: '· · ·',
-    },
-    {
-      key: '9',
-      orderId: 'ORD009',
-      orderTime: '2025-07-14 10:52:00',
-      orderType: "订单收入",
-      balance: '+￥84',
-      status: '已完成',
-      operate: '· · ·',
-    },
-    {
-      key: '10',
-      orderId: 'ORD010',
-      orderTime: '2025-07-14 10:52:00',
-      orderType: "订单收入",
-      balance: '+￥84',
-      status: '已完成',
-      operate: '· · ·',
-    },
-    {
-      key: '11',
-      orderId: 'ORD011',
-      orderTime: '2025-07-14 10:52:00',
-      orderType: "订单收入",
-      balance: '+￥84',
-      status: '已完成',
-      operate: '· · ·',
-    },
-  ]);
+  // 使用API获取的真实数据
+  const [tableData, setTableData] = useState<DataType[]>([]);
 
-  const turnover_yesterday = current_turnover[5].value;
-  const turnover_today = current_turnover[6].value;
-  const turnover_change = (turnover_today - turnover_yesterday) / turnover_yesterday * 100;
-  const balance_this_month = current_balance[6].value;
+  // 数据映射函数：将后端数据转换为前端需要的格式
+  const mapBackendDataToFrontend = (backendData: BackendFinancialRecord[]): DataType[] => {
+    return backendData.map((item, index) => {
+      // 交易类型映射
+      const getOrderType = (transactionType: string) => {
+        switch (transactionType) {
+          case 'Withdrawal':
+            return '提现';
+          case 'Income':
+            return '订单收入';
+          case 'Deposit':
+            return '充值';
+          default:
+            return '其他';
+        }
+      };
+
+      // 金额格式化
+      const formatBalance = (amount: number, transactionType: string) => {
+        const prefix = transactionType === 'Withdrawal' ? '-' : '+';
+        return `${prefix}￥${amount.toFixed(2)}`;
+      };
+
+      // 时间格式化
+      const formatTime = (timeString: string) => {
+        const date = new Date(timeString);
+        return date.toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        }).replace(/\//g, '-');
+      };
+
+      // 状态映射（根据业务逻辑设定）
+      const getStatus = (transactionType: string) => {
+        // 这里可以根据实际业务逻辑调整
+        return transactionType === 'Withdrawal' ? '处理中' : '已完成';
+      };
+
+      return {
+        key: (index + 1).toString(),
+        orderId: `FIN${item.financialId.toString().padStart(3, '0')}`,
+        orderTime: formatTime(item.transactionTime),
+        orderType: getOrderType(item.transactionType),
+        balance: formatBalance(item.amount, item.transactionType),
+        status: getStatus(item.transactionType),
+        operate: '· · ·',
+      };
+    });
+  };
+
+  // 安全地获取数据，防止数组为空时出错
+  const turnover_yesterday = current_turnover.length > 5 ? current_turnover[5]?.value || 0 : 0;
+  const turnover_today = current_turnover.length > 6 ? current_turnover[6]?.value || 0 : 0;
+  const turnover_change = turnover_yesterday > 0 ? (turnover_today - turnover_yesterday) / turnover_yesterday * 100 : 0;
+  const balance_this_month = current_balance.length > 6 ? current_balance[6]?.value || 0 : 0;
   const order_this_month = current_order.reduce((acc, cur) => acc + cur.value, 0);
+
+  // 检查是否有收入数据
+  const hasRevenueData = balance_this_month > 0 || turnover_today > 0;
+  const emptyStateMessage = "近期还没有订单，派出车辆来获取收益吧~";
   // const reputation_last_month = current_reputation[0].value;
   // const reputation_this_month = current_reputation[1].value;
   // const reputation_calculate = (reputation_this_month / 100) * 5;
@@ -378,10 +537,23 @@ export default function benefit() {
               <span className="change-number red">{Math.abs(turnover_change).toFixed(2)}%</span>
             </p>
           )}
-          <div
-            className="item-number"
-            style={{ color: '#4c76f7' }}
-          >￥{current_turnover[4].value.toFixed(2)}</div>
+          {hasRevenueData ? (
+            <div
+              className="item-number"
+              style={{ color: '#4c76f7' }}
+            >￥{current_turnover.length > 4 ? (current_turnover[4]?.value || 0).toFixed(2) : '0.00'}</div>
+          ) : (
+            <div
+              className="item-number"
+              style={{ 
+                color: '#999', 
+                fontSize: '14px',
+                fontStyle: 'italic',
+                textAlign: 'center',
+                padding: '10px'
+              }}
+            >{emptyStateMessage}</div>
+          )}
           <LineChart
             data={current_turnover}
           // width={300}
@@ -393,10 +565,23 @@ export default function benefit() {
             <MoneyCollectOutlined style={{ marginRight: '5px' }} />
             本月收入
           </p>
-          <span
-            className="item-number"
-            style={{ color: '#97c8a0' }}
-          >￥{balance_this_month.toFixed(2)}</span>
+          {hasRevenueData ? (
+            <span
+              className="item-number"
+              style={{ color: '#97c8a0' }}
+            >￥{balance_this_month.toFixed(2)}</span>
+          ) : (
+            <div
+              className="item-number"
+              style={{ 
+                color: '#999', 
+                fontSize: '14px',
+                fontStyle: 'italic',
+                textAlign: 'center',
+                padding: '10px'
+              }}
+            >{emptyStateMessage}</div>
+          )}
           <BarChart
             data={current_balance}
           // width={600}
@@ -409,10 +594,23 @@ export default function benefit() {
             <PieChartOutlined style={{ marginRight: '5px' }} />
             本月订单数
           </p>
-          <span
-            className="item-number"
-            style={{ color: '#ffc658' }}
-          >{order_this_month}单</span>
+          {hasRevenueData ? (
+            <span
+              className="item-number"
+              style={{ color: '#ffc658' }}
+            >{order_this_month}单</span>
+          ) : (
+            <div
+              className="item-number"
+              style={{ 
+                color: '#999', 
+                fontSize: '14px',
+                fontStyle: 'italic',
+                textAlign: 'center',
+                padding: '10px'
+              }}
+            >{emptyStateMessage}</div>
+          )}
           <PieChart
             data={current_order}
           // data1={current_comments}
