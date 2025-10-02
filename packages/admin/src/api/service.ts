@@ -1,29 +1,50 @@
-export const service = {
-  // 用户端
-  register: "driver/register",               // 车主注册
-  login: "driver/login",                     // 车主登录
-  addVehicle: "driver/vehicle",              // 添加用户车辆
-  acceptOrder: "driver/order/accept",        // 车主接单
-  completeOrder: "driver/order/complete",    // 车主完成订单
-  orderHistory: "driver/orders/history",     // 获取车主历史订单
-  recent7dayTurn: "driver/turnover/days",    // 获取最近7天的营业额
-  recent7MonTurn: "driver/turnover/months",  // 获取最近7个月的营业额
-  uploadBankcard: "driver/bankcard",         // 上传银行卡
-  getVehicleInfo: "driver/vehicle/{vehicleId}/condition",  // 获取车辆信息
+// API 接口路径配置
+export const apiEndpoints = {
+  // 用户管理接口
+  login: "auth/login",
+  logout: "auth/logout",
+  getUserInfo: "user/info",
+  updateUserInfo: "user/update",
+  
+  // 用户管理接口
+  getUsers: "admin/users",
+  getUserDetail: "admin/users",
 
-  // 财务接口
-  withdrawFinance: "financial/withdraw",      // 提现
-  getFinanceInfo: "financial/records",        // 获取财务信息
+  // 车辆管理接口
+  getVehicles: "admin/vehicles",
+  getVehicleDetail: "admin/vehicles",
+  approveVehicle: "admin/vehicles/approve",
+  rejectVehicle: "admin/vehicles/reject",
+  
+  // 订单管理接口
+  getOrders: "admin/orders",
+  getOrderDetail: "admin/orders",
+  updateOrderStatus: "admin/orders/status",
+  
+  // 司机管理接口
+  getDrivers: "admin/drivers",
+  getDriverDetail: "admin/drivers",
+  approveDriver: "admin/drivers/approve",
+  rejectDriver: "admin/drivers/reject",
+  
+  // 财务管理接口
+  getFinancials: "admin/financials",
+  getFinancialDetail: "admin/financials",
+  withdrawFinance: "admin/financials/withdraw",
+  
+  // 评论管理接口
+  getPendingReviews: "admin/reviews/pending",
+  getReviewDetail: "admin/reviews",
+  approveReview: "admin/reviews/approve",
+  rejectReview: "admin/reviews/reject",
+  
+  // 系统管理接口
+  getSystemStats: "admin/stats",
+  getSystemLogs: "admin/logs",
+  
+  // 通用接口
+  uploadFile: "common/upload",
+  downloadFile: "common/download"
 };
 
-// 自动拼接二级地址
-for (let key in service) {
-  if (service.hasOwnProperty(key)) {
-    const serviceKey = key as keyof typeof service;
-    service[serviceKey] = `${window.envConfig.API_BASE_URL}${window.envConfig.API_BASE_PORT ? window.envConfig.API_BASE_PORT + '/' : ""}${service[serviceKey]}`;
-  }
-}
-
-export function getVehicleInfoUrl(vehicleId: string) {
-  return `${service.getVehicleInfo.replace("{vehicleId}", vehicleId)}`;
-}
+export default apiEndpoints;
