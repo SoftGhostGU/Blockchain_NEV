@@ -11,6 +11,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.0.0",
     "@vicons/ionicons5": "^0.13.0",
+    "axios": "^1.12.2",
     "naive-ui": "^2.42.0",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"

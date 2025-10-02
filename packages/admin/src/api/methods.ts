@@ -1,5 +1,4 @@
 import request from "../utils/request/request";
-import { notification } from 'antd'
 let API_BASE_URL = window.envConfig['API_BASE_URL'] || ""
 let API_BASE_PORT = window.envConfig['API_BASE_PORT']
 
@@ -22,9 +21,7 @@ export function axios(method: string, url: string, params?: any) {
         headers: { "Content-Type": "multipart/form-data" },
       });
     default:
-      return notification.error({
-        message: "请求方式错误",
-        description: "找不到此方法，请检查拼写",
-      });
+      console.error("请求方式错误: 找不到此方法，请检查拼写");
+      return Promise.reject(new Error("请求方式错误"));
   }
 }
