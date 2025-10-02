@@ -89,10 +89,16 @@ export const api = {
       request.get(apiEndpoints.getPendingReviews, { params }),
     getDetail: (id: string | number) => 
       request.get(`${apiEndpoints.getReviewDetail}/${id}`),
+    // 评论审核统一接口 (status: 2=通过, 3=拒绝)
+    audit: (id: string | number, status: number, data?: any) => {
+      const params = { status, ...data };
+      return request.put(`admin/reviews/${id}/audit`, null, { params });
+    },
+    // 保留旧方法以兼容（内部调用audit方法）
     approve: (id: string | number, data?: any) => 
-      request.post(`${apiEndpoints.approveReview}/${id}`, data),
+      api.reviews.audit(id, 2, data),
     reject: (id: string | number, data?: any) => 
-      request.post(`${apiEndpoints.rejectReview}/${id}`, data),
+      api.reviews.audit(id, 3, data),
   },
 
   // 系统管理
