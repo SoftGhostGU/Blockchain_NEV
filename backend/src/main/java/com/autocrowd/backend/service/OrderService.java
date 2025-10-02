@@ -8,6 +8,9 @@ import com.autocrowd.backend.dto.order.EstimatePriceRequest;
 import com.autocrowd.backend.dto.order.SelectVehicleRequest;
 import com.autocrowd.backend.dto.driver.TurnoverDTO;
 import com.autocrowd.backend.dto.order.UserOrderDetailResponse;
+import com.autocrowd.backend.dto.order.OrderTypeDistributionDTO;
+import com.autocrowd.backend.dto.order.StarDistributionDTO;
+import com.autocrowd.backend.dto.financial.WithdrawableBalanceDTO;
 import com.autocrowd.backend.entity.Order;
 import com.autocrowd.backend.entity.Review;
 
@@ -75,4 +78,28 @@ public interface OrderService {
      * @return 近六月营业额数据列表
      */
     List<TurnoverDTO> getDriverTurnoverLast7Months(Integer driverId);
+    
+    /**
+     * 获取本月订单类型分布
+     * @param userId 用户ID
+     * @param role 用户角色 (user/driver)
+     * @return 本月每种订单类型的数量
+     */
+    List<OrderTypeDistributionDTO> getMonthlyOrderTypeDistribution(Integer userId, String role);
+    
+    /**
+     * 获取评价分布
+     * @param userId 用户ID
+     * @param role 用户角色 (user/driver)
+     * @return 评价星级分布
+     */
+    List<StarDistributionDTO> getStarDistribution(Integer userId, String role);
+    
+    /**
+     * 获取可提现余额
+     * @param userId 用户ID
+     * @param role 用户角色 (user/driver)
+     * @return 可提现余额信息
+     */
+    WithdrawableBalanceDTO getWithdrawableBalance(Integer userId, String role);
 }

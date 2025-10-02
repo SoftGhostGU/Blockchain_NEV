@@ -3,7 +3,9 @@ package com.autocrowd.backend.service.impl;
 import com.autocrowd.backend.dto.driver.DriverOrderDetailResponse;
 import com.autocrowd.backend.dto.order.*;
 import com.autocrowd.backend.dto.driver.TurnoverDTO;
+import com.autocrowd.backend.dto.financial.WithdrawableBalanceDTO;
 import com.autocrowd.backend.entity.*;
+import com.autocrowd.backend.enums.OrderTypeEnum;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.*;
@@ -34,10 +36,10 @@ public class OrderServiceImpl implements OrderService {
     private final DriverRepository driverRepository;
     private final UserRepository userRepository;
     private final FinancialRepository financialRepository;
-    
+
     @Autowired
     private BlockchainService blockchainService;
-    
+
     // Helper method to generate a more realistic order ID
     private String generateOrderId() {
         // Generate order ID in the format ORD20250717001
@@ -45,11 +47,12 @@ public class OrderServiceImpl implements OrderService {
         String randomPart = String.format("%03d", (new Random()).nextInt(1000));
         return "ORD" + datePart + randomPart;
     }
-    
+
     /**
      * 创建新订单
+     *
      * @param request 创建订单请求DTO
-     * @param userId 用户ID
+     * @param userId  用户ID
      * @return 创建的订单实体
      * @throws BusinessException 当参数无效或创建失败时抛出
      */
@@ -82,7 +85,7 @@ public class OrderServiceImpl implements OrderService {
             order.setStatus((byte) 0); // 0=Pending
             order.setCreatedAt(LocalDateTime.now());
             order.setUpdatedAt(LocalDateTime.now());
-            
+
             // 设置访问策略，允许用户访问
             String accessPolicy = "(USER_" + userId + ")";
             order.setAccessPolicy(accessPolicy);
@@ -102,6 +105,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 价格预估
+     *
      * @param request 预估请求参数
      * @return 预估价格信息
      */
@@ -134,6 +138,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 获取用户当前订单
+     *
      * @param userId 用户ID
      * @return 当前订单响应DTO
      */
@@ -195,6 +200,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 根据订单ID获取订单详情
+     *
      * @param orderId 订单ID
      * @return 订单详情
      */
@@ -202,7 +208,7 @@ public class OrderServiceImpl implements OrderService {
     public Order getOrderById(String orderId) {
         try {
             return orderRepository.findById(orderId)
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
@@ -213,8 +219,9 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 更新订单状态
+     *
      * @param orderId 订单ID
-     * @param status 新的状态
+     * @param status  新的状态
      * @return 更新后的订单
      */
     @Override
@@ -222,7 +229,7 @@ public class OrderServiceImpl implements OrderService {
         try {
             // 查找订单
             Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
 
             // 更新订单状态和更新时间
             order.setStatus(status);
@@ -243,8 +250,9 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 用户选择车辆来接单
+     *
      * @param request 选择车辆请求DTO
-     * @param userId 用户ID
+     * @param userId  用户ID
      * @return 更新后的订单
      */
     @Override
@@ -253,7 +261,7 @@ public class OrderServiceImpl implements OrderService {
         try {
             // 查找订单
             Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
 
             // 检查订单是否属于该用户
             if (!order.getUserId().equals(userId)) {
@@ -267,22 +275,22 @@ public class OrderServiceImpl implements OrderService {
 
             // 检查车辆是否通过审核
             Vehicle vehicle = vehicleRepository.findById(request.getVehicleId())
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆不存在"));
-            
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆不存在"));
+
             if (vehicle.getAuditStatus() == null || vehicle.getAuditStatus() != 2) {
                 throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_AUDITED, "车辆未通过审核，无法选择");
             }
 
             // 获取车主信息
             Driver driver = driverRepository.findById(vehicle.getDriverId())
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "车主不存在"));
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "车主不存在"));
 
             // 更新订单信息
             order.setDriverId(driver.getDriverId());
             order.setVehicleId(request.getVehicleId());
             order.setStatus((byte) 1); // 1=On the way
             order.setUpdatedAt(LocalDateTime.now());
-            
+
             // 设置用户偏好和位置信息
             order.setUserCredit(request.getUserCredit());
             order.setUserPrefQuiet(request.getUserPrefQuiet());
@@ -292,7 +300,7 @@ public class OrderServiceImpl implements OrderService {
             order.setStartLon(request.getStartLon());
             order.setDestLat(request.getDestLat());
             order.setDestLon(request.getDestLon());
-            
+
             // 更新访问策略，允许车主访问
             String currentPolicy = order.getAccessPolicy();
             if (currentPolicy != null && !currentPolicy.isEmpty()) {
@@ -320,8 +328,9 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 车主接单
-     * @param orderId 订单ID
-     * @param driverId 车主ID
+     *
+     * @param orderId   订单ID
+     * @param driverId  车主ID
      * @param vehicleId 车辆ID
      * @return 接单后的订单
      */
@@ -331,7 +340,7 @@ public class OrderServiceImpl implements OrderService {
         try {
             // 查找订单
             Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
 
             // 检查订单状态
             if (order.getStatus() != 0) {
@@ -340,8 +349,8 @@ public class OrderServiceImpl implements OrderService {
 
             // 检查车辆是否通过审核
             Vehicle vehicle = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆不存在"));
-            
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆不存在"));
+
             if (vehicle.getAuditStatus() == null || vehicle.getAuditStatus() != 2) {
                 throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_AUDITED, "车辆未通过审核，无法接单");
             }
@@ -351,7 +360,7 @@ public class OrderServiceImpl implements OrderService {
             order.setVehicleId(vehicleId);
             order.setStatus((byte) 1); // 1=On the way
             order.setUpdatedAt(LocalDateTime.now());
-            
+
             // 更新访问策略，允许车主访问
             String currentPolicy = order.getAccessPolicy();
             if (currentPolicy != null && !currentPolicy.isEmpty()) {
@@ -379,7 +388,8 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 车主完成订单
-     * @param orderId 订单ID
+     *
+     * @param orderId     订单ID
      * @param actualPrice 实际价格（已加密）
      * @return 完成的订单
      */
@@ -402,22 +412,22 @@ public class OrderServiceImpl implements OrderService {
             // 直接存储前端传来的加密数据
             order.setActualPrice(actualPrice);
             // 这里我们假设实际时间与预计时间相同，实际项目中可能需要根据真实情况设置
-            order.setActualTime(order.getEstimatedTime()); 
+            order.setActualTime(order.getEstimatedTime());
             order.setUpdatedAt(LocalDateTime.now());
-            
+
             // 保存订单
             Order completedOrder = orderRepository.save(order);
             logger.info("[OrderService] 订单完成成功: {}", completedOrder.getOrderId());
-            
+
             // 创建财务记录
             createFinancialRecords(order, actualPrice);
-            
+
             // 将订单信息上链
             boolean orderOnChain = blockchainService.createOrderOnBlockchain(completedOrder);
             if (!orderOnChain) {
                 logger.error("[OrderService] 订单信息上链失败: {}", completedOrder.getOrderId());
             }
-            
+
             return completedOrder;
         } catch (BusinessException e) {
             throw e;
@@ -426,10 +436,11 @@ public class OrderServiceImpl implements OrderService {
             throw new BusinessException(ExceptionCodeEnum.ORDER_COMPLETE_FAILED, "完成订单失败: " + e.getMessage());
         }
     }
-    
+
     /**
      * 为完成的订单创建财务记录
-     * @param order 订单
+     *
+     * @param order       订单
      * @param actualPrice 实际价格
      */
     @Override
@@ -437,13 +448,13 @@ public class OrderServiceImpl implements OrderService {
     public void createFinancialRecords(Order order, BigDecimal actualPrice) {
         try {
             logger.info("[OrderService] 为订单创建财务记录: 订单ID={}, 实际价格={}", order.getOrderId(), actualPrice);
-            
+
             // 获取用户和车主信息
             User user = userRepository.findById(order.getUserId())
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "用户不存在"));
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.USER_NOT_FOUND, "用户不存在"));
             Driver driver = driverRepository.findById(order.getDriverId())
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "车主不存在"));
-            
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "车主不存在"));
+
             // 更新用户余额（减少）
             if (user.getBalance() == null) {
                 user.setBalance(BigDecimal.ZERO);
@@ -452,7 +463,7 @@ public class OrderServiceImpl implements OrderService {
             user.setUpdatedAt(LocalDateTime.now());
             userRepository.save(user);
             logger.info("[OrderService] 用户余额更新成功: 用户ID={}, 新余额={}", user.getUserId(), user.getBalance());
-            
+
             // 更新车主余额（增加）
             if (driver.getWalletBalance() == null) {
                 driver.setWalletBalance(BigDecimal.ZERO);
@@ -461,7 +472,7 @@ public class OrderServiceImpl implements OrderService {
             driver.setUpdatedAt(LocalDateTime.now());
             driverRepository.save(driver);
             logger.info("[OrderService] 车主余额更新成功: 车主ID={}, 新余额={}", driver.getDriverId(), driver.getWalletBalance());
-            
+
             // 为用户创建支出记录
             Financial userFinancial = new Financial();
             userFinancial.setUserId(order.getUserId());
@@ -496,7 +507,7 @@ public class OrderServiceImpl implements OrderService {
                 logger.info("[OrderService] 车主财务记录创建成功: ID={}", driverFinancial.getFinancialId());
             }
 
-            
+
         } catch (Exception e) {
             logger.error("[OrderService] 创建财务记录异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.FINANCIAL_RECORD_CREATION_FAILED, "创建财务记录失败: " + e.getMessage());
@@ -505,8 +516,9 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 用户评价订单
+     *
      * @param request 添加评价请求DTO
-     * @param userId 用户ID
+     * @param userId  用户ID
      */
     @Override
     public Review addReview(AddReviewRequest request, Integer userId) {
@@ -514,7 +526,7 @@ public class OrderServiceImpl implements OrderService {
         try {
             // 查找订单
             Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
 
             // 检查订单状态是否为已完成
             if (order.getStatus() != 3) { // 3=Completed
@@ -553,6 +565,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 用户获取历史订单列表
+     *
      * @param userId 用户ID
      * @return 用户订单详情响应DTO列表
      */
@@ -578,6 +591,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 车主获取历史订单列表
+     *
      * @param driverId 车主ID
      * @return 车主订单详情响应DTO列表
      */
@@ -603,15 +617,70 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 将订单实体转换为用户订单详情响应DTO
+     *
      * @param order 订单实体
      * @return 用户订单详情响应DTO
      */
     private UserOrderDetailResponse convertToUserOrderDetailResponse(Order order) {
         UserOrderDetailResponse response = new UserOrderDetailResponse();
+
+        // 设置基本订单信息
         response.setOrderId(order.getOrderId());
+
+        // 格式化下单时间
+        if (order.getCreatedAt() != null) {
+            response.setOrderTime(order.getCreatedAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        }
+
+        // 设置订单类型
+        response.setOrderType("网约车");
+
+        // 设置余额变动信息（仅保留数值）
+        if (order.getActualPrice() != null) {
+            response.setBalance(order.getActualPrice());
+        } else if (order.getEstimatedPrice() != null) {
+            response.setBalance(order.getEstimatedPrice());
+        }
+
+        // 设置订单状态文字描述
+        response.setStatus(getStatusDescription(order.getStatus()));
+
+        // 设置位置信息
         response.setStartLocation(order.getStartLocation());
+        response.setEndLocation(order.getDestination());
+
+        // 查询用户信息
+        if (order.getUserId() != null) {
+            Optional<User> userOpt = userRepository.findById(order.getUserId());
+            if (userOpt.isPresent()) {
+                User user = userOpt.get();
+                response.setUsername(user.getUsername());
+            }
+        }
+
+        // 查询评价信息
+        List<Review> reviews = reviewRepository.findByOrderId(order.getOrderId());
+        if (!reviews.isEmpty()) {
+            Review review = reviews.get(0);
+            response.setCommentStar(review.getCommentStar());
+            response.setCommentText(review.getContent());
+
+            // 设置评价详情对象
+            UserOrderDetailResponse.ReviewInfoDTO reviewInfo = new UserOrderDetailResponse.ReviewInfoDTO();
+            reviewInfo.setReviewId(review.getReviewId());
+            reviewInfo.setContent(review.getContent());
+            reviewInfo.setCommentStar(review.getCommentStar());
+            reviewInfo.setCreatedAt(review.getCreatedAt());
+            reviewInfo.setUpdatedAt(review.getUpdatedAt());
+            response.setReview(reviewInfo);
+        } else {
+            // 没有评价时设置默认值
+            response.setCommentStar(BigDecimal.ZERO);
+            response.setCommentText("");
+        }
+
+        // 保留原有字段用于向后兼容
         response.setDestination(order.getDestination());
-        response.setStatus(order.getStatus());
         response.setEstimatedPrice(order.getEstimatedPrice());
         response.setActualPrice(order.getActualPrice());
         response.setCreatedAt(order.getCreatedAt());
@@ -627,41 +696,42 @@ public class OrderServiceImpl implements OrderService {
                 driverInfo.setDriverId(driver.getDriverId());
                 driverInfo.setUsername(driver.getUsername());
                 driverInfo.setCreditScore(driver.getCreditScore());
-
-                // 查询车辆信息
-                if (order.getVehicleId() != null) {
-                    Optional<Vehicle> vehicleOpt = vehicleRepository.findById(order.getVehicleId());
-                    if (vehicleOpt.isPresent()) {
-                        Vehicle vehicle = vehicleOpt.get();
-                        UserOrderDetailResponse.VehicleInfoDTO vehicleInfo = new UserOrderDetailResponse.VehicleInfoDTO();
-                        vehicleInfo.setVehicleId(vehicle.getVehicleId());
-                        vehicleInfo.setLicensePlate(vehicle.getLicensePlate());
-                        // 移除对setVehicle方法的调用，因为DriverInfoDTO中没有这个方法
-                        // driverInfo.setVehicle(vehicleInfo);
-                    }
-                }
                 response.setDriver(driverInfo);
             }
-        }
-
-        // 查询评价信息
-        List<Review> reviews = reviewRepository.findByOrderId(order.getOrderId());
-        if (!reviews.isEmpty()) {
-            Review review = reviews.get(0); // 一个订单只应该有一个评价
-            UserOrderDetailResponse.ReviewInfoDTO reviewInfo = new UserOrderDetailResponse.ReviewInfoDTO();
-            reviewInfo.setReviewId(review.getReviewId());
-            reviewInfo.setContent(review.getContent());
-            reviewInfo.setCommentStar(review.getCommentStar());
-            reviewInfo.setCreatedAt(review.getCreatedAt());
-            reviewInfo.setUpdatedAt(review.getUpdatedAt());
-            response.setReview(reviewInfo);
         }
 
         return response;
     }
 
     /**
+     * 获取订单状态的文字描述
+     *
+     * @param status 状态码
+     * @return 状态描述
+     */
+    private String getStatusDescription(Byte status) {
+        if (status == null) {
+            return "未知";
+        }
+        switch (status) {
+            case 0:
+                return "等待中";
+            case 1:
+                return "已接单";
+            case 2:
+                return "进行中";
+            case 3:
+                return "已完成";
+            case 4:
+                return "已取消";
+            default:
+                return "未知";
+        }
+    }
+
+    /**
      * 将订单实体转换为车主订单详情响应DTO
+     *
      * @param order 订单实体
      * @return 车主订单详情响应DTO
      */
@@ -845,5 +915,111 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return result;
+    }
+
+    @Override
+    public List<OrderTypeDistributionDTO> getMonthlyOrderTypeDistribution(Integer userId, String role) {
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime monthStart = now.withDayOfMonth(1).with(LocalDateTime.MIN.toLocalTime());
+            LocalDateTime monthEnd = now.withDayOfMonth(now.toLocalDate().lengthOfMonth()).with(LocalDateTime.MAX.toLocalTime());
+
+            List<Order> orders;
+            if ("driver".equals(role)) {
+                // 只统计已完成的订单 (status=3)
+                orders = orderRepository.findByDriverIdAndStatusAndCreatedAtBetween(userId, (byte) 3, monthStart, monthEnd);
+            } else {
+                // 只统计已完成的订单 (status=3)
+                orders = orderRepository.findByUserIdAndStatusAndCreatedAtBetween(userId, (byte) 3, monthStart, monthEnd);
+            }
+
+            // 统计每种类型的数量
+            Map<String, Long> typeCountMap = new HashMap<>();
+            for (OrderTypeEnum type : OrderTypeEnum.values()) {
+                typeCountMap.put(type.getDescription(), 0L);
+            }
+
+            for (Order order : orders) {
+                String orderType = order.getType() != null ? order.getType() : "网约车";
+                typeCountMap.put(orderType, typeCountMap.getOrDefault(orderType, 0L) + 1);
+            }
+
+            List<OrderTypeDistributionDTO> result = new ArrayList<>();
+            for (Map.Entry<String, Long> entry : typeCountMap.entrySet()) {
+                result.add(new OrderTypeDistributionDTO(entry.getKey(), entry.getValue()));
+            }
+
+            return result;
+        } catch (Exception e) {
+            logger.error("[获取订单类型分布异常]: {}", e.getMessage(), e);
+            throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "获取订单类型分布失败: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<StarDistributionDTO> getStarDistribution(Integer userId, String role) {
+        try {
+            List<Review> reviews;
+            if ("driver".equals(role)) {
+                reviews = reviewRepository.findByDriverId(userId);
+            } else {
+                reviews = reviewRepository.findByUserId(userId);
+            }
+
+            // 统计每个星级的数量
+            Map<Integer, Long> starCountMap = new HashMap<>();
+            for (int i = 1; i <= 5; i++) {
+                starCountMap.put(i, 0L);
+            }
+
+            for (Review review : reviews) {
+                if (review.getCommentStar() != null) {
+                    int star = review.getCommentStar().intValue();
+                    if (star >= 1 && star <= 5) {
+                        starCountMap.put(star, starCountMap.get(star) + 1);
+                    }
+                }
+            }
+
+            List<StarDistributionDTO> result = new ArrayList<>();
+            for (Map.Entry<Integer, Long> entry : starCountMap.entrySet()) {
+                result.add(new StarDistributionDTO(entry.getKey(), entry.getValue()));
+            }
+
+            // 按星级降序排列 (5星到1星)
+            result.sort((a, b) -> b.getStar().compareTo(a.getStar()));
+            return result;
+        } catch (Exception e) {
+            logger.error("[获取评价分布异常]: {}", e.getMessage(), e);
+            throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "获取评价分布失败: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public WithdrawableBalanceDTO getWithdrawableBalance(Integer userId, String role) {
+        try {
+            BigDecimal totalBalance = BigDecimal.ZERO;
+
+            if ("driver".equals(role)) {
+                Optional<Driver> driverOpt = driverRepository.findById(userId);
+                if (driverOpt.isPresent()) {
+                    Driver driver = driverOpt.get();
+                    totalBalance = driver.getWalletBalance() != null ? driver.getWalletBalance() : BigDecimal.ZERO;
+                }
+            } else {
+                Optional<User> userOpt = userRepository.findById(userId);
+                if (userOpt.isPresent()) {
+                    User user = userOpt.get();
+                    totalBalance = user.getBalance() != null ? user.getBalance() : BigDecimal.ZERO;
+                }
+            }
+
+            // 可提现余额就是总余额，不需要考虑冻结余额
+            BigDecimal withdrawableBalance = totalBalance;
+            return new WithdrawableBalanceDTO(withdrawableBalance, totalBalance);
+        } catch (Exception e) {
+            logger.error("[获取可提现余额异常]: {}", e.getMessage(), e);
+            throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "获取可提现余额失败: " + e.getMessage());
+        }
     }
 }

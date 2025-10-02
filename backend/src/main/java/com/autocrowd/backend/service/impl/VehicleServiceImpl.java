@@ -5,6 +5,7 @@ import com.autocrowd.backend.dto.vehicle.VehicleDTO;
 import com.autocrowd.backend.dto.vehicle.VehicleUpdateRequest;
 import com.autocrowd.backend.entity.Vehicle;
 import com.autocrowd.backend.entity.VehicleCondition;
+import com.autocrowd.backend.enums.VehicleStatusEnum;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.VehicleConditionRepository;
@@ -79,20 +80,30 @@ public class VehicleServiceImpl implements VehicleService {
             if (request.getLicensePlate() == null || request.getLicensePlate().trim().isEmpty()) {
                 throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "车牌号不能为空");
             }
+            if (request.getVehicleModel() == null || request.getVehicleModel().trim().isEmpty()) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "车辆型号不能为空");
+            }
 
             // 检查车牌号是否已存在
             if (vehicleRepository.existsByLicensePlate(request.getLicensePlate())) {
                 throw new BusinessException(ExceptionCodeEnum.VEHICLE_LICENSE_PLATE_EXISTS, "车牌号已存在");
             }
 
-            // 创建默认的车辆状况
+            // 创建车辆状况，使用前端传入的实际数据
             VehicleCondition vehicleCondition = new VehicleCondition();
+            vehicleCondition.setVehicleModel(request.getVehicleModel());
             vehicleCondition.setBatteryPercent((byte) 85); // 默认电量85%
             vehicleCondition.setMilesToGo("300"); // 默认续航300公里
-            vehicleCondition.setBodyState((byte) 0); // 车身状态：0-良好
-            vehicleCondition.setTirePressure((byte) 0); // 轮胎压力：0-正常
-            vehicleCondition.setBrakeState((byte) 1); // 制动系统：1-正常
-            vehicleCondition.setPowerState((byte) 2); // 动力系统：2-良好
+            
+            // 根据前端传入的状态设置对应的枚举值
+            vehicleCondition.setBodyState(VehicleStatusEnum.fromDescription(
+                request.getBodyState() != null ? request.getBodyState() : "正常").getCode().byteValue());
+            vehicleCondition.setTirePressure(VehicleStatusEnum.fromDescription(
+                request.getTirePressure() != null ? request.getTirePressure() : "正常").getCode().byteValue());
+            vehicleCondition.setBrakeState(VehicleStatusEnum.fromDescription(
+                request.getBrakeState() != null ? request.getBrakeState() : "正常").getCode().byteValue());
+            vehicleCondition.setPowerState(VehicleStatusEnum.fromDescription(
+                request.getPowerState() != null ? request.getPowerState() : "正常").getCode().byteValue());
             VehicleCondition savedCondition = vehicleConditionRepository.save(vehicleCondition);
 
             // 创建车辆实体
@@ -252,6 +263,34 @@ public class VehicleServiceImpl implements VehicleService {
     private VehicleDTO convertToDTO(Vehicle vehicle) {
         VehicleDTO dto = new VehicleDTO();
         BeanUtils.copyProperties(vehicle, dto);
+        
+        // 查询并填充车辆状况信息
+        if (vehicle.getConditionId() != null) {
+            try {
+                VehicleCondition condition = vehicleConditionRepository.findById(vehicle.getConditionId()).orElse(null);
+                if (condition != null) {
+                    dto.setVehicleModel(condition.getVehicleModel());
+                    dto.setBatteryPercent(condition.getBatteryPercent());
+                    dto.setMilesToGo(condition.getMilesToGo());
+                    // 将数字状态转换为文字描述
+                    dto.setBodyState(VehicleStatusEnum.fromCode(condition.getBodyState().intValue()).getDescription());
+                    dto.setTirePressure(VehicleStatusEnum.fromCode(condition.getTirePressure().intValue()).getDescription());
+                    dto.setBrakeState(VehicleStatusEnum.fromCode(condition.getBrakeState().intValue()).getDescription());
+                    dto.setPowerState(VehicleStatusEnum.fromCode(condition.getPowerState().intValue()).getDescription());
+                }
+            } catch (Exception e) {
+                logger.warn("[VehicleServiceImpl] 获取车辆状况信息失败: {}", e.getMessage());
+                // 如果获取失败，设置默认值
+                dto.setVehicleModel("未知");
+                dto.setBatteryPercent((byte) 0);
+                dto.setMilesToGo("0公里");
+                dto.setBodyState("未知");
+                dto.setTirePressure("未知");
+                dto.setBrakeState("未知");
+                dto.setPowerState("未知");
+            }
+        }
+        
         return dto;
     }
 }
