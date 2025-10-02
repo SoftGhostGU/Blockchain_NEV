@@ -16,7 +16,7 @@ const barChart: React.FC<BarChartProps> = ({ data }) => {
   const minValue = Math.min(...data.map((item: { value: any; }) => item.value));
   const transformedData = data.map((item: { value: number; day: string }) => ({
     ...item,
-    value: item.value - minValue + 500,
+    value: item.value - minValue,
   }));
 
   const [width, setWidth] = useState(0);
