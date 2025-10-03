@@ -1,4 +1,5 @@
 import axios from "axios";
+import { encrypt, decrypt } from "../IBE";
 
 // 获取配置，提供默认值
 const getConfig = () => {
@@ -11,6 +12,22 @@ const getConfig = () => {
 };
 
 const config = getConfig();
+
+// 获取用户身份
+const getUserIdentity = (): string => {
+  try {
+    const appInfo = localStorage.getItem("ROOT_APP_INFO");
+    if (appInfo) {
+      const { user } = JSON.parse(appInfo);
+      if (user && user.role) {
+        return `${user.role.toUpperCase()}_${user.id || 'ADMIN'}`;
+      }
+    }
+  } catch (error) {
+    console.warn("获取用户身份失败:", error);
+  }
+  return "ADMIN"; // 默认管理员身份
+};
 
 // axios 实例
 const request = axios.create({
@@ -49,6 +66,35 @@ request.interceptors.request.use(
         console.warn("解析 ROOT_APP_INFO 出错:", e);
       }
     }
+
+    // IBE加密：对请求数据中的敏感字段进行加密
+    if (config.data && typeof config.data === 'object') {
+      const userIdentity = getUserIdentity();
+      const accessPolicy = `(${userIdentity})`; // 只有当前用户可以解密
+      
+      try {
+        const encryptedData = encrypt(config.data, accessPolicy);
+        config.data = encryptedData;
+        console.log('IBE加密请求数据:', encryptedData);
+      } catch (error) {
+        console.warn('IBE加密失败，使用原始数据:', error);
+      }
+    }
+
+    // IBE加密：对GET请求参数中的敏感字段进行加密
+    if (config.params && typeof config.params === 'object') {
+      const userIdentity = getUserIdentity();
+      const accessPolicy = `(${userIdentity})`;
+      
+      try {
+        const encryptedParams = encrypt(config.params, accessPolicy);
+        config.params = encryptedParams;
+        console.log('IBE加密请求参数:', encryptedParams);
+      } catch (error) {
+        console.warn('IBE加密参数失败，使用原始参数:', error);
+      }
+    }
+
     return config;
   },
   (error: any) => Promise.reject(error)
@@ -71,6 +117,53 @@ request.interceptors.response.use(
       return data;
     }
     
+    // IBE解密：对响应数据中的敏感字段进行解密
+    const decryptResponseData = (responseData: any): any => {
+      if (!responseData || typeof responseData !== 'object') {
+        return responseData;
+      }
+      
+      const userIdentity = getUserIdentity();
+      
+      // 处理分页响应格式
+      if (responseData.content && Array.isArray(responseData.content)) {
+        const decryptedContent = responseData.content.map((item: any) => {
+          try {
+            const decrypted = decrypt(item, userIdentity);
+            return decrypted || item;
+          } catch (error) {
+            console.warn('IBE解密数组项失败:', error);
+            return item;
+          }
+        });
+        return { ...responseData, content: decryptedContent };
+      }
+      
+      // 处理普通数组响应
+      if (Array.isArray(responseData)) {
+        return responseData.map((item: any) => {
+          try {
+            const decrypted = decrypt(item, userIdentity);
+            return decrypted || item;
+          } catch (error) {
+            console.warn('IBE解密数组项失败:', error);
+            return item;
+          }
+        });
+      }
+      
+      // 处理单个对象
+      try {
+        const decrypted = decrypt(responseData, userIdentity);
+        return decrypted || responseData;
+      } catch (error) {
+        console.warn('IBE解密对象失败:', error);
+        return responseData;
+      }
+    };
+    
+    const decryptedData = decryptResponseData(data);
+    
     // 按后端约定：0 或 200 才算成功，或者没有code字段也认为成功
     if (data.code !== undefined && data.code !== 0 && data.code !== 200) {
       const errorText = data.message || codeMessage[data.code] || "未知错误";
@@ -82,7 +175,7 @@ request.interceptors.response.use(
       // 不要在这里抛出错误，让调用方处理
     }
     
-    return data;
+    return decryptedData;
   },
   (error: any) => {
     if (error.message && error.message.includes("timeout")) {
