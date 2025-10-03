@@ -11,6 +11,7 @@ public class VehicleDTO {
     private Integer driverId;
     private Integer fuelLevel;
     private Integer conditionId;
+    private Byte status; // 车辆状态(1=可接单,2=不可接单)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     

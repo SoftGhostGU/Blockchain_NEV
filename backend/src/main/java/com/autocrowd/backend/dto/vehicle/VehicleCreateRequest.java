@@ -45,6 +45,12 @@ public class VehicleCreateRequest {
     private String powerState;
     
     /**
+     * 车辆状态
+     * 1=可接单, 2=不可接单
+     */
+    private Byte status;
+    
+    /**
      * 车辆状况ID（保留兼容字段）
      * 关联车辆状况表的ID
      */
@@ -64,5 +70,13 @@ public class VehicleCreateRequest {
 
     public void setConditionId(Integer conditionId) {
         this.conditionId = conditionId;
+    }
+    
+    public Byte getStatus() {
+        return status;
+    }
+    
+    public void setStatus(Byte status) {
+        this.status = status;
     }
 }

@@ -27,4 +27,7 @@ public interface OrderRepository extends JpaRepository<Order, String> {
     // 按状态和时间范围查询订单
     List<Order> findByUserIdAndStatusAndCreatedAtBetween(Integer userId, Byte status, LocalDateTime startTime, LocalDateTime endTime);
     List<Order> findByDriverIdAndStatusAndCreatedAtBetween(Integer driverId, Byte status, LocalDateTime startTime, LocalDateTime endTime);
+    
+    // 根据车辆ID查找订单
+    List<Order> findByVehicleIdAndStatus(Integer vehicleId, Byte status);
 }

@@ -12,6 +12,7 @@ public class VehicleUpdateRequest {
     private Integer fuelLevel;
     private Integer conditionId;
     private String licensePlate;
+    private Byte status; // 车辆状态(1=可接单,2=不可接单)
 
     public Integer getVehicleId() {
         return vehicleId;
@@ -43,5 +44,13 @@ public class VehicleUpdateRequest {
     
     public void setLicensePlate(String licensePlate) {
         this.licensePlate = licensePlate;
+    }
+    
+    public Byte getStatus() {
+        return status;
+    }
+    
+    public void setStatus(Byte status) {
+        this.status = status;
     }
 }

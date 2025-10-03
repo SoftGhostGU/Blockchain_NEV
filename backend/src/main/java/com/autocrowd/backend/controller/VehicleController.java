@@ -251,4 +251,80 @@ public class VehicleController {
             return ResponseEntity.ok(errorResponse);
         }
     }
+    
+    /**
+     * 派出车辆（更新车辆状态为不可接单）
+     * @param vehicleId 车辆ID
+     * @param httpRequest HTTP请求对象，包含用户身份信息
+     * @return 包含更新后车辆DTO的响应实体
+     */
+    @PutMapping("/{vehicleId}/dispatch")
+    public ResponseEntity<?> dispatchVehicle(@PathVariable Integer vehicleId, HttpServletRequest httpRequest) {
+        try {
+            // 从请求头获取token并解析司机ID
+            String token = httpRequest.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            token = token.substring(7);
+            Claims claims = jwtUtil.parseToken(token);
+            String driverIdStr = claims.get("driverId", String.class);
+            if (driverIdStr == null || driverIdStr.isEmpty()) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含司机ID");
+            }
+            Integer driverId = Integer.valueOf(driverIdStr);
+
+            // 更新车辆状态为不可接单(2)
+            VehicleDTO vehicleDTO = vehicleService.updateVehicleStatus(driverId, vehicleId, (byte) 2);
+            return ResponseEntity.ok(vehicleDTO);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误: " + e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+    
+    /**
+     * 收回车辆（更新车辆状态为可接单）
+     * @param vehicleId 车辆ID
+     * @param httpRequest HTTP请求对象，包含用户身份信息
+     * @return 包含更新后车辆DTO的响应实体
+     */
+    @PutMapping("/{vehicleId}/recall")
+    public ResponseEntity<?> recallVehicle(@PathVariable Integer vehicleId, HttpServletRequest httpRequest) {
+        try {
+            // 从请求头获取token并解析司机ID
+            String token = httpRequest.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            token = token.substring(7);
+            Claims claims = jwtUtil.parseToken(token);
+            String driverIdStr = claims.get("driverId", String.class);
+            if (driverIdStr == null || driverIdStr.isEmpty()) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含司机ID");
+            }
+            Integer driverId = Integer.valueOf(driverIdStr);
+
+            // 更新车辆状态为可接单(1)
+            VehicleDTO vehicleDTO = vehicleService.updateVehicleStatus(driverId, vehicleId, (byte) 1);
+            return ResponseEntity.ok(vehicleDTO);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误: " + e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
 }

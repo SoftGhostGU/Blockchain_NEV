@@ -11,6 +11,7 @@ import com.autocrowd.backend.dto.order.UserOrderDetailResponse;
 import com.autocrowd.backend.dto.order.OrderTypeDistributionDTO;
 import com.autocrowd.backend.dto.order.StarDistributionDTO;
 import com.autocrowd.backend.dto.financial.WithdrawableBalanceDTO;
+import com.autocrowd.backend.dto.vehicle.VehicleDTO;
 import com.autocrowd.backend.entity.Order;
 import com.autocrowd.backend.entity.Review;
 
@@ -102,4 +103,27 @@ public interface OrderService {
      * @return 可提现余额信息
      */
     WithdrawableBalanceDTO getWithdrawableBalance(Integer userId, String role);
+    
+    /**
+     * 用户完成订单
+     * @param orderId 订单ID
+     * @param actualPrice 实际价格
+     * @param userId 用户ID
+     * @return 完成的订单
+     */
+    Order completeOrderByUser(String orderId, BigDecimal actualPrice, Integer userId);
+    
+    /**
+     * 获取可接单的车辆列表
+     * @return 可接单车辆列表
+     */
+    List<VehicleDTO> getAvailableVehicles();
+    
+    /**
+     * 取消订单
+     * @param orderId 订单ID
+     * @param userId 用户ID
+     * @return 取消的订单
+     */
+    Order cancelOrder(String orderId, Integer userId);
 }

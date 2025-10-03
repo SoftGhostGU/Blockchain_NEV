@@ -30,6 +30,9 @@ public class Vehicle {
     @Column(name = "audit_status")
     private Byte auditStatus = 1; // 默认审核状态为1（待审核）
     
+    @Column(name = "status")
+    private Byte status = 1; // 车辆状态(1=可接单,2=不可接单)
+    
     // 新增的4个字段
     @Column(name = "car_cleanliness")
     private Byte carCleanliness;

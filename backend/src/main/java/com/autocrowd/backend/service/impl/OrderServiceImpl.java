@@ -4,8 +4,10 @@ import com.autocrowd.backend.dto.driver.DriverOrderDetailResponse;
 import com.autocrowd.backend.dto.order.*;
 import com.autocrowd.backend.dto.driver.TurnoverDTO;
 import com.autocrowd.backend.dto.financial.WithdrawableBalanceDTO;
+import com.autocrowd.backend.dto.vehicle.VehicleDTO;
 import com.autocrowd.backend.entity.*;
 import com.autocrowd.backend.enums.OrderTypeEnum;
+import com.autocrowd.backend.enums.VehicleStatusEnum;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.*;
@@ -15,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +26,7 @@ import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +37,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ReviewRepository reviewRepository;
     private final VehicleRepository vehicleRepository;
+    private final VehicleConditionRepository vehicleConditionRepository;
     private final DriverRepository driverRepository;
     private final UserRepository userRepository;
     private final FinancialRepository financialRepository;
@@ -184,6 +189,7 @@ public class OrderServiceImpl implements OrderService {
                             CurrentOrderResponse.VehicleInfoDTO vehicleInfo = new CurrentOrderResponse.VehicleInfoDTO();
                             vehicleInfo.setLicensePlate(vehicle.getLicensePlate());
                             vehicleInfo.setFuelLevel(vehicle.getFuelLevel());
+                            vehicleInfo.setStatus(vehicle.getStatus()); // 添加车辆状态
                             driverInfo.setVehicle(vehicleInfo);
                         }
                     }
@@ -280,6 +286,11 @@ public class OrderServiceImpl implements OrderService {
             if (vehicle.getAuditStatus() == null || vehicle.getAuditStatus() != 2) {
                 throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_AUDITED, "车辆未通过审核，无法选择");
             }
+            
+            // 检查车辆是否可接单
+            if (vehicle.getStatus() == null || vehicle.getStatus() != 1) {
+                throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_AUDITED, "车辆当前不可接单");
+            }
 
             // 获取车主信息
             Driver driver = driverRepository.findById(vehicle.getDriverId())
@@ -288,7 +299,8 @@ public class OrderServiceImpl implements OrderService {
             // 更新订单信息
             order.setDriverId(driver.getDriverId());
             order.setVehicleId(request.getVehicleId());
-            order.setStatus((byte) 1); // 1=On the way
+            // 车主派遣车辆后，将订单状态更新为1（已接单）
+            order.setStatus((byte) 1);
             order.setUpdatedAt(LocalDateTime.now());
 
             // 设置用户偏好和位置信息
@@ -327,7 +339,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 车主接单
+     * 车主接单并派遣车辆
      *
      * @param orderId   订单ID
      * @param driverId  车主ID
@@ -354,11 +366,16 @@ public class OrderServiceImpl implements OrderService {
             if (vehicle.getAuditStatus() == null || vehicle.getAuditStatus() != 2) {
                 throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_AUDITED, "车辆未通过审核，无法接单");
             }
+            
+            // 检查车辆是否可接单
+            if (vehicle.getStatus() == null || vehicle.getStatus() != 1) {
+                throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_AUDITED, "车辆当前不可接单");
+            }
 
             // 更新订单信息
             order.setDriverId(driverId);
             order.setVehicleId(vehicleId);
-            order.setStatus((byte) 1); // 1=On the way
+            order.setStatus((byte) 1); // 1=已接单（车主已派遣车辆）
             order.setUpdatedAt(LocalDateTime.now());
 
             // 更新访问策略，允许车主访问
@@ -375,7 +392,7 @@ public class OrderServiceImpl implements OrderService {
 
             // 保存订单
             Order updatedOrder = orderRepository.save(order);
-            logger.info("[OrderService] 司机接单成功: {}", updatedOrder.getOrderId());
+            logger.info("[OrderService] 司机接单并派遣车辆成功: {}", updatedOrder.getOrderId());
 
             return updatedOrder;
         } catch (BusinessException e) {
@@ -433,6 +450,63 @@ public class OrderServiceImpl implements OrderService {
             throw e;
         } catch (Exception e) {
             logger.error("[OrderService] 完成订单异常: {}", e.getMessage(), e);
+            throw new BusinessException(ExceptionCodeEnum.ORDER_COMPLETE_FAILED, "完成订单失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 用户完成订单
+     *
+     * @param orderId     订单ID
+     * @param actualPrice 实际价格（已加密）
+     * @param userId      用户ID
+     * @return 完成的订单
+     */
+    @Override
+    @Transactional
+    public Order completeOrderByUser(String orderId, BigDecimal actualPrice, Integer userId) {
+        logger.info("[OrderService] 收到用户完成订单请求: 订单ID={}, 实际价格={}, 用户ID={}", orderId, actualPrice, userId);
+        try {
+            // 查找订单
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+
+            // 检查订单是否属于该用户
+            if (!order.getUserId().equals(userId)) {
+                throw new BusinessException(ExceptionCodeEnum.PERMISSION_DENIED, "订单不属于当前用户");
+            }
+
+            // 检查订单状态 (只有状态为2(已接上客人)的订单才能完成)
+            if (order.getStatus() != 2) { // 2 = 已接上客人
+                throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法完成");
+            }
+
+            // 更新订单状态和实际价格
+            order.setStatus((byte) 3); // 3 = 已完成
+            // 直接存储前端传来的加密数据
+            order.setActualPrice(actualPrice);
+            // 这里我们假设实际时间与预计时间相同，实际项目中可能需要根据真实情况设置
+            order.setActualTime(order.getEstimatedTime());
+            order.setUpdatedAt(LocalDateTime.now());
+
+            // 保存订单
+            Order completedOrder = orderRepository.save(order);
+            logger.info("[OrderService] 用户完成订单成功: {}", completedOrder.getOrderId());
+
+            // 创建财务记录
+            createFinancialRecords(order, actualPrice);
+
+            // 将订单信息上链
+            boolean orderOnChain = blockchainService.createOrderOnBlockchain(completedOrder);
+            if (!orderOnChain) {
+                logger.error("[OrderService] 订单信息上链失败: {}", completedOrder.getOrderId());
+            }
+
+            return completedOrder;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[OrderService] 用户完成订单异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.ORDER_COMPLETE_FAILED, "完成订单失败: " + e.getMessage());
         }
     }
@@ -1021,5 +1095,105 @@ public class OrderServiceImpl implements OrderService {
             logger.error("[获取可提现余额异常]: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.ORDER_GET_FAILED, "获取可提现余额失败: " + e.getMessage());
         }
+    }
+    
+    /**
+     * 获取可接单的车辆列表
+     * @return 可接单车辆列表
+     */
+    @Override
+    public List<VehicleDTO> getAvailableVehicles() {
+        try {
+            // 查询审核通过且状态为可接单的车辆
+            List<Vehicle> vehicles = vehicleRepository.findByAuditStatusAndStatus((byte) 2, (byte) 1);
+            
+            // 转换为DTO
+            return vehicles.stream()
+                    .map(this::convertVehicleToDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            logger.error("[OrderService] 查询可用车辆异常: {}", e.getMessage(), e);
+            throw new BusinessException(ExceptionCodeEnum.VEHICLE_QUERY_ERROR, "查询可用车辆失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 取消订单
+     * @param orderId 订单ID
+     * @param userId 用户ID
+     * @return 取消的订单
+     */
+    @Override
+    public Order cancelOrder(String orderId, Integer userId) {
+        logger.info("[OrderService] 收到取消订单请求: 订单ID={}, 用户ID={}", orderId, userId);
+        try {
+            // 查找订单
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+
+            // 检查订单是否属于该用户
+            if (!order.getUserId().equals(userId)) {
+                throw new BusinessException(ExceptionCodeEnum.PERMISSION_DENIED, "订单不属于当前用户");
+            }
+
+            // 检查订单状态 (只有状态为0(等待中)或1(已接单)的订单才能取消)
+            if (order.getStatus() != 0 && order.getStatus() != 1) {
+                throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法取消");
+            }
+
+            // 更新订单状态为4（已取消）
+            order.setStatus((byte) 4);
+            order.setUpdatedAt(LocalDateTime.now());
+
+            // 保存订单
+            Order cancelledOrder = orderRepository.save(order);
+            logger.info("[OrderService] 订单取消成功: {}", cancelledOrder.getOrderId());
+
+            return cancelledOrder;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[OrderService] 取消订单异常: {}", e.getMessage(), e);
+            throw new BusinessException(ExceptionCodeEnum.ORDER_CANCEL_FAILED, "取消订单失败: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * 将车辆实体转换为DTO
+     * @param vehicle 车辆实体
+     * @return 车辆DTO
+     */
+    private VehicleDTO convertVehicleToDTO(Vehicle vehicle) {
+        VehicleDTO dto = new VehicleDTO();
+        BeanUtils.copyProperties(vehicle, dto);
+        
+        // 查询并填充车辆状况信息
+        if (vehicle.getConditionId() != null) {
+            try {
+                VehicleCondition condition = vehicleConditionRepository.findById(vehicle.getConditionId()).orElse(null);
+                if (condition != null) {
+                    dto.setVehicleModel(condition.getVehicleModel());
+                    dto.setBatteryPercent(condition.getBatteryPercent());
+                    dto.setMilesToGo(condition.getMilesToGo());
+                    // 将数字状态转换为文字描述
+                    dto.setBodyState(VehicleStatusEnum.fromCode(condition.getBodyState().intValue()).getDescription());
+                    dto.setTirePressure(VehicleStatusEnum.fromCode(condition.getTirePressure().intValue()).getDescription());
+                    dto.setBrakeState(VehicleStatusEnum.fromCode(condition.getBrakeState().intValue()).getDescription());
+                    dto.setPowerState(VehicleStatusEnum.fromCode(condition.getPowerState().intValue()).getDescription());
+                }
+            } catch (Exception e) {
+                logger.warn("[OrderService] 获取车辆状况信息失败: {}", e.getMessage());
+                // 如果获取失败，设置默认值
+                dto.setVehicleModel("未知");
+                dto.setBatteryPercent((byte) 0);
+                dto.setMilesToGo("0公里");
+                dto.setBodyState("未知");
+                dto.setTirePressure("未知");
+                dto.setBrakeState("未知");
+                dto.setPowerState("未知");
+            }
+        }
+        
+        return dto;
     }
 }

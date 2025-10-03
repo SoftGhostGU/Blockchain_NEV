@@ -22,6 +22,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.autocrowd.backend.entity.Order;
+import com.autocrowd.backend.repository.OrderRepository;
+
 /**
  * 车辆服务实现类
  * 实现VehicleService接口定义的业务逻辑，作为服务层的具体实现
@@ -33,6 +36,7 @@ public class VehicleServiceImpl implements VehicleService {
     
     private final VehicleRepository vehicleRepository;
     private final VehicleConditionRepository vehicleConditionRepository;
+    private final OrderRepository orderRepository;
 
     /**
      * 根据司机ID获取车辆信息
@@ -113,6 +117,7 @@ public class VehicleServiceImpl implements VehicleService {
             vehicle.setFuelLevel(100); // 默认油量为100
             vehicle.setConditionId(savedCondition.getConditionId()); // 关联车辆状况
             vehicle.setAuditStatus((byte) 1); // 默认审核状态为1（待审核）
+            vehicle.setStatus((byte) 1); // 默认车辆状态为1（可接单）
             vehicle.setCreatedAt(LocalDateTime.now());
             vehicle.setUpdatedAt(LocalDateTime.now());
 
@@ -169,6 +174,12 @@ public class VehicleServiceImpl implements VehicleService {
             if (request.getFuelLevel() != null) {
                 existingVehicle.setFuelLevel(request.getFuelLevel());
             }
+            
+            // 更新车辆状态
+            if (request.getStatus() != null) {
+                existingVehicle.setStatus(request.getStatus());
+            }
+            
             existingVehicle.setUpdatedAt(LocalDateTime.now());
 
             // 保存更新
@@ -252,6 +263,56 @@ public class VehicleServiceImpl implements VehicleService {
         } catch (Exception e) {
             logger.error("[VehicleService] 获取车辆状况时发生异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.VEHICLE_QUERY_ERROR, "查询车辆状况失败: " + e.getMessage());
+        }
+    }
+    
+    @Override
+    public VehicleDTO updateVehicleStatus(Integer driverId, Integer vehicleId, Byte status) {
+        try {
+            // 参数验证
+            if (driverId == null) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_NULL_ERROR, "司机ID不能为空");
+            }
+            if (vehicleId == null) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_NULL_ERROR, "车辆ID不能为空");
+            }
+            if (status == null || (status != 1 && status != 2)) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "车辆状态参数无效");
+            }
+
+            // 检查车辆是否存在且属于该司机
+            Vehicle existingVehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆不存在"));
+                
+            if (!existingVehicle.getDriverId().equals(driverId)) {
+                throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆不存在或不属于该司机");
+            }
+
+            // 更新车辆状态
+            existingVehicle.setStatus(status);
+            existingVehicle.setUpdatedAt(LocalDateTime.now());
+
+            // 保存更新
+            Vehicle updatedVehicle = vehicleRepository.save(existingVehicle);
+            
+            // 如果是派遣车辆(状态为2)，则更新相关订单的状态为1(已接单)
+            if (status == 2) {
+                List<Order> orders = orderRepository.findByVehicleIdAndStatus(vehicleId, (byte) 0);
+                for (Order order : orders) {
+                    order.setStatus((byte) 1);
+                    order.setUpdatedAt(LocalDateTime.now());
+                    orderRepository.save(order);
+                    logger.info("[VehicleServiceImpl] 车辆派遣时更新订单状态为已接单: 订单ID={}", order.getOrderId());
+                }
+            }
+
+            // 转换为DTO并返回
+            return convertToDTO(updatedVehicle);
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[VehicleServiceImpl] 更新车辆状态时发生异常: {}", e.getMessage(), e);
+            throw new BusinessException(ExceptionCodeEnum.VEHICLE_UPDATE_ERROR, "更新车辆状态失败: " + e.getMessage());
         }
     }
 
