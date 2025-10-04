@@ -30,6 +30,7 @@
 <script setup>
 import { ref } from 'vue';
 import router from '../router';
+import { storeUserPrivateKey } from '@/utils/IBE/keys';
 
 // 导入图标
 import eye from '@/assets/icons/eye.svg'
@@ -53,6 +54,22 @@ const togglePasswordVisibility = () => {
 // 登录事件
 const handleLogin = () => {
   if (username.value === correctUsername && password.value === correctPassword) {
+    // 存储用户信息到localStorage
+    const userInfo = {
+      token: 'admin_token_' + Date.now(),
+      user: {
+        id: 'admin',
+        role: 'admin',
+        username: username.value
+      }
+    };
+    localStorage.setItem('ROOT_APP_INFO', JSON.stringify(userInfo));
+    localStorage.setItem('USER_INFO', JSON.stringify(userInfo));
+    
+    // 生成并存储用户私钥
+    const userIdentity = 'ADMIN_admin'; // 根据getUserIdentity逻辑生成
+    storeUserPrivateKey(userIdentity);
+    
     router.push('/dashboard');
   } else {
     alert('Invalid username or password');

@@ -14,7 +14,7 @@ const getConfig = () => {
 const config = getConfig();
 
 // 获取用户身份
-const getUserIdentity = (): string => {
+const getUserIdentity = (): string | null => {
   try {
     const appInfo = localStorage.getItem("ROOT_APP_INFO");
     if (appInfo) {
@@ -26,7 +26,7 @@ const getUserIdentity = (): string => {
   } catch (error) {
     console.warn("获取用户身份失败:", error);
   }
-  return "ADMIN"; // 默认管理员身份
+  return null; // 未登录用户返回null
 };
 
 // axios 实例
@@ -70,28 +70,32 @@ request.interceptors.request.use(
     // IBE加密：对请求数据中的敏感字段进行加密
     if (config.data && typeof config.data === 'object') {
       const userIdentity = getUserIdentity();
-      const accessPolicy = `(${userIdentity})`; // 只有当前用户可以解密
-      
-      try {
-        const encryptedData = encrypt(config.data, accessPolicy);
-        config.data = encryptedData;
-        console.log('IBE加密请求数据:', encryptedData);
-      } catch (error) {
-        console.warn('IBE加密失败，使用原始数据:', error);
+      if (userIdentity) {
+        const accessPolicy = `(${userIdentity})`; // 只有当前用户可以解密
+        
+        try {
+          const encryptedData = encrypt(config.data, accessPolicy);
+          config.data = encryptedData;
+          console.log('IBE加密请求数据:', encryptedData);
+        } catch (error) {
+          console.warn('IBE加密失败，使用原始数据:', error);
+        }
       }
     }
 
     // IBE加密：对GET请求参数中的敏感字段进行加密
     if (config.params && typeof config.params === 'object') {
       const userIdentity = getUserIdentity();
-      const accessPolicy = `(${userIdentity})`;
-      
-      try {
-        const encryptedParams = encrypt(config.params, accessPolicy);
-        config.params = encryptedParams;
-        console.log('IBE加密请求参数:', encryptedParams);
-      } catch (error) {
-        console.warn('IBE加密参数失败，使用原始参数:', error);
+      if (userIdentity) {
+        const accessPolicy = `(${userIdentity})`;
+        
+        try {
+          const encryptedParams = encrypt(config.params, accessPolicy);
+          config.params = encryptedParams;
+          console.log('IBE加密请求参数:', encryptedParams);
+        } catch (error) {
+          console.warn('IBE加密参数失败，使用原始参数:', error);
+        }
       }
     }
 
@@ -124,6 +128,9 @@ request.interceptors.response.use(
       }
       
       const userIdentity = getUserIdentity();
+      if (!userIdentity) {
+        return responseData; // 未登录用户不解密
+      }
       
       // 处理分页响应格式
       if (responseData.content && Array.isArray(responseData.content)) {
