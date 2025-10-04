@@ -14,7 +14,13 @@ export function decrypt(
   userIdentity: string
 ): Record<string, string> | null {
   const decrypted: Record<string, string> = {};
+  
+  // 检查是否是加密数据（包含access_policy字段）
   const policy = ciphertextObj['access_policy'] as string;
+  if (!policy) {
+    // 如果不是加密数据，直接返回原始数据
+    return ciphertextObj as Record<string, string>;
+  }
 
   // 检查用户私钥是否存在
   const userPrivKey = USER_KEYS[userIdentity];
@@ -25,8 +31,8 @@ export function decrypt(
     .split(/OR/i)
     .map(s => s.trim().replace(/^\(|\)$/g, ''));
 
-  const cleanedUserId = userIdentity.trim().toUpperCase();
-  const cleanedAllowed = allowed.map(s => s.trim().toUpperCase());
+  const cleanedUserId = userIdentity.trim();
+  const cleanedAllowed = allowed.map(s => s.trim());
 
   if (!cleanedAllowed.includes(cleanedUserId)) return { "解密错误": "用户无需要的解密权限" };
 

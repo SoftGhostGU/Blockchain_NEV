@@ -5,5 +5,6 @@ export const USER_KEYS: Record<string, string> = {
   "USER_1": "PRIV_KEY_USER_1",
   "DRIVER_67890": "PRIV_KEY_DRIVER_67890",
   "DRIVER_11111": "PRIV_KEY_DRIVER_11111",
-  "ADMIN": "PRIV_KEY_ADMIN"
+  "ADMIN": "PRIV_KEY_ADMIN",
+  "ADMIN_admin": "PRIV_KEY_ADMIN" // 管理员用户私钥（匹配实际生成的身份格式）
 };
