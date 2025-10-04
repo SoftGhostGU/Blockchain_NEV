@@ -1,0 +1,297 @@
+.car-selection-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 999;
+}
+
+.car-selection-popup-container {
+  width: 100%;
+  max-height: 80%;
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.car-selection-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.car-selection-popup-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.car-selection-popup-close {
+  font-size: 20px;
+  color: #888;
+  cursor: pointer;
+}
+
+.car-selection-popup-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  background: #fafafa;
+}
+
+/* 加载提示与骨架屏 */
+.loading-hint {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 4px 0 10px;
+}
+
+@keyframes skeletonShimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 37%, #f3f4f6 63%);
+  background-size: 400% 100%;
+  animation: skeletonShimmer 1.2s ease-in-out infinite;
+}
+
+.skeleton-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.skeleton-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+}
+
+.skeleton-content {
+  flex: 1;
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: 7px;
+  margin: 6px 0;
+}
+
+.skeleton-line.short { width: 40%; }
+.skeleton-line.medium { width: 60%; }
+.skeleton-line.long { width: 80%; }
+
+.skeleton-right {
+  min-width: 110px;
+}
+
+.empty-state {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  color: #6b7280;
+}
+.empty-title { font-size: 16px; font-weight: 600; color: #374151; }
+.empty-subtitle { font-size: 14px; margin-top: 6px; }
+
+.car-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease-in-out;
+  border: 2px solid transparent;
+  min-height: 85px; /* 提升每辆车的点击区域高度 */
+}
+
+.car-card:hover {
+  transform: translateY(-2px);
+}
+
+.car-card.selected {
+  border: 2px solid transparent;
+  background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+  box-shadow: 0 8px 24px rgba(116, 185, 255, 0.4);
+  transform: translateY(-2px);
+  
+  .car-name,
+  .car-model,
+  .car-plate,
+  .car-driver,
+  .car-price,
+  .car-time,
+  .car-distance-info {
+    color: #fff;
+  }
+  /* 选中态下仍以绿色加粗突出距乘客距离 */
+  .car-distance-info {
+    color: #2ecc71;
+    font-weight: 700;
+  }
+  
+  .metric {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.35);
+  }
+  .battery-text {
+    color: #fff;
+  }
+}
+
+.car-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  margin-right: 12px;
+}
+
+.car-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metrics-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.battery-capsule {
+  position: relative;
+  width: 160px;
+  height: 20px;
+  border-radius: 999px;
+  background: #c9dfc9; /* 背景淡绿 */
+  border: 1px solid #c8f7c5;
+  overflow: hidden;
+}
+
+.battery-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #2ecc71 0%, #27ae60 100%); /* 绿色进度条 */
+}
+
+.battery-text {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px; /* 适当放大电量文字 */
+  color: #03170d; /* 深绿文字提高可读性 */
+}
+
+.metric {
+  padding: 6px 10px;
+  border-radius: 16px;
+  border: 1px solid #e0e0e0;
+  background: #f7f7f7;
+  font-size: 12px;
+  color: #333;
+}
+
+.car-name {
+  font-size: 20px; /* 进一步增大车型标题 */
+  font-weight: 700;
+}
+
+.car-model {
+  font-size: 18px; /* 进一步增大车型信息 */
+  color: #333;
+}
+
+.car-plate,
+.car-driver {
+  font-size: 18px; /* 进一步增大车牌与司机信息 */
+  color: #666;
+}
+
+.car-price-time {
+  text-align: right;
+  min-width: 120px; /* 利用右侧空间，保证在375*651中清晰 */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.car-price {
+  font-size: 21px; /* 进一步增大右侧价格 */
+  font-weight: bold;
+  color: #1890ff;
+}
+
+.car-time {
+  font-size: 18px; /* 进一步增大预计时间 */
+  color: #999;
+}
+
+.car-distance-info {
+  font-size: 20px; /* 放大右侧距离文字，提升可读性 */
+  color: #58d49a; /* 绿色突出 */
+  font-weight: 700; /* 加粗强调 */
+}
+
+.car-selection-popup-footer {
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  background: #fff;
+}
+
+.confirm-button {
+  width: 90%;
+  height: 48px; /* 确认按钮高度稍微增大 */
+  border-radius: 22px;
+  background: #2d95f7;
+  color: #fbf7f7;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.confirm-button.disabled {
+  background: #ccc;
+}
+
+.select-button {
+  height: 44px; /* 每一辆车的选择按钮高度增大 */
+  padding: 0 14px;
+  border-radius: 22px;
+  background: #1477d3;
+  color: #fff;
+  font-size: 14px;
+}

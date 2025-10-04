@@ -17,6 +17,50 @@ import rideService from '../../api/rideService'
 import { Location, PriceEstimateRequest, CreateOrderRequest } from '../../api/type'
 import Fab from '../../components/Fab'
 import Map from '../../components/Map'
+import AMapLoader from '@amap/amap-jsapi-loader'
+import CarSelectionPopup from './components/CarSelectionPopup'
+
+// 根据选择的车型生成 4 辆同类型车辆（含型号、电量、距离）
+const generateMockCars = (carTypeId: string) => {
+  const typeNameMap: Record<string, string> = {
+    economy: '经济型',
+    comfort: '舒适型',
+    luxury: '豪华型',
+  }
+
+  const modelMap: Record<string, string[]> = {
+    economy: ['广汽埃安 AION S', '比亚迪 秦Plus', '丰田 雷凌', '大众 朗逸'],
+    comfort: ['本田 雅阁', '丰田 凯美瑞', '大众 迈腾', '尼桑 天籁'],
+    luxury: ['奔驰 E级', '宝马 5系', '奥迪 A6L', '特斯拉 Model S'],
+  }
+
+  const basePrices: Record<string, number> = { economy: 28, comfort: 35, luxury: 45 }
+  const baseTimes: Record<string, string> = { economy: '约3分钟', comfort: '约5分钟', luxury: '约8分钟' }
+
+  const name = typeNameMap[carTypeId] || '经济型'
+  const models = modelMap[carTypeId] || modelMap.economy
+
+  const phones = ['13800001111', '13800002222', '13800003333', '13800004444']
+  const unifiedImage = 'https://image.bitauto.com/autoalbum/files/20250120/239/202501204021736376523945122-900x600-w0.png'
+
+  return new Array(4).fill(0).map((_, idx) => {
+    const battery = Math.min(95, Math.max(25, 70 + (idx * 5 - 10))) // 约 60-90%
+    const distanceKm = (0.6 + idx * 0.4).toFixed(1)
+    return {
+      id: idx + 1,
+      name,
+      price: basePrices[carTypeId] + idx * 5,
+      time: baseTimes[carTypeId],
+      plate: `粤B ${10000 + idx}`,
+      driver: ['张师傅', '李师傅', '王师傅', '赵师傅'][idx] || '张师傅',
+      phone: phones[idx] || '13800001111',
+      avatar: unifiedImage,
+      model: models[idx % models.length],
+      battery,
+      distance: `${distanceKm}km`,
+    }
+  })
+}
 
 // 全局 store（确保路径和文件名和你项目一致： src/store/ride.js 或 src/store/rideStore.js）
 import { useRideStore } from '../../store/ride'
@@ -64,8 +108,50 @@ export default function Ride() {
   const [showPreferencePopup, setShowPreferencePopup] = useState(false)
   const [showTimePopup, setShowTimePopup] = useState(false)
   
+  // 车辆选择弹窗状态
+  const [showCarSelection, setShowCarSelection] = useState(false)
+
   // 地图展开状态管理
   const [isMapExpanded, setIsMapExpanded] = useState(false)
+
+  // ----- 联想与防抖相关状态 -----
+  type Suggestion = { name: string; district?: string; address?: string; adcode?: string; location?: any }
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const [isSuggestLoading, setIsSuggestLoading] = useState(false)
+  const debounceTimerRef = useRef<any>(null)
+  const autoCompleteRef = useRef<any>(null)
+  const placeSearchRef = useRef<any>(null)
+  const amapReadyRef = useRef<boolean>(false)
+  const [currentCity, setCurrentCity] = useState<string>('')
+
+  // 固定头像点击跳转主页
+  const handleAvatarClick = () => {
+    navigateTo({ url: '/pages/home/index' })
+  }
+
+  // 获取当前城市并设置到联想搜索
+  useEffect(() => {
+    (async () => {
+      try {
+        const AMap = await ensureAMapReady()
+        const citySearch = new (AMap as any).CitySearch()
+        citySearch.getLocalCity((status: string, result: any) => {
+          if (status === 'complete' && result?.city) {
+            setCurrentCity(result.city)
+            if (autoCompleteRef.current) {
+              autoCompleteRef.current.setCity(result.city)
+            }
+            if (placeSearchRef.current) {
+              placeSearchRef.current.setCity(result.city)
+            }
+          }
+        })
+      } catch (err) {
+        console.warn('CitySearch failed:', err)
+      }
+    })()
+  }, [])
 
   useLoad(() => {
     // 清空上次的目的地输入
@@ -86,6 +172,9 @@ export default function Ride() {
   // 添加新的状态管理
   const [showPricing, setShowPricing] = useState(false) // 控制是否显示价格和时间
   const [carTypePricing, setCarTypePricing] = useState<{[key: string]: {time: string, price: number}}>({}) // 存储各车型的动态价格和时间
+  // 车辆弹窗异步加载状态
+  const [carsLoading, setCarsLoading] = useState<boolean>(false)
+  const [carsData, setCarsData] = useState<any[]>([])
 
   // ------ 车类型与时间选项数据（UI） ------
   const carTypes = [
@@ -102,6 +191,32 @@ export default function Ride() {
     { id: '30min', label: '30分钟后', description: '预约出行' },
     { id: '1hour', label: '1小时后', description: '预约出行' },
   ]
+
+  // 异步获取后端车辆（占位：可替换为真实接口）
+  const fetchCarsByType = async (carTypeId: string) => {
+    try {
+      // TODO: 调用真实后端接口获取车辆列表
+      // 这里先模拟网络延时
+      await new Promise(resolve => setTimeout(resolve, 800))
+      return generateMockCars(carTypeId)
+    } catch (e) {
+      console.warn('fetchCarsByType error:', e)
+      return []
+    }
+  }
+
+  // 打开弹窗时触发异步加载
+  useEffect(() => {
+    if (showCarSelection) {
+      setCarsLoading(true)
+      fetchCarsByType(selectedCarType).then(data => {
+        setCarsData(data)
+      }).finally(() => setCarsLoading(false))
+    } else {
+      // 关闭时重置，避免旧数据闪现
+      setCarsData([])
+    }
+  }, [showCarSelection, selectedCarType])
 
   // ---------- 价格预估（每次手动或触发时调用） ----------
   const estimatePrice = async (carTypeId: string) => {
@@ -220,27 +335,142 @@ export default function Ride() {
     setIsActionSheetOpened(false)
   }
 
-  // 处理目的地输入
+  // 确保高德 JS API 可用（一次加载）
+  const ensureAMapReady = async () => {
+    if ((window as any).AMap && amapReadyRef.current) return (window as any).AMap
+    ;(window as any)._AMapSecurityConfig = {
+      securityJsCode: '847370c4fd8230a39278ac95e450d9c6',
+    }
+    const AMap = await AMapLoader.load({
+      key: '2cbfc31f5eae1f3dd09f26255f115449',
+      version: '2.0',
+      plugins: ['AMap.AutoComplete', 'AMap.PlaceSearch', 'AMap.Geocoder', 'AMap.CitySearch']
+    })
+    amapReadyRef.current = true
+    return AMap
+  }
+
+  // 处理目的地输入（防抖 + 高德联想）
   const handleDestinationInput = (value: string) => {
     setEndAddressInput(value)
-    // 当用户输入目的地时，创建一个基本的Location对象
-    if (value.trim()) {
-      const destinationObj: Location = {
-        latitude: currentLocation?.latitude || 0,
-        longitude: currentLocation?.longitude || 0,
-        address: value,
-        landmark: value
-      }
-      setDestinationLocation(destinationObj)
-      
-      // 开始异步加载价格
-      if (currentLocation) {
-        estimatePrice(selectedCarType)
-      }
-    } else {
+
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current)
+    }
+
+    const keyword = value.trim()
+
+    if (!keyword) {
+      setShowSuggestions(false)
+      setSuggestions([])
       setDestinationLocation(null)
-      setShowPricing(false) // 隐藏价格信息
-      setCarTypePricing({}) // 清空价格数据
+      setShowPricing(false)
+      setCarTypePricing({})
+      return
+    }
+
+    // 防抖后触发联想
+    debounceTimerRef.current = setTimeout(async () => {
+      try {
+        setIsSuggestLoading(true)
+        const AMap = await ensureAMapReady()
+    if (!autoCompleteRef.current) {
+      autoCompleteRef.current = new (AMap as any).AutoComplete({ city: currentCity || undefined, citylimit: false })
+    }
+        autoCompleteRef.current.search(keyword, (status: string, result: any) => {
+          if (status === 'complete' && result?.tips?.length) {
+            const tips: Suggestion[] = result.tips.map((t: any) => ({
+              name: t.name,
+              district: t.district,
+              adcode: t.adcode,
+              location: t.location
+            }))
+            setSuggestions(tips)
+            setShowSuggestions(true)
+          } else {
+            setSuggestions([])
+            setShowSuggestions(true)
+          }
+          setIsSuggestLoading(false)
+        })
+      } catch (err) {
+        console.warn('AutoComplete error:', err)
+        setIsSuggestLoading(false)
+      }
+    }, 350)
+  }
+
+  // 选择联想候选，获取坐标并更新目的地
+  const handleSuggestionChoose = async (item: Suggestion) => {
+    try {
+      const AMap = await ensureAMapReady()
+      // 优先使用联想返回的坐标
+      const loc = item.location
+      const usePlaceSearch = !loc || (typeof loc?.lng === 'undefined' || typeof loc?.lat === 'undefined')
+
+      let lng = 0, lat = 0
+      let finalName = item.name
+
+    if (usePlaceSearch) {
+      if (!placeSearchRef.current) {
+        placeSearchRef.current = new (AMap as any).PlaceSearch({ city: currentCity || undefined, citylimit: false })
+      }
+        placeSearchRef.current.search(item.name, (status: string, result: any) => {
+          if (status === 'complete' && result?.poiList?.pois?.length) {
+            const poi = result.poiList.pois[0]
+            const pos = poi.location
+            lng = pos.lng
+            lat = pos.lat
+            finalName = poi.name || item.name
+            const destinationObj: Location = {
+              latitude: lat,
+              longitude: lng,
+              address: finalName,
+              landmark: finalName
+            }
+            setDestinationLocation(destinationObj)
+            setEndAddressInput(finalName)
+            setShowSuggestions(false)
+            setShowPricing(true)
+            if (currentLocation) {
+              estimatePrice(selectedCarType)
+            }
+          } else {
+            // 无坐标，fallback 为当前坐标
+            const destinationObj: Location = {
+              latitude: currentLocation?.latitude || 0,
+              longitude: currentLocation?.longitude || 0,
+              address: finalName,
+              landmark: finalName
+            }
+            setDestinationLocation(destinationObj)
+            setEndAddressInput(finalName)
+            setShowSuggestions(false)
+            setShowPricing(true)
+            if (currentLocation) {
+              estimatePrice(selectedCarType)
+            }
+          }
+        })
+      } else {
+        lng = loc.lng
+        lat = loc.lat
+        const destinationObj: Location = {
+          latitude: lat,
+          longitude: lng,
+          address: finalName,
+          landmark: finalName
+        }
+        setDestinationLocation(destinationObj)
+        setEndAddressInput(finalName)
+        setShowSuggestions(false)
+        setShowPricing(true)
+        if (currentLocation) {
+          estimatePrice(selectedCarType)
+        }
+      }
+    } catch (err) {
+      console.warn('handleSuggestionChoose error:', err)
     }
   }
 
@@ -275,11 +505,9 @@ export default function Ride() {
   }
   const actualDistance = calculateDistance(currentLocation, destinationLocation)
 
-  // ---------- 下单（乐观策略） ----------
-  const createOrder = async () => {
-    if (isOrderCreating) return
-
-    // 必要检查
+  // ---------- 处理下单按钮点击 ----------
+  const handleCreateOrder = () => {
+    // 必要的检查
     if (!currentLocation || !currentLocation.landmark) {
       showToast({ title: '请先选择上车地点', icon: 'none' })
       return
@@ -293,6 +521,14 @@ export default function Ride() {
       return
     }
 
+    // 显示车辆选择弹窗
+    setShowCarSelection(true)
+  }
+
+  // ---------- 下单（乐观策略） ----------
+  const createOrder = async (selectedCar?: any) => {
+    if (isOrderCreating) return
+
     setIsOrderCreating(true)
     showLoading({ title: '正在创建订单...' })
 
@@ -300,7 +536,7 @@ export default function Ride() {
       // 获取对应车型的mock数据（价格、司机、车辆信息）
       const mockData = getMockDataByCarType(selectedCarType)
       
-      // 创建订单数据：用户选择 + mock数据
+      // 创建订单数据：用户选择 + mock数据/选中车辆
       const orderData = {
         // 用户在页面选择的数据
         startLocation: currentLocation,
@@ -309,10 +545,13 @@ export default function Ride() {
         preference: travelPreference,
         departureTime: selectedTimeOption,
         
-        // mock数据提供的信息
+        // 价格信息
         price: mockData.price,
-        driver: mockData.driver,
-        vehicle: mockData.vehicle,
+        // 司机与车辆信息以用户选中为准（若存在），否则使用mock
+        driver: selectedCar ? { name: selectedCar.driver, phone: selectedCar.phone || mockData.driver?.phone || '' } : mockData.driver,
+        vehicle: selectedCar
+          ? { type: `${selectedCar.name} · ${selectedCar.model}`, plateNumber: selectedCar.plate, imageUrl: selectedCar.avatar }
+          : mockData.vehicle,
         
         // 订单状态
         status: 'pending' as const,
@@ -351,7 +590,7 @@ export default function Ride() {
         showCancel: true,
         confirmText: '重试',
         success: (res) => {
-          if (res.confirm) createOrder()
+          if (res.confirm) createOrder(selectedCar)
         }
       })
     } finally {
@@ -391,17 +630,32 @@ export default function Ride() {
         className={classnames('map-container', { 'expanded': isMapExpanded })}
         onTouchMove={!isMapExpanded ? handleMapExpand : undefined}
       >
-        <Map />
+        <Map destinationLocation={destinationLocation || undefined} />
         
         {/* 地图展开时的返回箭头 */}
         {isMapExpanded && (
           <View className='map-back-arrow' onClick={handleMapCollapse}>
-            <AtIcon value='chevron-left' size='24' color='#000' />
+            <AtIcon value='chevron-left' size='18' color='#000' />
           </View>
         )}
       </View>
 
       <View className={classnames('main-content', { 'loaded': pageLoaded })}>
+        {/* 固定用户头像（左上角，地图展开时隐藏） */}
+        {!isMapExpanded && (
+          <View className='fixed-user-avatar'>
+            <View className='avatar-circle' onClick={handleAvatarClick}>
+              <AtIcon value='user' size='20' className='avatar-icon' />
+            </View>
+            {currentCity && (
+              <View className='current-city-badge'>
+                <Text className='city-text'>{currentCity}</Text>
+                <View className='city-dot'></View>
+              </View>
+            )}
+          </View>
+        )}
+
         {/* 地址卡片 - 在地图展开时仍然可见 */}
         <View className={classnames('address-card', { 'loaded': elementsLoaded.address })}>
           <View className='address-row start-location'>
@@ -424,6 +678,40 @@ export default function Ride() {
                 placeholder='您要去哪儿？'
                 onInput={(e) => handleDestinationInput(e.detail.value)}
               />
+              {showSuggestions && (
+                <View className='suggestion-dropdown'>
+                  {isSuggestLoading && (
+                    <View className='suggestion-item'>正在搜索…</View>
+                  )}
+                  {!isSuggestLoading && suggestions.length === 0 && (
+                    <View className='suggestion-empty'>无相关结果</View>
+                  )}
+                  {!isSuggestLoading && suggestions.map((s, idx) => (
+                    <View
+                      key={idx}
+                      className='suggestion-item'
+                      onClick={() => handleSuggestionChoose(s)}
+                    >
+                      <View className='suggestion-icon'>
+                        <svg
+                          className='suggestion-icon-svg'
+                          viewBox='0 0 1024 1024'
+                          xmlns='http://www.w3.org/2000/svg'
+                          width='200'
+                          height='200'
+                        >
+                          <path d='M511.998977 65.290005c-173.638689 0-314.904063 138.294716-314.904063 308.281225 0 77.603449 31.020504 185.005574 85.10633 294.67023 53.746088 108.971877 124.852566 209.287607 195.185424 275.377838 8.955976 9.602705 21.51092 15.08865 34.612309 15.08865 12.913101 0 25.359574-5.358031 34.296107-14.736633 149.549038-140.014894 280.608979-406.358985 280.608979-570.401108C826.904063 203.584722 685.637666 65.290005 511.998977 65.290005zM517.467525 914.127613l-1.128707 1.13894c-0.816598 0.8913-2.232854 1.952468-4.339842 1.952468-2.245134 0-3.695159-1.251503-4.361331-1.997494l-1.294482-1.327228C366.207519 782.579555 238.584863 525.041014 238.584863 373.572254c0-147.109476 122.652458-266.791276 273.414113-266.791276 150.761656 0 273.415137 119.6818 273.415137 266.791276C785.414113 525.483082 657.700383 783.130094 517.467525 914.127613z' fill='#272636'></path>
+                          <path d='M513.044796 181.616384c-91.091648 0-165.199483 74.112951-165.199483 165.210739 0 91.076298 74.107835 165.172877 165.199483 165.172877 91.083461 0 165.184133-74.096579 165.184133-165.172877C678.228929 255.729336 604.128257 181.616384 513.044796 181.616384zM513.044796 470.51005c-68.213591 0-123.709533-55.484685-123.709533-123.682927 0-68.219731 55.495942-123.720789 123.709533-123.720789 68.205405 0 123.694183 55.501058 123.694183 123.720789C636.738979 415.025365 581.2502 470.51005 513.044796 470.51005z' fill='#272636'></path>
+                        </svg>
+                      </View>
+                      <View className='suggestion-content'>
+                        <Text className='suggestion-title'>{s.name}</Text>
+                        <Text className='suggestion-subtitle'>{s.address || s.district || ''}</Text>
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              )}
             </View>
           </View>
         </View>
@@ -570,7 +858,7 @@ export default function Ride() {
         <View className='action-button-container'>
           <Button
             className={`action-button-primary ${isOrderCreating ? 'loading' : ''}`}
-            onClick={createOrder}
+            onClick={handleCreateOrder}
             disabled={isOrderCreating || isPriceLoading || !destinationLocation?.landmark}
           >
             {isOrderCreating ? '创建中...' : '立即用车'}
@@ -619,6 +907,19 @@ export default function Ride() {
             </View>
           </View>
         </View>
+      )}
+
+      {showCarSelection && (
+        <CarSelectionPopup
+          cars={carsData}
+          loading={carsLoading}
+          onClose={() => setShowCarSelection(false)}
+          onConfirm={(car) => {
+            console.log('Selected car:', car)
+            setShowCarSelection(false)
+            createOrder(car)
+          }}
+        />
       )}
     </View>
   )

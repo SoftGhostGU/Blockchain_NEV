@@ -1,11 +1,14 @@
 import "./index.scss";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import AMapLoader from "@amap/amap-jsapi-loader";
+import type { Location } from "../../api/type";
 
-const Map = () => {
+const Map = ({ destinationLocation }: { destinationLocation?: Location }) => {
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(
     null
   );
+  const mapRef = useRef<any>(null);
+  const destMarkerRef = useRef<any>(null);
 
   useEffect(() => {
     (window as any)._AMapSecurityConfig = {
@@ -29,6 +32,7 @@ const Map = () => {
           logoPosition: "RT", // 将logo放到右上角 (Right Top)
           copyrightPosition: "RT", // 将版权信息放到右上角 (Right Top)
         });
+        mapRef.current = amap;
 
         // 示例轨迹点（替换成后端返回的轨迹也行）
         const path = [
@@ -113,6 +117,28 @@ const Map = () => {
         console.error(e);
       });
   }, []);
+
+  // 目的地联动：居中并落点
+  useEffect(() => {
+    const AMap = (window as any).AMap;
+    if (!AMap || !mapRef.current || !destinationLocation) return;
+    const lnglat = new AMap.LngLat(
+      destinationLocation.longitude,
+      destinationLocation.latitude
+    );
+    if (!destMarkerRef.current) {
+      destMarkerRef.current = new AMap.Marker({
+        position: lnglat,
+        icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+        offset: new AMap.Pixel(-13, -26),
+      });
+      mapRef.current.add(destMarkerRef.current);
+    } else {
+      destMarkerRef.current.setPosition(lnglat);
+    }
+    mapRef.current.setZoom(16);
+    mapRef.current.setCenter(lnglat);
+  }, [destinationLocation]);
 
   return (
     <div
