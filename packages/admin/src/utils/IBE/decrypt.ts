@@ -1,7 +1,7 @@
 import type { CiphertextObject } from './types';
 import { base64ToUtf8 } from './base64Utils';
 import { sensitiveFields } from '../../config/sensitiveFields';
-import { USER_KEYS } from './keys';
+import { getUserPrivateKey } from './keys';
 
 /**
  * 收到来自后端的数据之后，解密敏感数据
@@ -23,7 +23,7 @@ export function decrypt(
   }
 
   // 检查用户私钥是否存在
-  const userPrivKey = USER_KEYS[userIdentity];
+  const userPrivKey = getUserPrivateKey(userIdentity);
   if (!userPrivKey) return { "解密错误": "用户私钥不存在" };
 
   // 解析 OR 策略
