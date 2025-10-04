@@ -70,6 +70,8 @@ $text-secondary-gray: #8c8c8c;
   box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.08);
   margin-bottom: 16rpx;
   position: relative;
+  z-index: 100; // 提升层级，确保下拉浮于后续模块之上
+  overflow: visible; // 避免被父容器裁剪
   transition: all 0.3s ease;
   
   .address-row {
@@ -1235,8 +1237,8 @@ $text-secondary-gray: #8c8c8c;
     top: 60rpx; // 状态栏下方
     left: 30rpx;
     z-index: 1001; // 在地图之上
-    width: 80rpx;
-    height: 80rpx;
+    width: 60rpx;
+    height: 60rpx;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 50%;
     display: flex;
@@ -1248,11 +1250,11 @@ $text-secondary-gray: #8c8c8c;
     
     &:hover {
       background: rgba(255, 255, 255, 1);
-      transform: scale(1.05);
+      transform: scale(1.03);
     }
     
     .at-icon {
-      font-size: 32rpx;
+      font-size: 24rpx;
       color: #333;
     }
   }
@@ -1314,5 +1316,163 @@ $text-secondary-gray: #8c8c8c;
     opacity: 1;
     transform: scale(1);
   }
+}
+
+// ---- 地址联想下拉样式 ----
+.address-input-container {
+  position: relative;
+}
+
+.suggestion-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16rpx;
+  box-shadow: 0 12rpx 36rpx rgba(0, 0, 0, 0.08);
+  z-index: 10000; // 远高于其他内容
+  max-height: 480rpx;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  padding: 36rpx 32rpx; // 加大上下间距
+  font-size: 30rpx;
+  line-height: 44rpx;
+  border-bottom: 1px solid #f6f6f6;
+  display: flex;
+  align-items: center;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background: #f9f9f9;
+}
+
+.suggestion-title {
+  color: #111;
+}
+
+.suggestion-icon {
+  width: 40rpx;
+  height: 40rpx;
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.suggestion-icon-svg {
+  width: 28rpx;
+  height: 28rpx;
+}
+
+.suggestion-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.suggestion-subtitle {
+  color: #888;
+  font-size: 24rpx;
+  margin-left: 12rpx;
+}
+
+.suggestion-empty {
+  padding: 24rpx 28rpx;
+  color: #888;
+  font-size: 28rpx;
+}
+
+.suggestion-item {
+  align-items: flex-start;
+}
+
+.suggestion-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.suggestion-title {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #222;
+  line-height: 42rpx;
+}
+
+.suggestion-subtitle {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: #8c8c8c;
+  line-height: 36rpx;
+}
+
+.fixed-user-avatar {
+  position: fixed;
+  top: 24rpx;
+  left: 24rpx;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+}
+
+.avatar-circle {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2rpx solid #f0f0f0;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  color: #555;
+}
+
+.avatar-circle {
+  cursor: pointer;
+}
+
+// 当前城市徽标
+.current-city-badge {
+  margin-left: 16rpx;
+  padding: 10rpx 16rpx;
+  background: rgba(255, 255, 255, 0.92);
+  border: 2rpx solid #f0f0f0;
+  box-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.08);
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+}
+
+.city-text {
+  max-width: 240rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #333;
+  font-size: 26rpx;
+  line-height: 36rpx;
+}
+
+.city-dot {
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background: #22c55e;
+  margin-left: 12rpx;
 }
 
