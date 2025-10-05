@@ -71,7 +71,7 @@ public class DriverController {
             Map<String, Object> claims = new HashMap<>();
             claims.put("driverId", driver.getDriverId().toString());
             claims.put("username", driver.getUsername());
-            claims.put("role", "DRIVER");
+            claims.put("role", "driver");
             String token = jwtUtil.generateTokenWithClaims(claims, driver.getDriverId().toString());
             data.put("token", token);
             data.put("driver", driverData);
@@ -234,7 +234,7 @@ public class DriverController {
             Map<String, Object> claims = new HashMap<>();
             claims.put("driverId", driver.getDriverId().toString());
             claims.put("username", driver.getUsername());
-            claims.put("role", "DRIVER");
+            claims.put("role", "driver");
             String token = jwtUtil.generateTokenWithClaims(claims, driver.getDriverId().toString());
             data.put("token", token);
             data.put("driver", driverData);

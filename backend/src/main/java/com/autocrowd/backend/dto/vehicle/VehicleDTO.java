@@ -11,15 +11,16 @@ public class VehicleDTO {
     private Integer driverId;
     private Integer fuelLevel;
     private Integer conditionId;
+    private Byte status; // 车辆状态(1=可接单,2=不可接单)
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
-    // 车辆状况信息占位符
-    private String conditionInfo = "占位符：车辆状况信息";
-    private String batteryPercent = "占位符：电池百分比";
-    private String milesToGo = "占位符：续航里程";
-    private String bodyState = "占位符：车身状态";
-    private String tirePressure = "占位符：轮胎压力";
-    private String brakeState = "占位符：刹车状态";
-    private String powerState = "占位符：动力状态";
+    // 车辆状况信息（实际数据）
+    private String vehicleModel;       // 车辆型号
+    private Byte batteryPercent;       // 电池百分比
+    private String milesToGo;          // 续航里程
+    private String bodyState;          // 车身状态（正常/注意/危险）
+    private String tirePressure;       // 轮胎气压（正常/注意/危险）
+    private String brakeState;         // 制动系统（正常/注意/危险）
+    private String powerState;         // 动力系统（正常/注意/危险）
 }

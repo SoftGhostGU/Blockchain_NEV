@@ -50,6 +50,7 @@ public enum ExceptionCodeEnum {
     ORDER_QUERY_ERROR(20011, "订单查询异常"),
     ORDER_ACCEPT_ERROR(20012, "订单接单异常"),
     ORDER_COMPLETE_FAILED(20013, "订单结算失败"),
+    ORDER_CANCEL_FAILED(20014, "订单取消失败"),
     // 车辆相关异常
     VEHICLE_NOT_FOUND(20006, "车辆不存在"),
     VEHICLE_TYPE_ERROR(20005, "车辆类型错误"),

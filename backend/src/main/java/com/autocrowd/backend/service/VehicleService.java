@@ -46,4 +46,13 @@ public interface VehicleService {
      * @return 车辆状况实体
      */
     VehicleCondition getVehicleConditionByVehicleId(Integer vehicleId);
+    
+    /**
+     * 更新车辆状态
+     * @param driverId 司机ID
+     * @param vehicleId 车辆ID
+     * @param status 车辆状态
+     * @return 更新后的车辆DTO
+     */
+    VehicleDTO updateVehicleStatus(Integer driverId, Integer vehicleId, Byte status);
 }
