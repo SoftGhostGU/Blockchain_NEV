@@ -17,12 +17,8 @@ interface AddressItem {
   type?: 'home' | 'company' | 'history' | 'recommend'
 }
 
-// 地址分类标签配置 - 现代化设计
-const ADDRESS_CATEGORIES = [
-  { id: 'home', label: '家', icon: 'home', color: '#FF6B35' },
-  { id: 'company', label: '公司', icon: 'bookmark', color: '#1677FF' },
-  { id: 'favorite', label: '收藏', icon: 'star-2', color: '#FFD700' }
-]
+// 地址分类标签配置 - 现代化设计（移除家/公司/收藏）
+const ADDRESS_CATEGORIES: { id: string; label: string; icon: string; color: string }[] = []
 
 export default function ModernAddressDetail() {
   // ========== 状态管理 ==========
@@ -143,54 +139,45 @@ export default function ModernAddressDetail() {
    * 执行搜索功能
    * @param query - 搜索关键词
    */
-  const performSearch = async (query: string) => {
-    setIsSearching(true)
-    setIsLoading(true)
+      const performSearch = async (query: string) => {
+      setIsSearching(true)
+      setIsLoading(true)
 
-    try {
-      // 模拟API搜索延迟
-      await new Promise(resolve => setTimeout(resolve, 500))
-      
-      // 模拟搜索结果（实际项目中应调用真实API）
-      const mockResults: AddressItem[] = [
-        {
-          id: 'search_1',
-          name: `${query}购物中心`,
-          address: `包含${query}的详细地址信息，位于市中心繁华地段`,
-          distance: '2.5km',
-          latitude: 31.2304,
-          longitude: 121.4737,
-        },
-        {
-          id: 'search_2',
-          name: `${query}地铁站`,
-          address: `${query}地铁站A出口，交通便利`,
-          distance: '5.8km',
-          latitude: 31.2431,
-          longitude: 121.5012,
-        },
-        {
-          id: 'search_3',
-          name: `${query}商务大厦`,
-          address: `${query}商务区核心位置，现代化办公环境`,
-          distance: '3.2km',
-          latitude: 31.2567,
-          longitude: 121.4892,
+      try {
+        const key = '你自己的高德Web服务key'
+        const city = '上海' // 可选，根据定位或默认城市
+        const url = `https://restapi.amap.com/v3/assistant/inputtips?key=${key}&keywords=${encodeURIComponent(query)}&city=${city}&citylimit=true`
+
+        const res = await fetch(url)
+        const data = await res.json()
+
+        if (data.status === '1' && data.tips) {
+          const results: AddressItem[] = data.tips
+            .filter((item: any) => item.location) // 过滤掉无坐标的项
+            .map((item: any, index: number) => ({
+              id: `amap_${index}`,
+              name: item.name || '',
+              address: item.address || item.district || '',
+              distance: '', // 高德未直接提供距离，这里可后续通过定位计算
+              latitude: Number(item.location.split(',')[1]),
+              longitude: Number(item.location.split(',')[0]),
+            }))
+          setSearchResults(results)
+        } else {
+          setSearchResults([])
         }
-      ]
-      
-      setSearchResults(mockResults)
-    } catch (error) {
-      console.error('搜索失败:', error)
-      showToast({
-        title: '搜索失败，请重试',
-        icon: 'none',
-        duration: 2000
-      })
-    } finally {
-      setIsLoading(false)
+      } catch (error) {
+        console.error('高德搜索失败:', error)
+        showToast({
+          title: '地址搜索失败，请重试',
+          icon: 'none',
+          duration: 2000
+        })
+      } finally {
+        setIsLoading(false)
+      }
     }
-  }
+
 
   /**
    * 处理地址分类选择
@@ -328,20 +315,7 @@ export default function ModernAddressDetail() {
         </View>
       </View>
 
-      {/* 优化的当前位置显示 */}
-      <View className="modern-location">
-        <View className="location-content">
-          <View className="location-info">
-            <View className="location-icon">
-              <AtIcon value="map-pin" size="14" color="#FF6B35" />
-            </View>
-            <View className="location-text">
-              <Text>上海</Text>
-              <Text className="arrow-down"></Text>
-            </View>
-          </View>
-        </View>
-      </View>
+      {/* 顶部城市定位模块移除，保持导航与内容一体化 */}
 
       {/* 现代化搜索卡片 */}
       <View className="modern-search-card">
@@ -367,26 +341,28 @@ export default function ModernAddressDetail() {
           </View>
         </View>
 
-        {/* 现代化分类标签 */}
-        <View className="category-section">
-          <View className="category-tabs">
-            {ADDRESS_CATEGORIES.map((category) => (
-              <View
-                key={category.id}
-                className={classnames('category-tab', {
-                  'active': activeCategory === category.id
-                })}
-                onClick={() => handleCategorySelect(category.id)}
-                style={{
-                  '--category-color': category.color
-                } as any}
-              >
-                <AtIcon value={category.icon} size="14" />
-                <Text className="category-label">{category.label}</Text>
-              </View>
-            ))}
+        {/* 现代化分类标签：当分类存在时才渲染 */}
+        {ADDRESS_CATEGORIES.length > 0 && (
+          <View className="category-section">
+            <View className="category-tabs">
+              {ADDRESS_CATEGORIES.map((category) => (
+                <View
+                  key={category.id}
+                  className={classnames('category-tab', {
+                    'active': activeCategory === category.id
+                  })}
+                  onClick={() => handleCategorySelect(category.id)}
+                  style={{
+                    '--category-color': category.color
+                  } as any}
+                >
+                  <AtIcon value={category.icon} size="14" />
+                  <Text className="category-label">{category.label}</Text>
+                </View>
+              ))}
+            </View>
           </View>
-        </View>
+        )}
       </View>
 
       {/* 主要内容区域 */}

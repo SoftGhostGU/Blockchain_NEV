@@ -1,11 +1,5 @@
 
 
-// index.scss — 适用于 Taro 小程序页面
-// 设计目标：卡片化组件、粘性头部（sticky）、动画 spinner、移动端友好
-
-// -----------------------------
-// 变量（基于UI设计图优化）
-// 主色调 - 基于图片中的蓝色主题
 $primary: #007AFF;
 $accent: #FF6B35;
 $success: #34C759;
@@ -54,7 +48,7 @@ $shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
 .modern-header {
   background: $card-bg;
   padding: 8px 16px;
-  border-bottom: 0.5px solid $separator-color;
+  border-bottom: none; // 移除分隔线，实现一体化导航栏
   
   .header-content {
     display: flex;
@@ -332,7 +326,7 @@ $shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
 
   .content-card {
     background: $card-bg;
-    border-radius: 24px; // 更新圆角
+    border-radius: 24px; // 默认圆角
     padding: 16px 20px; // 更新内边距
     margin-bottom: 16px; // 更新外边距
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); // 更新阴影
@@ -366,6 +360,16 @@ $shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
     color: $muted;
 
     .empty-text { margin-top: 8px; font-size: 14px; }
+  }
+}
+
+/* 历史/推荐卡片浅灰背景与圆角统一 */
+.modern-content {
+  .content-card.history-card,
+  .content-card.recommend-card {
+    background: #F9FAFB;
+    border-radius: 8px;
+    box-shadow: none;
   }
 }
 
@@ -538,9 +542,7 @@ $shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
 
 /* ============ 当前位置显示 - 基于图片设计优化 ============ */
 .modern-location {
-  background: $card-bg;
-  padding: 12px 16px;
-  border-bottom: 0.5px solid $separator-color;
+  display: none; // 隐藏顶部城市定位模块
 
   .location-content {
     display: flex;
@@ -624,7 +626,7 @@ $shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
   }
 
   .address-icon-wrapper {
-    margin-right: 12px;
+    margin-right: 18px; // 增加图标与文字间距 +6px
     flex-shrink: 0;
 
     .address-icon-bg {
@@ -643,6 +645,9 @@ $shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
     flex: 1;
     min-width: 0;
     margin-right: 12px;
+    display: flex; // 垂直居中文本块
+    flex-direction: column;
+    justify-content: center;
 
     .address-name {
       display: block;
@@ -675,15 +680,15 @@ $shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
 
     .distance-badge {
-      background: rgba(0, 122, 255, 0.1);
-      padding: 4px 8px;
-      border-radius: $radius-sm;
-      border: 1px solid rgba(0, 122, 255, 0.2);
+      background: transparent; // 取消按钮风格
+      padding: 0;
+      border-radius: 0;
+      border: none;
 
       .distance-text {
-        font-size: 12px;
-        font-weight: 500;
-        color: $primary;
+        font-size: 13px;
+        font-weight: 600; // 加粗文字表示距离
+        color: $text;
       }
     }
 
@@ -721,6 +726,7 @@ $shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
 
 /* ========== 页面底部安全区域 ========== */
 .modern-content {
+  padding: 0 16px;
   padding-bottom: env(safe-area-inset-bottom, 16px);
 }
 
@@ -745,13 +751,13 @@ $shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
     }
 
     .modern-search-card {
-      margin: 0 10px 12px;
+      margin: 0 0 12px; // 与其它卡片保持等宽
       padding: 14px;
       border-radius: $radius-lg;
     }
 
     .modern-content {
-      padding: 0 10px;
+      padding: 0 16px; // 与桌面一致，保持等宽
 
       .content-section {
         margin-bottom: 10px;
@@ -828,6 +834,55 @@ $shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
       background: rgba(0, 0, 0, 0.1);
     }
   }
+}
+
+/* ========== 搜索输入对齐ride页面风格（覆盖增强） ========== */
+.modern-search-card {
+  .search-section {
+    .search-input-container {
+      gap: 8px;
+      background: #efeeee;
+      border: 1px solid #d0d0d0;
+      border-radius: 38px;
+      padding: 6px 12px;
+      min-height: 36px;
+      box-shadow: none;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+
+      &:focus-within { border-color: rgba(0, 122, 255, 0.3); }
+
+      .search-icon { flex-shrink: 0; opacity: 0.9; }
+      .search-input {
+        font-size: 16px;
+        line-height: 24px;
+        padding-right: 40px; // 预留右侧图标空间
+      }
+
+      .locate-btn-container {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+}
+
+/* ========== 等宽卡片布局统一（全局覆盖） ========== */
+.modern-address-page {
+  padding: 0 16px;
+}
+
+.modern-location,
+.modern-search-card,
+.modern-content .content-card {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 /* 小屏幕视图微调（可选） */
