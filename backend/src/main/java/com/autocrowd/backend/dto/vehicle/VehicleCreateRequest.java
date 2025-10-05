@@ -13,8 +13,45 @@ public class VehicleCreateRequest {
      * 车辆的唯一标识号码
      */
     private String licensePlate;
+    
     /**
-     * 车辆状况ID
+     * 车辆型号
+     * 如：特斯拉 Model 3
+     */
+    private String vehicleModel;
+    
+    /**
+     * 车身状态
+     * 正常/注意/危险
+     */
+    private String bodyState;
+    
+    /**
+     * 轮胎气压
+     * 正常/注意/危险
+     */
+    private String tirePressure;
+    
+    /**
+     * 制动系统
+     * 正常/注意/危险
+     */
+    private String brakeState;
+    
+    /**
+     * 动力系统
+     * 正常/注意/危险
+     */
+    private String powerState;
+    
+    /**
+     * 车辆状态
+     * 1=可接单, 2=不可接单
+     */
+    private Byte status;
+    
+    /**
+     * 车辆状况ID（保留兼容字段）
      * 关联车辆状况表的ID
      */
     private Integer conditionId;
@@ -27,12 +64,19 @@ public class VehicleCreateRequest {
         this.licensePlate = licensePlate;
     }
 
-
     public Integer getConditionId() {
         return conditionId;
     }
 
     public void setConditionId(Integer conditionId) {
         this.conditionId = conditionId;
+    }
+    
+    public Byte getStatus() {
+        return status;
+    }
+    
+    public void setStatus(Byte status) {
+        this.status = status;
     }
 }

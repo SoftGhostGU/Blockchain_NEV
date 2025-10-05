@@ -27,5 +27,6 @@ public class CurrentOrderResponse {
     public static class VehicleInfoDTO {
         private String licensePlate;
         private Integer fuelLevel;
+        private Byte status; // 车辆状态(1=可接单,2=不可接单)
     }
 }

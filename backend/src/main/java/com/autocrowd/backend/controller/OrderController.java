@@ -1,10 +1,13 @@
 package com.autocrowd.backend.controller;
 
 import com.autocrowd.backend.dto.order.*;
+import com.autocrowd.backend.dto.vehicle.VehicleDTO;
 import com.autocrowd.backend.entity.Order;
 import com.autocrowd.backend.entity.Review;
+import com.autocrowd.backend.entity.Vehicle;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
+import com.autocrowd.backend.repository.VehicleRepository;
 import com.autocrowd.backend.service.OrderService;
 import com.autocrowd.backend.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -31,6 +34,7 @@ public class OrderController {
 
     private final OrderService orderService;
     private final JwtUtil jwtUtil;
+    private final VehicleRepository vehicleRepository;
 
     /**
      * 查询当前进行中的订单
@@ -52,7 +56,7 @@ public class OrderController {
             if (userId == null) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
             }
-            
+
             // 获取用户当前订单
             CurrentOrderResponse currentOrder = orderService.getCurrentOrderByUserId(Integer.valueOf(userId));
             Map<String, Object> result = new HashMap<>();
@@ -86,8 +90,8 @@ public class OrderController {
             Order updatedOrder = orderService.updateOrderStatus(orderId, status);
             Map<String, Object> result = new HashMap<>();
             result.put("data", Map.of(
-                "order_id", updatedOrder.getOrderId(),
-                "status", status
+                    "order_id", updatedOrder.getOrderId(),
+                    "status", status
             ));
             logger.debug("[OrderController] 返回更新订单状态结果: {}", updatedOrder);
             return ResponseEntity.ok(result);
@@ -153,17 +157,17 @@ public class OrderController {
             if (userId == null) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
             }
-            
+
             Map<String, Object> result = new HashMap<>();
             Order order = orderService.createOrder(request, userId);
-            
+
             // 使用HashMap代替Map.of以避免null值导致的NullPointerException
             Map<String, Object> orderData = new HashMap<>();
             orderData.put("order_id", order.getOrderId() != null ? order.getOrderId() : "");
             orderData.put("estimated_price", order.getEstimatedPrice() != null ? order.getEstimatedPrice() : BigDecimal.ZERO);
             orderData.put("distance_km", "5.50公里");
             orderData.put("duration_min", "15分钟");
-            
+
             result.put("data", orderData);
             logger.debug("[OrderController] 返回创建订单结果: {}", order);
             return ResponseEntity.ok(result);
@@ -180,10 +184,9 @@ public class OrderController {
             return ResponseEntity.ok(errorResponse);
         }
     }
-    
+
     /**
-     * 更新订单状态从1到2（On the way -> In progress）
-     * 此接口不需要JWT验证
+     * 更新订单状态从1到2（已接单 -> 进行中）
      */
     @PostMapping("/start")
     public ResponseEntity<Map<String, Object>> startOrder(@RequestParam String orderId) {
@@ -193,22 +196,22 @@ public class OrderController {
             if (orderId == null || orderId.isEmpty()) {
                 throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "订单ID不能为空");
             }
-            
+
             // 获取订单详情并验证状态
             Order order = orderService.getOrderById(orderId);
-            
-            // 检查订单状态是否为1（On the way）
+
+            // 检查订单状态是否为1（已接单）
             if (order.getStatus() != 1) {
                 throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法开始服务");
             }
-            
-            // 更新订单状态为2（In progress）
+
+            // 更新订单状态为2（进行中）
             Order updatedOrder = orderService.updateOrderStatus(orderId, (byte) 2);
-            
+
             Map<String, Object> result = new HashMap<>();
             result.put("data", Map.of(
-                "order_id", updatedOrder.getOrderId(),
-                "status", updatedOrder.getStatus()
+                    "order_id", updatedOrder.getOrderId(),
+                    "status", updatedOrder.getStatus()
             ));
             logger.debug("[OrderController] 返回开始订单结果: {}", updatedOrder);
             return ResponseEntity.ok(result);
@@ -226,7 +229,7 @@ public class OrderController {
             return ResponseEntity.ok(errorResponse);
         }
     }
-    
+
     /**
      * 获取订单详情（包含加密数据）
      *
@@ -237,7 +240,7 @@ public class OrderController {
     public ResponseEntity<Map<String, Object>> getOrderDetail(@PathVariable String orderId) {
         try {
             Order order = orderService.getOrderById(orderId);
-            
+
             Map<String, Object> orderData = new HashMap<>();
             orderData.put("orderId", order.getOrderId());
             orderData.put("userId", order.getUserId());
@@ -255,11 +258,19 @@ public class OrderController {
             orderData.put("updatedAt", order.getUpdatedAt());
             orderData.put("accessPolicy", order.getAccessPolicy());
             
+            // 如果订单关联了车辆，获取车辆信息
+            if (order.getVehicleId() != null) {
+                Vehicle vehicle = vehicleRepository.findById(order.getVehicleId()).orElse(null);
+                if (vehicle != null) {
+                    orderData.put("vehicleStatus", vehicle.getStatus());
+                }
+            }
+
             Map<String, Object> result = new HashMap<>();
             result.put("code", 0);
             result.put("data", orderData);
             result.put("message", "获取订单详情成功");
-            
+
             return ResponseEntity.ok(result);
         } catch (BusinessException e) {
             Map<String, Object> errorResponse = new HashMap<>();
@@ -273,7 +284,7 @@ public class OrderController {
             return ResponseEntity.ok(errorResponse);
         }
     }
-    
+
     /**
      * 用户选择车辆接口
      */
@@ -294,15 +305,15 @@ public class OrderController {
             if (userId == null) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
             }
-            
+
             Order order = orderService.selectVehicleForOrder(request, Integer.valueOf(userId));
-            
+
             Map<String, Object> result = new HashMap<>();
             result.put("data", Map.of(
-                "order_id", order.getOrderId(),
-                "driver_id", order.getDriverId(),
-                "vehicle_id", order.getVehicleId(),
-                "status", order.getStatus()
+                    "order_id", order.getOrderId(),
+                    "driver_id", order.getDriverId(),
+                    "vehicle_id", order.getVehicleId(),
+                    "status", order.getStatus()
             ));
             logger.debug("[OrderController] 返回用户选择车辆结果: {}", order);
             return ResponseEntity.ok(result);
@@ -319,7 +330,7 @@ public class OrderController {
             return ResponseEntity.ok(errorResponse);
         }
     }
-    
+
     /**
      * 添加订单评价
      */
@@ -340,15 +351,15 @@ public class OrderController {
             if (userId == null) {
                 throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
             }
-            
+
             Review review = orderService.addReview(request, Integer.parseInt(userId));
-            
+
             Map<String, Object> result = new HashMap<>();
             result.put("data", Map.of(
-                "review_id", review.getReviewId(),
-                "order_id", review.getOrderId(),
-                "content", review.getContent(),
-                "comment_star", review.getCommentStar()
+                    "review_id", review.getReviewId(),
+                    "order_id", review.getOrderId(),
+                    "content", review.getContent(),
+                    "comment_star", review.getCommentStar()
             ));
             logger.debug("[OrderController] 返回添加订单评价结果: {}", review);
             return ResponseEntity.ok(result);
@@ -366,5 +377,192 @@ public class OrderController {
             return ResponseEntity.ok(errorResponse);
         }
     }
+
+    /**
+     * 获取本月订单类型分布
+     */
+    @GetMapping("/monthly-type-distribution")
+    public ResponseEntity<Map<String, Object>> getMonthlyOrderTypeDistribution(HttpServletRequest httpRequest) {
+        logger.debug("[OrderController] 收到获取本月订单类型分布请求");
+        try {
+            // 从请求头获取token
+            String authHeader = httpRequest.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            String token = authHeader.substring(7);
+            Claims claims = jwtUtil.parseToken(token);
+
+            // 获取用户信息
+            String userIdStr = claims.get("userId", String.class);
+            String driverIdStr = claims.get("driverId", String.class);
+            String role = claims.get("role", String.class);
+
+            Integer userId;
+            String userRole;
+            if (driverIdStr != null && !driverIdStr.isEmpty()) {
+                userId = Integer.valueOf(driverIdStr);
+                userRole = "driver";
+            } else if (userIdStr != null && !userIdStr.isEmpty()) {
+                userId = Integer.valueOf(userIdStr);
+                userRole = "user";
+            } else {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "无法获取用户信息");
+            }
+
+            List<OrderTypeDistributionDTO> distribution = orderService.getMonthlyOrderTypeDistribution(userId, userRole);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("code", 0);
+            result.put("data", distribution);
+            result.put("message", "获取本月订单类型分布成功");
+            return ResponseEntity.ok(result);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            logger.error("[OrderController] 服务器内部错误", e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误");
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+
+    /**
+     * 获取评价分布
+     */
+    @GetMapping("/star-distribution")
+    public ResponseEntity<Map<String, Object>> getStarDistribution(HttpServletRequest httpRequest) {
+        logger.debug("[OrderController] 收到获取评价分布请求");
+        try {
+            // 从请求头获取token
+            String authHeader = httpRequest.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            String token = authHeader.substring(7);
+            Claims claims = jwtUtil.parseToken(token);
+
+            // 获取用户信息
+            String userIdStr = claims.get("userId", String.class);
+            String driverIdStr = claims.get("driverId", String.class);
+            String role = claims.get("role", String.class);
+
+            Integer userId;
+            String userRole;
+            if (driverIdStr != null && !driverIdStr.isEmpty()) {
+                userId = Integer.valueOf(driverIdStr);
+                userRole = "driver";
+            } else if (userIdStr != null && !userIdStr.isEmpty()) {
+                userId = Integer.valueOf(userIdStr);
+                userRole = "user";
+            } else {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "无法获取用户信息");
+            }
+
+            List<StarDistributionDTO> distribution = orderService.getStarDistribution(userId, userRole);
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("code", 0);
+            result.put("data", distribution);
+            result.put("message", "获取评价分布成功");
+            return ResponseEntity.ok(result);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            logger.error("[OrderController] 服务器内部错误", e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误");
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
     
+    /**
+     * 获取可接单的车辆列表
+     */
+    @GetMapping("/available-vehicles")
+    public ResponseEntity<Map<String, Object>> getAvailableVehicles() {
+        logger.debug("[OrderController] 收到获取可用车辆请求");
+        try {
+            List<VehicleDTO> vehicles = orderService.getAvailableVehicles();
+
+            Map<String, Object> result = new HashMap<>();
+            result.put("code", 0);
+            result.put("data", vehicles);
+            result.put("message", "获取可用车辆成功");
+            return ResponseEntity.ok(result);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            logger.error("[OrderController] 服务器内部错误", e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误");
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+    
+    /**
+     * 用户完成订单接口
+     */
+    @PostMapping("/complete")
+    public ResponseEntity<Map<String, Object>> completeOrder(@RequestBody CompleteOrderRequest request, HttpServletRequest httpRequest) {
+        logger.info("[OrderController] 收到用户完成订单请求: 订单ID={}, 实际价格={}", request.getOrderId(), request.getActualPrice());
+        try {
+            // 从请求头获取token并解析用户ID
+            String authHeader = httpRequest.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            String token = authHeader.substring(7);
+            Claims claims = jwtUtil.parseToken(token);
+            // 获取userId
+            String userId = claims.get("userId", String.class);
+
+            if (userId == null) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+
+            // 验证订单ID和实际价格
+            String orderId = request.getOrderId();
+            BigDecimal actualPrice = request.getActualPrice();
+            if (orderId == null || orderId.isEmpty()) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "订单ID不能为空");
+            }
+            if (actualPrice == null || actualPrice.compareTo(BigDecimal.ZERO) <= 0) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "实际价格必须大于0");
+            }
+
+            // 完成订单
+            Order completedOrder = orderService.completeOrderByUser(orderId, actualPrice, Integer.valueOf(userId));
+            
+            Map<String, Object> response = new HashMap<>();
+            Map<String, Object> data = new HashMap<>();
+            data.put("order_id", completedOrder.getOrderId());
+            data.put("status", completedOrder.getStatus());
+            data.put("actual_price", completedOrder.getActualPrice());
+            response.put("data", data);
+            return ResponseEntity.ok(response);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误: " + e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
 }

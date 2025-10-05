@@ -55,4 +55,13 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
      * @return 符合审核状态的车辆分页结果
      */
     Page<Vehicle> findByAuditStatus(Byte auditStatus, Pageable pageable);
+    
+    /**
+     * 查询可接单的车辆（审核通过且状态为可接单）
+     * @param auditStatus 审核状态（2=已通过）
+     * @param status 车辆状态（1=可接单）
+     * @return 符合条件的车辆列表
+     */
+    @Query("SELECT v FROM Vehicle v WHERE v.auditStatus = ?1 AND v.status = ?2")
+    List<Vehicle> findByAuditStatusAndStatus(Byte auditStatus, Byte status);
 }
