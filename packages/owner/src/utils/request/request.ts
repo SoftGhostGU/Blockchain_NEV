@@ -1,6 +1,8 @@
 // src/utils/request.ts
 import axios from "axios";
 import { notification, Modal } from "antd";
+import { encrypt } from '../IBE/encrypt';
+import { decrypt } from '../IBE/decrypt';
 
 // axios 实例
 const request = axios.create({
@@ -25,6 +27,22 @@ const codeMessage: Record<number, string> = {
   504: "网关超时",
 };
 
+// 获取用户身份
+const getUserIdentity = (): string | null => {
+  try {
+    const appInfo = localStorage.getItem("ROOT_APP_INFO");
+    if (appInfo) {
+      const { userInfo } = JSON.parse(appInfo);
+      if (userInfo && userInfo.role && userInfo.driverId) {
+        return `${userInfo.role.toUpperCase()}_${userInfo.driverId}`;
+      }
+    }
+  } catch (error) {
+    console.warn("获取用户身份失败:", error);
+  }
+  return null;
+};
+
 // 请求拦截器
 request.interceptors.request.use(
   (config) => {
@@ -39,6 +57,21 @@ request.interceptors.request.use(
         console.warn("解析 ROOT_APP_INFO 出错:", e);
       }
     }
+    
+    // IBE加密：对请求数据中的敏感字段进行加密
+    if (config.data && typeof config.data === 'object') {
+      const userIdentity = getUserIdentity();
+      if (userIdentity) {
+        try {
+          // 设置访问策略为当前用户身份
+          const accessPolicy = `(${userIdentity})`;
+          config.data = encrypt(config.data, accessPolicy);
+        } catch (error) {
+          console.warn("IBE加密失败:", error);
+        }
+      }
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)
@@ -48,6 +81,34 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   (response) => {
     const { data } = response;
+    
+    // IBE解密：对响应数据中的敏感字段进行解密
+    if (data && typeof data === 'object') {
+      const userIdentity = getUserIdentity();
+      if (userIdentity) {
+        try {
+          // 尝试解密数组项
+          if (Array.isArray(data.content)) {
+            data.content = data.content.map((item: any) => {
+              if (item && typeof item === 'object') {
+                const decrypted = decrypt(item, userIdentity);
+                return decrypted || item;
+              }
+              return item;
+            });
+          } else if (data && typeof data === 'object') {
+            // 解密单个对象
+            const decrypted = decrypt(data, userIdentity);
+            if (decrypted) {
+              Object.assign(data, decrypted);
+            }
+          }
+        } catch (error) {
+          console.warn("IBE解密失败:", error);
+        }
+      }
+    }
+    
     // 按后端约定：0 或 200 才算成功
     if (data && data.code !== 0 && data.code !== 200) {
       const errorText = data.message || codeMessage[data.code] || "未知错误";
