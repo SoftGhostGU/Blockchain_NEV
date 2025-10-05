@@ -86,6 +86,25 @@
         }
       }
 
+      // 空状态消息样式
+      .empty-state-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        min-height: 200px;
+        text-align: center;
+        
+        .empty-state-message {
+          color: #999;
+          font-size: 14px;
+          font-style: italic;
+          line-height: 1.5;
+          white-space: pre-line;
+        }
+      }
+
       .table-title {
         display: flex;
         justify-content: space-between;

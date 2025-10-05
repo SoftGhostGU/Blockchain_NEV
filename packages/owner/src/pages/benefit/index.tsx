@@ -126,6 +126,15 @@ export default function benefit() {
     { month: '2025/07', value: 0 },
   ]);
 
+  const [current_order, setCurrent_order] = useState([
+    { type: '网约车', value: 0 },
+    { type: '同城配送', value: 0 },
+    { type: '紧急医疗', value: 0 },
+    { type: '路况监控', value: 0 },
+    { type: '移动零售', value: 0 },
+    { type: '能源交易', value: 0 }
+  ]);
+
   const [loading, setLoading] = useState(false);
 
   // 获取API数据
@@ -133,16 +142,19 @@ export default function benefit() {
     try {
       setLoading(true);
       
-      // 并行调用三个API
-      const [turnoverResponse, balanceResponse, financeResponse] = await Promise.all([
+      // 并行调用五个API
+      const [turnoverResponse, balanceResponse, financeResponse, orderDistributionResponse, withdrawableBalanceResponse] = await Promise.all([
         request.getTurnoverDays({}),
         request.getTurnoverMonths({}),
-        request.getFinanceInfo({})
+        request.getFinanceInfo({}),
+        request.getMonthlyOrderTypeDistribution({}),
+        request.getWithdrawableBalance({})
       ]);
 
       console.log('API响应 - 营业额数据:', turnoverResponse);
       console.log('API响应 - 收入数据:', balanceResponse);
       console.log('API响应 - 财务记录数据:', financeResponse);
+      console.log('API响应 - 订单分布数据:', orderDistributionResponse);
 
       // 根据API响应格式更新数据
       if (turnoverResponse) {
@@ -168,11 +180,32 @@ export default function benefit() {
         }
       }
 
+      // 处理订单类型分布数据
+      if (orderDistributionResponse) {
+        const orderData = orderDistributionResponse.data || orderDistributionResponse;
+        if (Array.isArray(orderData)) {
+          setCurrent_order(orderData);
+        } else {
+          setCurrent_order([]);
+        }
+      }
+
+      // 处理可提现余额数据
+      if (withdrawableBalanceResponse) {
+        const balanceData = withdrawableBalanceResponse.data || withdrawableBalanceResponse;
+        if (balanceData && balanceData.withdrawableBalance !== undefined) {
+          set_balance_to_withdraw(balanceData.withdrawableBalance);
+        } else {
+          set_balance_to_withdraw(0);
+        }
+      }
+
     } catch (error) {
       console.error('API调用失败:', error);
       // API失败时设置为空数组
       setCurrent_turnover([]);
       setCurrent_balance([]);
+      setCurrent_order([]);
       setTableData([]);
     } finally {
       setLoading(false);
@@ -184,21 +217,22 @@ export default function benefit() {
     fetchData();
   }, []);
 
-  const current_order = [
-    { type: '网约车', value: 18 },
-    { type: '同城配送', value: 23 },
-    { type: '紧急医疗', value: 12 },
-    { type: '路况监控', value: 29 },
-    { type: '移动零售', value: 15 },
-    { type: '能源交易', value: 21 }
-  ]
+  // 使用API获取的订单类型分布数据
+  // const current_order = [
+  //   { type: '网约车', value: 18 },
+  //   { type: '同城配送', value: 23 },
+  //   { type: '紧急医疗', value: 12 },
+  //   { type: '路况监控', value: 29 },
+  //   { type: '移动零售', value: 15 },
+  //   { type: '能源交易', value: 21 }
+  // ]
 
   // const current_reputation = [
   //   { month: '2025-6', value: 94 },
   //   { month: '2025-7', value: 96 },
   // ];
 
-  const [balance_to_withdraw, set_balance_to_withdraw] = useState(5370);
+  const [balance_to_withdraw, set_balance_to_withdraw] = useState(0);
   const bank_card_number = '6222026000000000001';
 
   // 示例数据（已注释）
@@ -371,7 +405,7 @@ export default function benefit() {
 
   // 检查是否有收入数据
   const hasRevenueData = balance_this_month > 0 || turnover_today > 0;
-  const emptyStateMessage = "近期还没有订单，派出车辆来获取收益吧~";
+  const emptyStateMessage = "近期还没有订单\n派出车辆来获取收益吧~";
   // const reputation_last_month = current_reputation[0].value;
   // const reputation_this_month = current_reputation[1].value;
   // const reputation_calculate = (reputation_this_month / 100) * 5;
@@ -518,7 +552,7 @@ export default function benefit() {
             <ShopOutlined style={{ marginRight: '5px' }} />
             每日营业额
           </p>
-          {turnover_change > 0 ? (
+          {turnover_change >= 0 ? (
             <p className="change-rate">
               <UpOutlined
                 style={{
@@ -538,27 +572,16 @@ export default function benefit() {
             </p>
           )}
           {hasRevenueData ? (
-            <div
+            <><div
               className="item-number"
               style={{ color: '#4c76f7' }}
-            >￥{current_turnover.length > 4 ? (current_turnover[4]?.value || 0).toFixed(2) : '0.00'}</div>
+            >￥{current_turnover.length > 4 ? (current_turnover[4]?.value || 0).toFixed(2) : '0.00'}</div><LineChart
+                data={current_turnover} /></>
           ) : (
-            <div
-              className="item-number"
-              style={{ 
-                color: '#999', 
-                fontSize: '14px',
-                fontStyle: 'italic',
-                textAlign: 'center',
-                padding: '10px'
-              }}
-            >{emptyStateMessage}</div>
+            <div className="empty-state-container">
+              <div className="empty-state-message">{emptyStateMessage}</div>
+            </div>
           )}
-          <LineChart
-            data={current_turnover}
-          // width={300}
-          // height={120}
-          />
         </div>
         <div className="row-item">
           <p className="item-title">
@@ -566,27 +589,16 @@ export default function benefit() {
             本月收入
           </p>
           {hasRevenueData ? (
-            <span
+            <><span
               className="item-number"
               style={{ color: '#97c8a0' }}
-            >￥{balance_this_month.toFixed(2)}</span>
+            >￥{balance_this_month.toFixed(2)}</span><BarChart
+                data={current_balance} /></>
           ) : (
-            <div
-              className="item-number"
-              style={{ 
-                color: '#999', 
-                fontSize: '14px',
-                fontStyle: 'italic',
-                textAlign: 'center',
-                padding: '10px'
-              }}
-            >{emptyStateMessage}</div>
+            <div className="empty-state-container">
+              <div className="empty-state-message">{emptyStateMessage}</div>
+            </div>
           )}
-          <BarChart
-            data={current_balance}
-          // width={600}
-          // height={400}
-          />
         </div>
 
         <div className="row-item">
@@ -595,28 +607,23 @@ export default function benefit() {
             本月订单数
           </p>
           {hasRevenueData ? (
-            <span
-              className="item-number"
-              style={{ color: '#ffc658' }}
-            >{order_this_month}单</span>
+            <>
+              <span
+                className="item-number"
+                style={{ color: '#ffc658' }}
+              >{order_this_month}单</span>
+              <PieChart
+                data={current_order}
+              // data1={current_comments}
+              // width={600}
+              // height={400}
+              />
+            </>
           ) : (
-            <div
-              className="item-number"
-              style={{ 
-                color: '#999', 
-                fontSize: '14px',
-                fontStyle: 'italic',
-                textAlign: 'center',
-                padding: '10px'
-              }}
-            >{emptyStateMessage}</div>
+            <div className="empty-state-container">
+              <div className="empty-state-message">{emptyStateMessage}</div>
+            </div>
           )}
-          <PieChart
-            data={current_order}
-          // data1={current_comments}
-          // width={600}
-          // height={400}
-          />
         </div>
         <div className="row-item">
           <p className="item-title">
@@ -633,7 +640,7 @@ export default function benefit() {
               fontSize: '14px',
               marginTop: '10px',
             }}
-          >本月已提现：￥{balance_has_withdrawn}</span>
+          >本轮已提现：￥{balance_has_withdrawn}</span>
           <Button
             // type="primary"
             onClick={clickButton}

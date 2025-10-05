@@ -1,131 +1,346 @@
-2025-10-05 00:16:49.828 [background-preinit] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-05 00:16:49.879 [main] INFO  com.autocrowd.backend.BackendApplication - Starting BackendApplication using Java 17.0.8.1 with PID 18772 (D:\Project\Blockchain_NEV\backend\target\classes started by GHOST in D:\Project\Blockchain_NEV\backend)
-2025-10-05 00:16:49.880 [main] INFO  com.autocrowd.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
-2025-10-05 00:16:50.804 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
-2025-10-05 00:16:50.806 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-05 00:16:50.939 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 125 ms. Found 7 JPA repository interfaces.
-2025-10-05 00:16:50.951 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
-2025-10-05 00:16:50.953 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2025-10-05 00:16:50.965 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.DriverRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-05 00:16:50.965 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.FinancialRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-05 00:16:50.965 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-05 00:16:50.965 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-05 00:16:50.965 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-05 00:16:50.966 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.VehicleConditionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-05 00:16:50.966 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.VehicleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-05 00:16:50.966 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 6 ms. Found 0 Redis repository interfaces.
-2025-10-05 00:16:51.586 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
-2025-10-05 00:16:51.593 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
-2025-10-05 00:16:51.595 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2025-10-05 00:16:51.595 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.26]
-2025-10-05 00:16:51.653 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2025-10-05 00:16:51.653 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1733 ms
-2025-10-05 00:16:51.900 [main] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-05 00:16:51.952 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
-2025-10-05 00:16:51.978 [main] INFO  o.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-10-05 00:16:52.189 [main] INFO  o.s.o.j.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-05 00:16:52.208 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-10-05 00:16:52.494 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@8e00c02
-2025-10-05 00:16:52.496 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-10-05 00:16:52.564 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-10-05 00:16:53.311 [main] INFO  o.h.e.t.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-10-05 00:16:53.313 [main] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-05 00:16:53.545 [main] INFO  o.s.data.jpa.repository.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-05 00:16:53.856 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 初始化区块链连接
-2025-10-05 00:16:53.856 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 区块链配置信息:
-2025-10-05 00:16:53.856 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   MSP ID: Org1MSP
-2025-10-05 00:16:53.856 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Channel Name: mychannel
-2025-10-05 00:16:53.856 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Order Chaincode Name: ordersLedger
-2025-10-05 00:16:53.856 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Financial Chaincode Name: financialsLedger
-2025-10-05 00:16:53.857 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Peer Endpoint: 10.147.17.184:7051
-2025-10-05 00:16:53.857 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Peer Host Alias: peer0.org1.example.com
-2025-10-05 00:17:09.672 [main] ERROR c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 区块链连接初始化失败: io.grpc.StatusRuntimeException: DEADLINE_EXCEEDED: CallOptions deadline exceeded after 14.979495100s. Name resolution delay 0.005166900 seconds. [closed=[], open=[[buffered_nanos=14982890100, waiting_for_connection]]]
-org.hyperledger.fabric.client.EndorseException: io.grpc.StatusRuntimeException: DEADLINE_EXCEEDED: CallOptions deadline exceeded after 14.979495100s. Name resolution delay 0.005166900 seconds. [closed=[], open=[[buffered_nanos=14982890100, waiting_for_connection]]]
-	at org.hyperledger.fabric.client.GatewayClient.endorse(GatewayClient.java:74)
-	at org.hyperledger.fabric.client.ProposalImpl.endorse(ProposalImpl.java:76)
-	at org.hyperledger.fabric.client.Proposal.endorse(Proposal.java:64)
-	at org.hyperledger.fabric.client.ContractImpl.submitTransaction(ContractImpl.java:45)
-	at com.autocrowd.backend.service.impl.BlockchainServiceImpl.init(BlockchainServiceImpl.java:104)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
-	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:568)
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMethod.invoke(InitDestroyAnnotationBeanPostProcessor.java:457)
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:401)
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:219)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:422)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1798)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:904)
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:782)
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:237)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1375)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1212)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:904)
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:782)
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:237)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1375)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1212)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:975)
-	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:971)
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625)
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
-	at com.autocrowd.backend.BackendApplication.main(BackendApplication.java:10)
-Caused by: io.grpc.StatusRuntimeException: DEADLINE_EXCEEDED: CallOptions deadline exceeded after 14.979495100s. Name resolution delay 0.005166900 seconds. [closed=[], open=[[buffered_nanos=14982890100, waiting_for_connection]]]
-	at io.grpc.stub.ClientCalls.toStatusRuntimeException(ClientCalls.java:268)
-	at io.grpc.stub.ClientCalls.getUnchecked(ClientCalls.java:249)
-	at io.grpc.stub.ClientCalls.blockingUnaryCall(ClientCalls.java:167)
-	at org.hyperledger.fabric.protos.gateway.GatewayGrpc$GatewayBlockingStub.endorse(GatewayGrpc.java:455)
-	at org.hyperledger.fabric.client.GatewayClient.endorse(GatewayClient.java:72)
-	... 57 common frames omitted
-2025-10-05 00:17:09.711 [main] INFO  c.a.backend.service.PairingBasedCryptosystem - IBE系统参数初始化完成
-2025-10-05 00:17:09.712 [main] INFO  com.autocrowd.backend.service.IbeService - IBE服务初始化完成
-2025-10-05 00:17:09.788 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+2025-10-06 00:09:39.304 [http-nio-8080-exec-7] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:09:39.305 [http-nio-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:09:39.620 [http-nio-8080-exec-9] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:09:39.628 [http-nio-8080-exec-5] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:10:10.522 [http-nio-8080-exec-4] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:10:10.522 [http-nio-8080-exec-7] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:10:10.545 [http-nio-8080-exec-1] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:10:10.859 [http-nio-8080-exec-6] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:11:08.533 [http-nio-8080-exec-4] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:11:08.535 [http-nio-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:11:08.855 [http-nio-8080-exec-1] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:11:08.868 [http-nio-8080-exec-9] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:14:18.989 [http-nio-8080-exec-4] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:14:18.993 [http-nio-8080-exec-2] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:14:19.003 [http-nio-8080-exec-5] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:14:19.329 [http-nio-8080-exec-6] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:14:36.500 [http-nio-8080-exec-4] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:14:36.502 [http-nio-8080-exec-10] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:14:36.811 [http-nio-8080-exec-5] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:14:36.830 [http-nio-8080-exec-9] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:16:06.880 [http-nio-8080-exec-4] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
+2025-10-06 00:16:06.880 [http-nio-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
+2025-10-06 00:16:06.882 [http-nio-8080-exec-4] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
+2025-10-06 00:16:07.247 [http-nio-8080-exec-7] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=19900000001, password=Test_111)
+2025-10-06 00:16:07.247 [http-nio-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: 19900000001
+2025-10-06 00:16:07.329 [http-nio-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录成功 - 司机ID: 506, 用户名: Test_111
+2025-10-06 00:16:11.944 [http-nio-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:16:12.263 [http-nio-8080-exec-1] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:16:12.263 [http-nio-8080-exec-10] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:16:12.587 [http-nio-8080-exec-7] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:17:30.606 [http-nio-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:17:30.609 [http-nio-8080-exec-3] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:17:30.924 [http-nio-8080-exec-10] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:17:30.937 [http-nio-8080-exec-4] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:18:01.416 [http-nio-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:18:01.417 [http-nio-8080-exec-2] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:18:01.739 [http-nio-8080-exec-9] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:18:01.739 [http-nio-8080-exec-6] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:18:26.972 [http-nio-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:18:26.980 [http-nio-8080-exec-1] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:18:26.987 [http-nio-8080-exec-9] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:18:27.318 [http-nio-8080-exec-7] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:18:55.533 [http-nio-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:18:55.533 [http-nio-8080-exec-5] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:18:55.855 [http-nio-8080-exec-4] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:18:55.855 [http-nio-8080-exec-1] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:21:58.850 [http-nio-8080-exec-3] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:21:58.850 [http-nio-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:21:58.874 [http-nio-8080-exec-1] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:21:59.192 [http-nio-8080-exec-10] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:24:36.135 [http-nio-8080-exec-3] ERROR o.a.c.c.C.[.[localhost].[/].[dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception
+com.autocrowd.backend.exception.BusinessException: 无效的令牌
+	at com.autocrowd.backend.util.JwtFilter.doFilter(JwtFilter.java:62)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:340)
+	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapSecured$0(ObservationFilterChainDecorator.java:82)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:128)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$0(ObservationFilterChainDecorator.java:323)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:224)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:113)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:389)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:904)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2025-10-06 00:24:49.488 [http-nio-8080-exec-9] ERROR o.a.c.c.C.[.[localhost].[/].[dispatcherServlet] - Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception
+com.autocrowd.backend.exception.BusinessException: 无效的令牌
+	at com.autocrowd.backend.util.JwtFilter.doFilter(JwtFilter.java:62)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+	at org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+	at org.springframework.security.web.ObservationFilterChainDecorator$FilterObservation$SimpleFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:479)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$1(ObservationFilterChainDecorator.java:340)
+	at org.springframework.security.web.ObservationFilterChainDecorator.lambda$wrapSecured$0(ObservationFilterChainDecorator.java:82)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:128)
+	at org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.web.filter.CorsFilter.doFilterInternal(CorsFilter.java:91)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+	at org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:227)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.wrapFilter(ObservationFilterChainDecorator.java:240)
+	at org.springframework.security.web.ObservationFilterChainDecorator$AroundFilterObservation$SimpleAroundFilterObservation.lambda$wrap$0(ObservationFilterChainDecorator.java:323)
+	at org.springframework.security.web.ObservationFilterChainDecorator$ObservationFilter.doFilter(ObservationFilterChainDecorator.java:224)
+	at org.springframework.security.web.ObservationFilterChainDecorator$VirtualFilterChain.doFilter(ObservationFilterChainDecorator.java:137)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
+	at org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+	at org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+	at org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.ServerHttpObservationFilter.doFilterInternal(ServerHttpObservationFilter.java:113)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:164)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:140)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:167)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:90)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:483)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:115)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:93)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:344)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:389)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:904)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1741)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1190)
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:659)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:63)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+2025-10-06 00:24:55.722 [http-nio-8080-exec-1] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=19900000002, password=Test_222)
+2025-10-06 00:24:55.722 [http-nio-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: 19900000002
+2025-10-06 00:24:55.822 [http-nio-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录成功 - 司机ID: 507, 用户名: Test_222
+2025-10-06 00:28:38.030 [SpringApplicationShutdownHook] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 销毁区块链连接
+2025-10-06 00:28:38.031 [SpringApplicationShutdownHook] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-06 00:28:38.033 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-06 00:28:38.039 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-06 00:28:46.012 [background-preinit] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2025-10-06 00:28:46.061 [main] INFO  com.autocrowd.backend.BackendApplication - Starting BackendApplication using Java 17.0.8.1 with PID 31004 (D:\Project\Blockchain_NEV\backend\target\classes started by GHOST in D:\Project\Blockchain_NEV\backend)
+2025-10-06 00:28:46.062 [main] INFO  com.autocrowd.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
+2025-10-06 00:28:46.943 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-10-06 00:28:46.944 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-10-06 00:28:47.055 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 106 ms. Found 7 JPA repository interfaces.
+2025-10-06 00:28:47.065 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2025-10-06 00:28:47.066 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2025-10-06 00:28:47.079 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.DriverRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-06 00:28:47.079 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.FinancialRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-06 00:28:47.079 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-06 00:28:47.079 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-06 00:28:47.079 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-06 00:28:47.080 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.VehicleConditionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-06 00:28:47.080 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.VehicleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2025-10-06 00:28:47.080 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 6 ms. Found 0 Redis repository interfaces.
+2025-10-06 00:28:47.662 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
+2025-10-06 00:28:47.671 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-8080"]
+2025-10-06 00:28:47.672 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
+2025-10-06 00:28:47.672 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.26]
+2025-10-06 00:28:47.728 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
+2025-10-06 00:28:47.729 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 1618 ms
+2025-10-06 00:28:47.984 [main] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-10-06 00:28:48.036 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
+2025-10-06 00:28:48.067 [main] INFO  o.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2025-10-06 00:28:48.319 [main] INFO  o.s.o.j.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-10-06 00:28:48.342 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2025-10-06 00:28:48.597 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@337fb1a5
+2025-10-06 00:28:48.598 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2025-10-06 00:28:48.641 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-10-06 00:28:49.404 [main] INFO  o.h.e.t.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-10-06 00:28:49.405 [main] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-10-06 00:28:49.614 [main] INFO  o.s.data.jpa.repository.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-10-06 00:28:49.926 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 初始化区块链连接
+2025-10-06 00:28:49.926 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 区块链配置信息:
+2025-10-06 00:28:49.926 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   MSP ID: Org1MSP
+2025-10-06 00:28:49.926 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Channel Name: mychannel
+2025-10-06 00:28:49.926 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Order Chaincode Name: ordersLedger
+2025-10-06 00:28:49.926 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Financial Chaincode Name: financialsLedger
+2025-10-06 00:28:49.926 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Peer Endpoint: 10.147.17.184:7051
+2025-10-06 00:28:49.926 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Peer Host Alias: peer0.org1.example.com
+2025-10-06 00:28:56.324 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 区块链连接初始化成功
+2025-10-06 00:28:56.379 [main] INFO  c.a.backend.service.PairingBasedCryptosystem - IBE系统参数初始化完成
+2025-10-06 00:28:56.380 [main] INFO  com.autocrowd.backend.service.IbeService - IBE服务初始化完成
+2025-10-06 00:28:56.455 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
 
-Using generated security password: 0ae43dfe-ccf5-451f-98f9-b65ec52b496c
+Using generated security password: db8608f5-33d5-4c22-9cba-125ac104a3fe
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2025-10-05 00:17:09.800 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2025-10-05 00:17:10.315 [main] INFO  o.s.b.actuate.endpoint.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
-2025-10-05 00:17:10.813 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
-2025-10-05 00:17:10.822 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
-2025-10-05 00:17:10.832 [main] INFO  com.autocrowd.backend.BackendApplication - Started BackendApplication in 21.524 seconds (process running for 22.349)
-2025-10-05 00:17:11.353 [RMI TCP Connection(3)-192.168.3.86] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2025-10-05 00:17:11.353 [RMI TCP Connection(3)-192.168.3.86] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2025-10-05 00:17:11.355 [RMI TCP Connection(3)-192.168.3.86] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2025-10-05 01:00:53.608 [http-nio-8080-exec-5] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=19900000002, password=Test_222)
-2025-10-05 01:00:53.609 [http-nio-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: 19900000002
-2025-10-05 01:00:53.736 [http-nio-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录成功 - 司机ID: 507, 用户名: Test_222
-2025-10-05 01:23:25.743 [SpringApplicationShutdownHook] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 销毁区块链连接
-2025-10-05 01:23:25.744 [SpringApplicationShutdownHook] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-05 01:23:25.747 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
-2025-10-05 01:23:25.761 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-06 00:28:56.471 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2025-10-06 00:28:57.245 [main] INFO  o.s.b.actuate.endpoint.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
+2025-10-06 00:28:58.312 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-8080"]
+2025-10-06 00:28:58.338 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
+2025-10-06 00:28:58.370 [main] INFO  com.autocrowd.backend.BackendApplication - Started BackendApplication in 12.852 seconds (process running for 13.537)
+2025-10-06 00:28:58.981 [RMI TCP Connection(3)-192.168.3.86] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-10-06 00:28:58.982 [RMI TCP Connection(3)-192.168.3.86] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
+2025-10-06 00:28:58.984 [RMI TCP Connection(3)-192.168.3.86] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
+2025-10-06 00:29:00.161 [http-nio-8080-exec-3] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=19900000002, password=Test_222)
+2025-10-06 00:29:00.161 [http-nio-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: 19900000002
+2025-10-06 00:29:00.479 [http-nio-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录成功 - 司机ID: 507, 用户名: Test_222
+2025-10-06 00:29:26.221 [http-nio-8080-exec-4] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:29:26.226 [http-nio-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求
+2025-10-06 00:29:26.600 [http-nio-8080-exec-1] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近七日营业额请求
+2025-10-06 00:29:26.646 [http-nio-8080-exec-2] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 收到查询车主近六月营业额请求

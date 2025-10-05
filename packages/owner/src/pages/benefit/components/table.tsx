@@ -25,7 +25,7 @@ const App: React.FC<{ data: DataType[] }> = ({ data }) => {
     {
       title: '订单编号',
       dataIndex: 'orderId',
-      render: (text: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined) => (
+      render: (text: React.ReactNode) => (
         <span style={{
           fontWeight: 'bold',
           color: isNightMode ? '#fff' : '#000',
@@ -45,7 +45,7 @@ const App: React.FC<{ data: DataType[] }> = ({ data }) => {
         },
         multiple: 3,
       },
-      render: (text: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined) => (
+      render: (text: React.ReactNode) => (
         <span style={{
           // fontWeight: 'bold',
           color: isNightMode ? '#bbb' : '#555',
@@ -61,7 +61,7 @@ const App: React.FC<{ data: DataType[] }> = ({ data }) => {
       //   compare: (a, b) => a.math - b.math,
       //   multiple: 2,
       // },
-      render: (text: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined) => (
+      render: (text: React.ReactNode) => (
         <span style={{
           // fontWeight: 'bold',
           color: isNightMode ? '#bbb' : '#555',
@@ -117,7 +117,7 @@ const App: React.FC<{ data: DataType[] }> = ({ data }) => {
       //   compare: (a, b) => a.math - b.math,
       //   multiple: 2,
       // },
-      render: (text: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined) => (
+      render: (text: React.ReactNode) => (
         <span style={{
           fontWeight: 'bold',
           color: '#5871e6',

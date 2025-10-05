@@ -14,6 +14,10 @@ export const service = {
   // 财务接口
   withdrawFinance: "financial/withdraw",      // 提现
   getFinanceInfo: "financial/records",        // 获取财务信息
+  getWithdrawableBalance: "financial/withdrawable-balance", // 获取可提现余额
+  
+  // 订单接口
+  getMonthlyOrderTypeDistribution: "order/monthly-type-distribution", // 获取本月订单类型分布
 };
 
 export function getVehicleInfoUrl(vehicleId: string) {

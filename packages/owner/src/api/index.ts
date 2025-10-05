@@ -25,6 +25,10 @@ const request = {
   // 财务接口
   withdrawFinance: (params: any) => { return axios('post', service.withdrawFinance, params) }, // 提现
   getFinanceInfo: (params: any) => { return axios('get', service.getFinanceInfo, params) }, // 财务记录
+  getWithdrawableBalance: (params: any) => { return axios('get', service.getWithdrawableBalance, params) }, // 获取可提现余额
+  
+  // 订单接口
+  getMonthlyOrderTypeDistribution: (params: any) => { return axios('get', service.getMonthlyOrderTypeDistribution, params) }, // 获取本月订单类型分布
 
   // 文件
   /** 
