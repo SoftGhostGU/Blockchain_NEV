@@ -21,8 +21,20 @@ export const service = {
   // 订单接口
   getMonthlyOrderTypeDistribution: "order/monthly-type-distribution", // 获取本月订单类型分布
   getStarDistribution: "order/star-distribution", // 获取评价分布
+  
+  // 车辆管理接口
+  dispatchVehicle: "driver/vehicle/{vehicleId}/dispatch", // 派出车辆
+  recallVehicle: "driver/vehicle/{vehicleId}/recall", // 召回车辆
 };
 
 export function getVehicleInfoUrl(vehicleId: string) {
   return `${service.getVehicleInfo.replace("{vehicleId}", vehicleId)}`;
+}
+
+export function getDispatchVehicleUrl(vehicleId: string) {
+  return `${service.dispatchVehicle.replace("{vehicleId}", vehicleId)}`;
+}
+
+export function getRecallVehicleUrl(vehicleId: string) {
+  return `${service.recallVehicle.replace("{vehicleId}", vehicleId)}`;
 }

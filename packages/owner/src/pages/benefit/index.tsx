@@ -166,7 +166,16 @@ export default function benefit() {
       if (balanceResponse) {
         // 根据实际API响应结构调整
         const balanceData = balanceResponse.data || balanceResponse;
-        setCurrent_balance(Array.isArray(balanceData) ? balanceData : []);
+        if (Array.isArray(balanceData)) {
+          // 转换API返回的数据格式：将day字段转换为month字段
+          const convertedBalanceData = balanceData.map(item => ({
+            month: item.day.replace('-', '/'), // 将"2025-04"转换为"2025/04"
+            value: item.value
+          }));
+          setCurrent_balance(convertedBalanceData);
+        } else {
+          setCurrent_balance([]);
+        }
       }
 
       // 处理财务记录数据
@@ -415,11 +424,26 @@ export default function benefit() {
   const turnover_yesterday = current_turnover.length > 5 ? current_turnover[5]?.value || 0 : 0;
   const turnover_today = current_turnover.length > 6 ? current_turnover[6]?.value || 0 : 0;
   const turnover_change = turnover_yesterday > 0 ? (turnover_today - turnover_yesterday) / turnover_yesterday * 100 : 0;
-  const balance_this_month = current_balance.length > 6 ? current_balance[6]?.value || 0 : 0;
+  
+  // 修复：查找当前月份的数据，而不是依赖固定索引
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
+  const currentMonthStr = `${currentYear}/${currentMonth.toString().padStart(2, '0')}`;
+  
+  // 查找当前月份的数据
+  const currentMonthData = current_balance.find(item => item.month === currentMonthStr);
+  const balance_this_month = currentMonthData ? currentMonthData.value : 0;
+  
+  // 计算及几个月的总值
+  const balance_these_month = current_balance.reduce((acc, cur) => acc + cur.value, 0);
+
+  const balance_change = balance_these_month - balance_these_month
+  
   const order_this_month = current_order.reduce((acc, cur) => acc + cur.value, 0);
 
   // 检查是否有收入数据
   const hasRevenueData = balance_this_month > 0 || turnover_today > 0;
+  const hasRecentMonthData = balance_these_month > 0;
   const emptyStateMessage = "近期还没有订单\n派出车辆来获取收益吧~";
   // const reputation_last_month = current_reputation[0].value;
   // const reputation_this_month = current_reputation[1].value;
@@ -545,18 +569,39 @@ export default function benefit() {
   const isNightMode = useColorModeStore(state => state.isNightMode);
   const toggleColorMode = useColorModeStore(state => state.toggleColorMode);
 
-  useEffect(() => {
+  // 昼夜模式应用函数
+  const applyNightModeClasses = () => {
     const rowItems = document.querySelectorAll('.row-item');
     rowItems.forEach(item => {
       if (isNightMode) {
         item.classList.add('night-mode');
-        ;
       } else {
         item.classList.remove('night-mode');
-        ;
       }
     });
+  };
+
+  // 主要应用逻辑 - 响应昼夜模式变化
+  useEffect(() => {
+    applyNightModeClasses();
   }, [isNightMode]);
+
+  // 页面加载时强制应用昼夜模式 - 解决初始化问题
+  useEffect(() => {
+    // 立即应用一次
+    applyNightModeClasses();
+    
+    // DOM完全渲染后多次应用
+    const timer1 = setTimeout(applyNightModeClasses, 100);
+    const timer2 = setTimeout(applyNightModeClasses, 300);
+    const timer3 = setTimeout(applyNightModeClasses, 500);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, []);
 
 
   return (
@@ -603,7 +648,7 @@ export default function benefit() {
             <MoneyCollectOutlined style={{ marginRight: '5px' }} />
             本月收入
           </p>
-          {hasRevenueData ? (
+          {hasRecentMonthData ? (
             <><span
               className="item-number"
               style={{ color: '#97c8a0' }}

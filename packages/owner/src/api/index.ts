@@ -1,7 +1,9 @@
 import { axios } from './methods';
 import {
   service,
-  getVehicleInfoUrl
+  getVehicleInfoUrl,
+  getDispatchVehicleUrl,
+  getRecallVehicleUrl
 } from './service';
 import { notification, message } from 'antd'
 
@@ -30,6 +32,10 @@ const request = {
   // 订单接口
   getMonthlyOrderTypeDistribution: (params: any) => { return axios('get', service.getMonthlyOrderTypeDistribution, params) }, // 获取本月订单类型分布
   getStarDistribution: (params: any) => { return axios('get', service.getStarDistribution, params) }, // 获取评价分布
+  
+  // 车辆管理接口
+  dispatchVehicle: (params: any) => { return axios('put', getDispatchVehicleUrl(params.vehicleId), params) }, // 派出车辆
+  recallVehicle: (params: any) => { return axios('put', getRecallVehicleUrl(params.vehicleId), params) }, // 召回车辆
   
   // 用户信息接口
   getProfile: (params: any) => { return axios('get', service.getProfile, params) }, // 获取用户信息

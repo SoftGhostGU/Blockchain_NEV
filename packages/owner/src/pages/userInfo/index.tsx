@@ -152,11 +152,13 @@ const UserInfo = () => {
     fetchUserProfile();
   }, []);
 
-  useEffect(() => {
+  // 昼夜模式应用函数
+  const applyNightModeClasses = () => {
     const userInfoItem = document.querySelector('.user-info-item');
     const userInfoTitle = document.querySelector('.user-info-title');
     const fieldLabel = document.querySelectorAll('.field-label');
     const fieldValue = document.querySelectorAll('.field-value');
+    
     if (isNightMode) {
       userInfoItem?.classList.add('night-mode');
       userInfoTitle?.classList.add('night-mode');
@@ -168,7 +170,29 @@ const UserInfo = () => {
       fieldLabel.forEach(label => label.classList.remove('night-mode'));
       fieldValue.forEach(value => value.classList.remove('night-mode'));
     }
-  }, [isNightMode, isEditing])
+  };
+
+  // 主要应用逻辑 - 响应昼夜模式变化
+  useEffect(() => {
+    applyNightModeClasses();
+  }, [isNightMode, isEditing]);
+
+  // 页面加载时强制应用昼夜模式 - 解决初始化问题
+  useEffect(() => {
+    // 立即应用一次
+    applyNightModeClasses();
+    
+    // DOM完全渲染后多次应用
+    const timer1 = setTimeout(applyNightModeClasses, 100);
+    const timer2 = setTimeout(applyNightModeClasses, 300);
+    const timer3 = setTimeout(applyNightModeClasses, 500);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, []);
 
   return (
     <ConfigProvider

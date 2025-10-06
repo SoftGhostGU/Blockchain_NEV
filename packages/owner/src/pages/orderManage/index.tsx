@@ -395,29 +395,36 @@ export default function orderManage() {
   useEffect(() => {
     fetchOrderHistory();
     fetchStarDistribution();
+
+    applyNightModeClasses();
   }, []);
 
-  useEffect(() => {
+  // 昼夜模式应用函数
+  const applyNightModeClasses = () => {
     const colomnItem = document.querySelectorAll('.colomn-item');
     const colomnTitle = document.querySelectorAll('.colomn-title');
     const titleInfo = document.querySelectorAll('.title-info');
     const ordersContainer = document.querySelector('.orders-container');
     const orderTitle = document.querySelector('.order-title');
+    
     if (isNightMode) {
       colomnItem.forEach(item => { item.classList.add('night-mode') });
       colomnTitle.forEach(item => { item.classList.add('night-mode') });
       titleInfo.forEach(item => { item.classList.add('night-mode') });
       ordersContainer?.classList.add('night-mode');
       orderTitle?.classList.add('night-mode');
-      
     } else {
       colomnItem.forEach(item => { item.classList.remove('night-mode') });
       colomnTitle.forEach(item => { item.classList.remove('night-mode') });
       titleInfo.forEach(item => { item.classList.remove('night-mode') });
       ordersContainer?.classList.remove('night-mode');
       orderTitle?.classList.remove('night-mode');
-      
     }
+  };
+
+  // 主要应用逻辑 - 响应昼夜模式变化
+  useEffect(() => {
+    applyNightModeClasses();
   }, [isNightMode]);
 
   return (
@@ -428,7 +435,7 @@ export default function orderManage() {
         <div className='colomn-container'>
           <div className='colomn-item'>
             <div className='colomn-title'>评分分布</div>
-            <CirclePieChart data={starCount} />
+            <CirclePieChart data={starCount.filter(item => item.count > 0)} />
           </div>
           <div className='colomn-item order-item'>
             <div className='info-item line-blue'>
