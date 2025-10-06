@@ -212,9 +212,24 @@ export default function benefit() {
     }
   };
 
+  // 获取用户信息（银行卡号）
+  const fetchUserProfile = async () => {
+    try {
+      const response = await request.getProfile({});
+      if (response && response.data) {
+        const bankCard = response.data.bankCard || '';
+        set_bank_card_number(bankCard);
+      }
+    } catch (error) {
+      console.error('获取用户信息失败:', error);
+      set_bank_card_number('');
+    }
+  };
+
   // 组件挂载时获取数据
   useEffect(() => {
     fetchData();
+    fetchUserProfile();
   }, []);
 
   // 使用API获取的订单类型分布数据
@@ -233,7 +248,7 @@ export default function benefit() {
   // ];
 
   const [balance_to_withdraw, set_balance_to_withdraw] = useState(0);
-  const bank_card_number = '6222026000000000001';
+  const [bank_card_number, set_bank_card_number] = useState('');
 
   // 示例数据（已注释）
   // const [tableData, setTableData] = useState<DataType[]>([

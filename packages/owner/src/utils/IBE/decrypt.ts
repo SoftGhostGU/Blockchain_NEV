@@ -24,7 +24,10 @@ export function decrypt(
 
   // 检查用户私钥是否存在
   const userPrivKey = getUserPrivateKey(userIdentity);
-  if (!userPrivKey) return { "解密错误": "用户私钥不存在" };
+  if (!userPrivKey) {
+    console.warn(`用户私钥不存在: ${userIdentity}`);
+    return ciphertextObj as Record<string, string>;
+  }
 
   // 解析 OR 策略
   const allowed = policy

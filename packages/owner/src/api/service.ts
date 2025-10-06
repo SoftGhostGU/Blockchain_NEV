@@ -10,6 +10,8 @@ export const service = {
   recent7MonTurn: "driver/turnover/months",  // 获取最近7个月的营业额
   uploadBankcard: "driver/bankcard",         // 上传银行卡
   getVehicleInfo: "driver/vehicle/{vehicleId}/condition",  // 获取车辆信息
+  getProfile: "driver/profile",              // 获取用户信息
+  updateProfile: "driver/profile",           // 更新用户信息
 
   // 财务接口
   withdrawFinance: "financial/withdraw",      // 提现
@@ -18,6 +20,7 @@ export const service = {
   
   // 订单接口
   getMonthlyOrderTypeDistribution: "order/monthly-type-distribution", // 获取本月订单类型分布
+  getStarDistribution: "order/star-distribution", // 获取评价分布
 };
 
 export function getVehicleInfoUrl(vehicleId: string) {

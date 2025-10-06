@@ -29,6 +29,11 @@ const request = {
   
   // 订单接口
   getMonthlyOrderTypeDistribution: (params: any) => { return axios('get', service.getMonthlyOrderTypeDistribution, params) }, // 获取本月订单类型分布
+  getStarDistribution: (params: any) => { return axios('get', service.getStarDistribution, params) }, // 获取评价分布
+  
+  // 用户信息接口
+  getProfile: (params: any) => { return axios('get', service.getProfile, params) }, // 获取用户信息
+  updateProfile: (params: any) => { return axios('put', service.getProfile, params) }, // 更新用户信息（PUT请求）
 
   // 文件
   /** 

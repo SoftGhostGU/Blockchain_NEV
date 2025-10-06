@@ -13,7 +13,6 @@ interface OrderCardProps {
     status: string,
     startLocation: string,
     endLocation: string,
-    userAvatar: string,
     username: string,
     commentStar: number,
     commentText: string,
@@ -82,13 +81,6 @@ export default function OrderCard(data: OrderCardProps) {
         </div>
 
         <div className="user-comment">
-          <div>
-            <img
-              src={data.data.userAvatar}
-              alt="用户头像"
-              className='user-avatar'
-            />
-          </div>
           <div className='comment-container'>
             <div className="user-info">
               <span className="username">{data.data.username}</span>
