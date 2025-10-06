@@ -13,6 +13,7 @@ import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.*;
 import com.autocrowd.backend.service.BlockchainService;
 import com.autocrowd.backend.service.OrderService;
+import com.autocrowd.backend.util.VehicleUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -413,11 +414,42 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public Order completeOrder(String orderId, BigDecimal actualPrice) {
-        logger.info("[OrderService] 收到完成订单请求: 订单ID={}, 实际价格={}", orderId, actualPrice);
+        return completeOrderInternal(orderId, actualPrice, null, false);
+    }
+
+    /**
+     * 用户完成订单
+     *
+     * @param orderId     订单ID
+     * @param actualPrice 实际价格（已加密）
+     * @param userId      用户ID
+     * @return 完成的订单
+     */
+    @Override
+    @Transactional
+    public Order completeOrderByUser(String orderId, BigDecimal actualPrice, Integer userId) {
+        return completeOrderInternal(orderId, actualPrice, userId, true);
+    }
+    
+    /**
+     * 完成订单的内部实现
+     * @param orderId 订单ID
+     * @param actualPrice 实际价格
+     * @param userId 用户ID（用于权限验证，可选）
+     * @param checkUserPermission 是否检查用户权限
+     * @return 完成的订单
+     */
+    private Order completeOrderInternal(String orderId, BigDecimal actualPrice, Integer userId, boolean checkUserPermission) {
+        logger.info("[OrderService] 收到完成订单请求: 订单ID={}, 实际价格={}, 用户ID={}", orderId, actualPrice, userId);
         try {
             // 查找订单
             Order order = orderRepository.findById(orderId)
                     .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
+
+            // 权限检查
+            if (checkUserPermission && !order.getUserId().equals(userId)) {
+                throw new BusinessException(ExceptionCodeEnum.PERMISSION_DENIED, "订单不属于当前用户");
+            }
 
             // 检查订单状态 (只有状态为2(已接上客人)的订单才能完成)
             if (order.getStatus() != 2) { // 2 = 已接上客人
@@ -426,9 +458,7 @@ public class OrderServiceImpl implements OrderService {
 
             // 更新订单状态和实际价格
             order.setStatus((byte) 3); // 3 = 已完成
-            // 直接存储前端传来的加密数据
             order.setActualPrice(actualPrice);
-            // 这里我们假设实际时间与预计时间相同，实际项目中可能需要根据真实情况设置
             order.setActualTime(order.getEstimatedTime());
             order.setUpdatedAt(LocalDateTime.now());
 
@@ -450,63 +480,6 @@ public class OrderServiceImpl implements OrderService {
             throw e;
         } catch (Exception e) {
             logger.error("[OrderService] 完成订单异常: {}", e.getMessage(), e);
-            throw new BusinessException(ExceptionCodeEnum.ORDER_COMPLETE_FAILED, "完成订单失败: " + e.getMessage());
-        }
-    }
-
-    /**
-     * 用户完成订单
-     *
-     * @param orderId     订单ID
-     * @param actualPrice 实际价格（已加密）
-     * @param userId      用户ID
-     * @return 完成的订单
-     */
-    @Override
-    @Transactional
-    public Order completeOrderByUser(String orderId, BigDecimal actualPrice, Integer userId) {
-        logger.info("[OrderService] 收到用户完成订单请求: 订单ID={}, 实际价格={}, 用户ID={}", orderId, actualPrice, userId);
-        try {
-            // 查找订单
-            Order order = orderRepository.findById(orderId)
-                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.ORDER_NOT_FOUND, "订单不存在"));
-
-            // 检查订单是否属于该用户
-            if (!order.getUserId().equals(userId)) {
-                throw new BusinessException(ExceptionCodeEnum.PERMISSION_DENIED, "订单不属于当前用户");
-            }
-
-            // 检查订单状态 (只有状态为2(已接上客人)的订单才能完成)
-            if (order.getStatus() != 2) { // 2 = 已接上客人
-                throw new BusinessException(ExceptionCodeEnum.ORDER_STATUS_ERROR, "订单状态不正确，无法完成");
-            }
-
-            // 更新订单状态和实际价格
-            order.setStatus((byte) 3); // 3 = 已完成
-            // 直接存储前端传来的加密数据
-            order.setActualPrice(actualPrice);
-            // 这里我们假设实际时间与预计时间相同，实际项目中可能需要根据真实情况设置
-            order.setActualTime(order.getEstimatedTime());
-            order.setUpdatedAt(LocalDateTime.now());
-
-            // 保存订单
-            Order completedOrder = orderRepository.save(order);
-            logger.info("[OrderService] 用户完成订单成功: {}", completedOrder.getOrderId());
-
-            // 创建财务记录
-            createFinancialRecords(order, actualPrice);
-
-            // 将订单信息上链
-            boolean orderOnChain = blockchainService.createOrderOnBlockchain(completedOrder);
-            if (!orderOnChain) {
-                logger.error("[OrderService] 订单信息上链失败: {}", completedOrder.getOrderId());
-            }
-
-            return completedOrder;
-        } catch (BusinessException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error("[OrderService] 用户完成订单异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.ORDER_COMPLETE_FAILED, "完成订单失败: " + e.getMessage());
         }
     }
@@ -1164,36 +1137,6 @@ public class OrderServiceImpl implements OrderService {
      * @return 车辆DTO
      */
     private VehicleDTO convertVehicleToDTO(Vehicle vehicle) {
-        VehicleDTO dto = new VehicleDTO();
-        BeanUtils.copyProperties(vehicle, dto);
-        
-        // 查询并填充车辆状况信息
-        if (vehicle.getConditionId() != null) {
-            try {
-                VehicleCondition condition = vehicleConditionRepository.findById(vehicle.getConditionId()).orElse(null);
-                if (condition != null) {
-                    dto.setVehicleModel(condition.getVehicleModel());
-                    dto.setBatteryPercent(condition.getBatteryPercent());
-                    dto.setMilesToGo(condition.getMilesToGo());
-                    // 将数字状态转换为文字描述
-                    dto.setBodyState(VehicleStatusEnum.fromCode(condition.getBodyState().intValue()).getDescription());
-                    dto.setTirePressure(VehicleStatusEnum.fromCode(condition.getTirePressure().intValue()).getDescription());
-                    dto.setBrakeState(VehicleStatusEnum.fromCode(condition.getBrakeState().intValue()).getDescription());
-                    dto.setPowerState(VehicleStatusEnum.fromCode(condition.getPowerState().intValue()).getDescription());
-                }
-            } catch (Exception e) {
-                logger.warn("[OrderService] 获取车辆状况信息失败: {}", e.getMessage());
-                // 如果获取失败，设置默认值
-                dto.setVehicleModel("未知");
-                dto.setBatteryPercent((byte) 0);
-                dto.setMilesToGo("0公里");
-                dto.setBodyState("未知");
-                dto.setTirePressure("未知");
-                dto.setBrakeState("未知");
-                dto.setPowerState("未知");
-            }
-        }
-        
-        return dto;
+        return VehicleUtils.convertToDTO(vehicle, vehicleConditionRepository);
     }
 }

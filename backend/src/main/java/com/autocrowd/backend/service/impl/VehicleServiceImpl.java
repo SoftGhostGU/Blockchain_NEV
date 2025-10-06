@@ -11,6 +11,7 @@ import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.repository.VehicleConditionRepository;
 import com.autocrowd.backend.repository.VehicleRepository;
 import com.autocrowd.backend.service.VehicleService;
+import com.autocrowd.backend.util.VehicleUtils;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -322,36 +323,6 @@ public class VehicleServiceImpl implements VehicleService {
      * @return 车辆DTO
      */
     private VehicleDTO convertToDTO(Vehicle vehicle) {
-        VehicleDTO dto = new VehicleDTO();
-        BeanUtils.copyProperties(vehicle, dto);
-        
-        // 查询并填充车辆状况信息
-        if (vehicle.getConditionId() != null) {
-            try {
-                VehicleCondition condition = vehicleConditionRepository.findById(vehicle.getConditionId()).orElse(null);
-                if (condition != null) {
-                    dto.setVehicleModel(condition.getVehicleModel());
-                    dto.setBatteryPercent(condition.getBatteryPercent());
-                    dto.setMilesToGo(condition.getMilesToGo());
-                    // 将数字状态转换为文字描述
-                    dto.setBodyState(VehicleStatusEnum.fromCode(condition.getBodyState().intValue()).getDescription());
-                    dto.setTirePressure(VehicleStatusEnum.fromCode(condition.getTirePressure().intValue()).getDescription());
-                    dto.setBrakeState(VehicleStatusEnum.fromCode(condition.getBrakeState().intValue()).getDescription());
-                    dto.setPowerState(VehicleStatusEnum.fromCode(condition.getPowerState().intValue()).getDescription());
-                }
-            } catch (Exception e) {
-                logger.warn("[VehicleServiceImpl] 获取车辆状况信息失败: {}", e.getMessage());
-                // 如果获取失败，设置默认值
-                dto.setVehicleModel("未知");
-                dto.setBatteryPercent((byte) 0);
-                dto.setMilesToGo("0公里");
-                dto.setBodyState("未知");
-                dto.setTirePressure("未知");
-                dto.setBrakeState("未知");
-                dto.setPowerState("未知");
-            }
-        }
-        
-        return dto;
+        return VehicleUtils.convertToDTO(vehicle, vehicleConditionRepository);
     }
 }
