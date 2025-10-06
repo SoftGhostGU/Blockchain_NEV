@@ -16,75 +16,198 @@ import {
 import { DownOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Button, Dropdown, Space, Flex, Progress, ConfigProvider, theme } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useColorModeStore } from '../../store/store';
+import request from '../../api';
 
 export default function orderManage() {
-  const originalOrderList = [
-    {
-      orderId: 'ORD20250717001',
-      orderTime: '2025-07-17 10:00:00',
-      orderType: '网约车',
-      balance: '+￥180',
-      status: '已完成',
-      // operate: '· · ·'
-      startLocation: '北京市朝阳区三里屯',
-      endLocation: '北京市海淀区中关村',
-      userAvatar: userAvatar,
-      username: '张俊喆',
-      commentStar: 0.5,
-      commentText: '非常差劲，车子开得太快了，路上堵车，还不及时让行，要价高，简直黑车！投诉！终身静止使用这个平台！',
-    },
-    {
-      orderId: 'ORD20250717002',
-      orderTime: '2025-07-18 10:00:00',
-      orderType: '同城配送',
-      balance: '+￥150',
-      status: '已完成',
-      // operate: '· · ·'
-      startLocation: '北京市朝阳区三里屯',
-      endLocation: '北京市海淀区中关村',
-      userAvatar: userAvatar,
-      username: '张俊喆',
-      commentStar: 5,
-      commentText: '非常好，车子开的很稳，路上没有堵车，车主服务态度很好，很快就送达，很满意！',
-    },
-    {
-      orderId: 'ORD20250717003',
-      orderTime: '2025-07-18 10:00:00',
-      orderType: '同城配送',
-      balance: '+￥150',
-      status: '已完成',
-      // operate: '· · ·'
-      startLocation: '北京市朝阳区三里屯',
-      endLocation: '北京市海淀区中关村',
-      userAvatar: userAvatar,
-      username: '张俊喆',
-      commentStar: 5,
-      commentText: '非常好，车子开的很稳，路上没有堵车，车主服务态度很好，很快就送达，很满意！',
-    }
-  ]
+  // 硬编码数据（已注释）
+  // const originalOrderList = [
+  //   {
+  //     orderId: 'ORD20250717001',
+  //     orderTime: '2025-07-17 10:00:00',
+  //     orderType: '网约车',
+  //     balance: '+￥180',
+  //     status: '已完成',
+  //     // operate: '· · ·'
+  //     startLocation: '北京市朝阳区三里屯',
+  //     endLocation: '北京市海淀区中关村',
+  //     userAvatar: userAvatar,
+  //     username: '张俊喆',
+  //     commentStar: 0.5,
+  //     commentText: '非常差劲，车子开得太快了，路上堵车，还不及时让行，要价高，简直黑车！投诉！终身静止使用这个平台！',
+  //   },
+  //   {
+  //     orderId: 'ORD20250717002',
+  //     orderTime: '2025-07-18 10:00:00',
+  //     orderType: '同城配送',
+  //     balance: '+￥150',
+  //     status: '已完成',
+  //     // operate: '· · ·'
+  //     startLocation: '北京市朝阳区三里屯',
+  //     endLocation: '北京市海淀区中关村',
+  //     userAvatar: userAvatar,
+  //     username: '张俊喆',
+  //     commentStar: 5,
+  //     commentText: '非常好，车子开的很稳，路上没有堵车，车主服务态度很好，很快就送达，很满意！',
+  //   },
+  //   {
+  //     orderId: 'ORD20250717003',
+  //     orderTime: '2025-07-18 10:00:00',
+  //     orderType: '同城配送',
+  //     balance: '+￥150',
+  //     status: '已完成',
+  //     // operate: '· · ·'
+  //     startLocation: '北京市朝阳区三里屯',
+  //     endLocation: '北京市海淀区中关村',
+  //     userAvatar: userAvatar,
+  //     username: '张俊喆',
+  //     commentStar: 5,
+  //     commentText: '非常好，车子开的很稳，路上没有堵车，车主服务态度很好，很快就送达，很满意！',
+  //   }
+  // ]
 
-  const starCount = [
-    { star: 5, count: 20 },
-    { star: 4, count: 13 },
-    { star: 3, count: 7 },
-    { star: 2, count: 6 },
-    { star: 1, count: 2 }
-  ];
+  interface OrderItem {
+    orderId: string;
+    orderTime: string;
+    orderType: string;
+    balance: string;
+    status: string;
+    startLocation: string;
+    endLocation: string;
+    username: string;
+    commentStar: number;
+    commentText: string;
+  }
 
-  // 计算需要的值
-  const rate_order_finish = 98.7;
-  const avg_order_benefit = originalOrderList.reduce((acc, cur) => acc + Number(cur.balance.split('￥')[1]), 0) / originalOrderList.length;
-  const rate_order_benefit = avg_order_benefit / originalOrderList.reduce((acc, cur) => acc > Number(cur.balance.split('￥')[1]) ? acc : Number(cur.balance.split('￥')[1]), 0) * 100;
-  const rate_comment_5 = starCount[0].count / starCount.reduce((acc, cur) => acc + cur.count, 0) * 100;
-  const rate_user_satisfaction = starCount.reduce((acc, cur) => acc + cur.star * cur.count / 5, 0) / starCount.reduce((acc, cur) => acc + cur.count, 0) * 100;
+  const [apiOrderList, setApiOrderList] = useState<OrderItem[]>([]);
+
+  // 硬编码数据（已注释）
+  // const starCount = [
+  //   { star: 5, count: 20 },
+  //   { star: 4, count: 13 },
+  //   { star: 3, count: 7 },
+  //   { star: 2, count: 6 },
+  //   { star: 1, count: 2 }
+  // ];
+
+  const [starCount, setStarCount] = useState([
+    { star: 5, count: 0 },
+    { star: 4, count: 0 },
+    { star: 3, count: 0 },
+    { star: 2, count: 0 },
+    { star: 1, count: 0 }
+  ]);
 
   const [time, setTime] = useState('全部时间');
   const [comment, setComment] = useState('全部评价');
   const [order, setOrder] = useState('时间正序');
 
-  const [orderList, setOrderList] = useState(originalOrderList);
+  const [orderList, setOrderList] = useState<OrderItem[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // 计算需要的值（使用useMemo避免重复计算）
+  const { rate_order_finish, avg_order_benefit, rate_order_benefit } = useMemo(() => {
+    if (orderList.length === 0) {
+      return { rate_order_finish: 0, avg_order_benefit: 0, rate_order_benefit: 0 };
+    }
+    
+    // 计算订单完成率：status为3（已完成）的订单占比
+    const completedOrders = orderList.filter(order => order.status === '已完成').length;
+    const completionRate = orderList.length > 0 ? (completedOrders / orderList.length) * 100 : 0;
+    
+    // 计算平均订单金额和比率
+    const avg = orderList.reduce((acc, cur) => acc + Number(cur.balance.split('￥')[1]), 0) / orderList.length;
+    const max = orderList.reduce((acc, cur) => acc > Number(cur.balance.split('￥')[1]) ? acc : Number(cur.balance.split('￥')[1]), 0);
+    const rate = max > 0 ? avg / max * 100 : 0;
+    
+    return { 
+      rate_order_finish: completionRate, 
+      avg_order_benefit: avg, 
+      rate_order_benefit: rate 
+    };
+  }, [orderList]);
+
+  const { rate_comment_5, rate_user_satisfaction } = useMemo(() => {
+    const totalComments = starCount.reduce((acc, cur) => acc + cur.count, 0);
+    const rate5 = totalComments > 0 ? starCount[0].count / totalComments * 100 : 0;
+    const rateUser = totalComments > 0 ? starCount.reduce((acc, cur) => acc + cur.star * cur.count / 5, 0) / totalComments * 100 : 0;
+    return { rate_comment_5: rate5, rate_user_satisfaction: rateUser };
+  }, [starCount]);
+
+  // 获取历史订单数据
+  const fetchOrderHistory = async () => {
+    try {
+      setLoading(true);
+      const response = await request.orderHistory({});
+      console.log('API响应 - 历史订单数据:', response);
+      
+      if (response && response.data) {
+        const orderData = response.data.data || response.data;
+        if (Array.isArray(orderData)) {
+          // 根据后端DTO映射数据到前端格式
+          const mappedOrders = orderData.map(order => ({
+            orderId: order.orderId,
+            orderTime: order.createdAt ? order.createdAt.replace('T', ' ').substring(0, 19) : '未知时间',
+            orderType: order.type || '未知类型',
+            balance: order.actualPrice ? `+￥${order.actualPrice}` : '+￥0',
+            status: order.status === 3 ? '已完成' : order.status === 4 ? '已取消' : order.status === 1 ? '已接单' : order.status === 2 ? '进行中' : '等待中',
+            startLocation: order.startLocation || '未知起点',
+            endLocation: order.destination || '未知终点',
+            username: order.user?.username || '未知用户',
+            commentStar: order.review?.commentStar ? Number(order.review.commentStar) : 0,
+            commentText: order.review?.content || '暂无评价'
+          }));
+          setApiOrderList(mappedOrders);
+          setOrderList(mappedOrders);
+        } else {
+          setApiOrderList([]);
+          setOrderList([]);
+        }
+      }
+    } catch (error) {
+      console.error('获取历史订单数据失败:', error);
+      setApiOrderList([]);
+      setOrderList([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 获取评价分布数据
+  const fetchStarDistribution = async () => {
+    try {
+      setLoading(true);
+      const response = await request.getStarDistribution({});
+      console.log('API响应 - 评价分布数据:', response);
+      
+      if (response && response.data) {
+        const starData = response.data.data || response.data;
+        if (Array.isArray(starData)) {
+          setStarCount(starData);
+        } else {
+          setStarCount([
+            { star: 5, count: 0 },
+            { star: 4, count: 0 },
+            { star: 3, count: 0 },
+            { star: 2, count: 0 },
+            { star: 1, count: 0 }
+          ]);
+        }
+      }
+    } catch (error) {
+      console.error('获取评价分布数据失败:', error);
+      setStarCount([
+        { star: 5, count: 0 },
+        { star: 4, count: 0 },
+        { star: 3, count: 0 },
+        { star: 2, count: 0 },
+        { star: 1, count: 0 }
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const dayItems: MenuProps['items'] = [
     {
@@ -161,7 +284,7 @@ export default function orderManage() {
   ]
 
   const applyFilters = (timeLabel: string, commentLabel: string, orderLabel: string) => {
-    let filtered = [...originalOrderList];
+    let filtered = [...apiOrderList];
 
     // ⭐ 时间筛选
     if (timeLabel !== '全部时间') {
@@ -268,27 +391,40 @@ export default function orderManage() {
   }
 
   const isNightMode = useColorModeStore(state => state.isNightMode);
+  // 组件挂载时获取数据
   useEffect(() => {
+    fetchOrderHistory();
+    fetchStarDistribution();
+
+    applyNightModeClasses();
+  }, []);
+
+  // 昼夜模式应用函数
+  const applyNightModeClasses = () => {
     const colomnItem = document.querySelectorAll('.colomn-item');
     const colomnTitle = document.querySelectorAll('.colomn-title');
     const titleInfo = document.querySelectorAll('.title-info');
     const ordersContainer = document.querySelector('.orders-container');
     const orderTitle = document.querySelector('.order-title');
+    
     if (isNightMode) {
       colomnItem.forEach(item => { item.classList.add('night-mode') });
       colomnTitle.forEach(item => { item.classList.add('night-mode') });
       titleInfo.forEach(item => { item.classList.add('night-mode') });
       ordersContainer?.classList.add('night-mode');
       orderTitle?.classList.add('night-mode');
-      
     } else {
       colomnItem.forEach(item => { item.classList.remove('night-mode') });
       colomnTitle.forEach(item => { item.classList.remove('night-mode') });
       titleInfo.forEach(item => { item.classList.remove('night-mode') });
       ordersContainer?.classList.remove('night-mode');
       orderTitle?.classList.remove('night-mode');
-      
     }
+  };
+
+  // 主要应用逻辑 - 响应昼夜模式变化
+  useEffect(() => {
+    applyNightModeClasses();
   }, [isNightMode]);
 
   return (
@@ -299,7 +435,7 @@ export default function orderManage() {
         <div className='colomn-container'>
           <div className='colomn-item'>
             <div className='colomn-title'>评分分布</div>
-            <CirclePieChart data={starCount} />
+            <CirclePieChart data={starCount.filter(item => item.count > 0)} />
           </div>
           <div className='colomn-item order-item'>
             <div className='info-item line-blue'>
@@ -412,7 +548,7 @@ export default function orderManage() {
                 setTime('全部时间');
                 setComment('全部评价');
                 setOrder('时间正序');
-                setOrderList(originalOrderList);
+                setOrderList(apiOrderList);
               }}
             >
               重置筛选
@@ -420,11 +556,18 @@ export default function orderManage() {
 
           </div>
           <div className='order-card-list'>
-            {
+            {orderList.length > 0 ? (
               orderList.map((item) => (
                 <OrderCard key={item.orderId} data={item} />
               ))
-            }
+            ) : (
+              <div className="empty-state-container">
+                <div className="empty-state-message">
+                  近期还没有订单<br />
+                  派出车辆来获取收益吧~
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

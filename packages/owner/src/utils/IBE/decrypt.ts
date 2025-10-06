@@ -1,7 +1,7 @@
 import type { CiphertextObject } from './types';
 import { base64ToUtf8 } from './base64Utils';
 import { sensitiveFields } from '../../config/sensitiveFields';
-import { USER_KEYS } from './keys';
+import { getUserPrivateKey } from './keys';
 
 /**
  * 收到来自后端的数据之后，解密敏感数据
@@ -14,19 +14,28 @@ export function decrypt(
   userIdentity: string
 ): Record<string, string> | null {
   const decrypted: Record<string, string> = {};
+  
+  // 检查是否是加密数据（包含access_policy字段）
   const policy = ciphertextObj['access_policy'] as string;
+  if (!policy) {
+    // 如果不是加密数据，直接返回原始数据
+    return ciphertextObj as Record<string, string>;
+  }
 
   // 检查用户私钥是否存在
-  const userPrivKey = USER_KEYS[userIdentity];
-  if (!userPrivKey) return { "解密错误": "用户私钥不存在" };
+  const userPrivKey = getUserPrivateKey(userIdentity);
+  if (!userPrivKey) {
+    console.warn(`用户私钥不存在: ${userIdentity}`);
+    return ciphertextObj as Record<string, string>;
+  }
 
   // 解析 OR 策略
   const allowed = policy
     .split(/OR/i)
     .map(s => s.trim().replace(/^\(|\)$/g, ''));
 
-  const cleanedUserId = userIdentity.trim().toUpperCase();
-  const cleanedAllowed = allowed.map(s => s.trim().toUpperCase());
+  const cleanedUserId = userIdentity.trim();
+  const cleanedAllowed = allowed.map(s => s.trim());
 
   if (!cleanedAllowed.includes(cleanedUserId)) return { "解密错误": "用户无需要的解密权限" };
 

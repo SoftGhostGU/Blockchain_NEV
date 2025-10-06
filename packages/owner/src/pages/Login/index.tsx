@@ -8,6 +8,8 @@ import { useNavigate } from 'react-router-dom';
 
 import request from '../../api/index.ts';
 import { testApiConnection, testRegisterApi } from '../../utils/apiTest';
+import { storeUserPrivateKey } from '../../utils/IBE/keys';
+import { setToken } from '../../utils/request/token';
 
 const Login = () => {
   let [isLogin, setIsLogin] = useState(true);
@@ -54,13 +56,20 @@ const Login = () => {
             const appInfo = {
               token: (result as any).data.token,
               userInfo: (result as any).data.driver,
+              role: 'driver',
               driverId: (result as any).data.driver.driver_id,
               username: (result as any).data.driver.username,
               creditScore: (result as any).data.driver.credit_score,
               walletBalance: (result as any).data.driver.wallet_balance
             };
             localStorage.setItem("ROOT_APP_INFO", JSON.stringify(appInfo));
+            setToken((result as any).data.token, appInfo);
             console.log("已保存用户信息到本地存储：", appInfo);
+            
+            // 生成并存储用户私钥
+            const userIdentity = `DRIVER_${(result as any).data.driver.driver_id}`;
+            storeUserPrivateKey(userIdentity);
+            console.log("已生成并存储用户私钥：", userIdentity);
           }
 
           // 延迟跳转到仪表板
@@ -99,6 +108,27 @@ const Login = () => {
         // 判断注册是否成功
         if (result && ((result as any).code === 200 || (result as any).code === 0)) {
           message.success("注册成功！请登录");
+          
+          // 注册成功后保存用户信息和生成私钥（如果返回了token和用户信息）
+          if ((result as any).data && (result as any).data.token && (result as any).data.driver) {
+            const appInfo = {
+              token: (result as any).data.token,
+              userInfo: (result as any).data.driver,
+              role: 'driver',
+              driverId: (result as any).data.driver.driver_id,
+              username: (result as any).data.driver.username,
+              creditScore: (result as any).data.driver.credit_score,
+              walletBalance: (result as any).data.driver.wallet_balance
+            };
+            localStorage.setItem("ROOT_APP_INFO", JSON.stringify(appInfo));
+            setToken((result as any).data.token, appInfo);
+            console.log("已保存注册用户信息到本地存储：", appInfo);
+            
+            // 生成并存储用户私钥
+            const userIdentity = `DRIVER_${(result as any).data.driver.driver_id}`;
+            storeUserPrivateKey(userIdentity);
+            console.log("已生成并存储用户私钥：", userIdentity);
+          }
           
           setTimeout(() => {
             navigate('/add-vehicle');

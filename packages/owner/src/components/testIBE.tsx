@@ -1,9 +1,16 @@
 import React, { useEffect } from 'react';
 import { encrypt } from '../utils/IBE/encrypt';
 import { decrypt } from '../utils/IBE/decrypt';
+import { storeUserPrivateKey } from '../utils/IBE/keys';
 
 const TestIBE: React.FC = () => {
   useEffect(() => {
+    // 为测试身份预先生成私钥
+    const testIdentities = ["DRIVER_67890", "USER_1", "DRIVER_11111", "ADMIN", "USER_2"];
+    testIdentities.forEach(id => {
+      storeUserPrivateKey(id);
+    });
+
     const order = {
       order_id: "A-10086",
       driver_id: "67890",
@@ -26,7 +33,7 @@ const TestIBE: React.FC = () => {
     });
   }, []);
 
-  return <div>IBE 测试组件（硬编码公私钥），打开控制台查看结果</div>;
+  return <div>IBE 测试组件（动态私钥生成），打开控制台查看结果</div>;
 };
 
 export default TestIBE;

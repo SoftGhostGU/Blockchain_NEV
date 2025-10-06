@@ -20,7 +20,8 @@ import {
   EllipsisOutlined
 } from '@ant-design/icons';
 import { useColorModeStore } from "../../store/store";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import request from '../../api';
 
 import type { NotificationArgsProps } from 'antd';
 
@@ -54,22 +55,120 @@ const CarAuditStatus = {
 const state = ["正常", "注意", "危险"];
 
 export default function CarInfo() {
-  const carLicense = "京8 8888"
-  const carType = "特斯拉 Model 3"
-  const carImage = "https://tandianji.com/uploads/2023/06/Tesla-Models-3-01.jpg"
-  const carAuditStatus = CarAuditStatus.Approved;
-  const [isRunning, setIsRunning] = useState(true);  // or false
+  const [carLicense, setCarLicense] = useState("京8 8888");
+  const [carType, setCarType] = useState("特斯拉 Model 3");
+  const carImage = "https://tandianji.com/uploads/2023/06/Tesla-Models-3-01.jpg";
+  const [carAuditStatus, setCarAuditStatus] = useState(CarAuditStatus.Approved);
+  const [isRunning, setIsRunning] = useState(true);
 
-  const batteryPercent = 85;
-  const milesToGo = "350km";
+  const [batteryPercent, setBatteryPercent] = useState(85);
+  const [milesToGo, setMilesToGo] = useState("350km");
 
-  const bodyState = state[0]; // or "注意", "危险"
-  const tirePressure = state[0]; // or "注意", "危险"
-  const brakeState = state[1]; // or "正常", "危险"
-  const powerState = state[2]; // or "正常", "注意"
+  const [bodyState, setBodyState] = useState(state[0]);
+  const [tirePressure, setTirePressure] = useState(state[0]);
+  const [brakeState, setBrakeState] = useState(state[0]);
+  const [powerState, setPowerState] = useState(state[0]);
 
-  const time = "14:30"
-  const money = "128.00"
+  const [time, setTime] = useState("14:30");
+  const [money, setMoney] = useState("128.00");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [rating, setRating] = useState(4.9); // 默认评分
+  const [onlineDays, setOnlineDays] = useState(180); // 默认上线天数
+
+  // 获取评分分布数据并计算加权平均评分
+  const fetchRatingData = async () => {
+    try {
+      const response = await request.getStarDistribution({});
+      console.log('API响应 - 评分分布数据:', response);
+      
+      if (response && response.data) {
+        const starData = response.data.data || response.data;
+        if (Array.isArray(starData)) {
+          // 计算加权平均评分
+          const totalComments = starData.reduce((acc, cur) => acc + cur.count, 0);
+          if (totalComments > 0) {
+            const weightedSum = starData.reduce((acc, cur) => acc + (cur.star * cur.count), 0);
+            const averageRating = weightedSum / totalComments;
+            setRating(Number(averageRating.toFixed(1))); // 保留一位小数
+          }
+        }
+      }
+    } catch (error) {
+      console.error('获取评分数据失败:', error);
+      // 保持默认评分4.9
+    }
+  };
+
+  // 获取车辆信息
+  useEffect(() => {
+    const fetchVehicleData = async () => {
+      try {
+        setLoading(true);
+        
+        // 1. 获取车主信息，包含vehicleId
+        const profileResponse = await request.getProfile({});
+        console.log('车主信息响应:', profileResponse);
+        
+        if (profileResponse && profileResponse.data) {
+          const profileData = profileResponse.data;
+          const vehicleId = profileData.vehicleId;
+          console.log('获取到的vehicleId:', vehicleId);
+          
+          // 计算上线天数
+          if (profileData.createdAt) {
+            const createdAt = new Date(profileData.createdAt);
+            const now = new Date();
+            const diffTime = Math.abs(now.getTime() - createdAt.getTime());
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            setOnlineDays(diffDays);
+            console.log('计算上线天数:', diffDays, '天 (创建时间:', createdAt, ')');
+          }
+          
+          if (!vehicleId) {
+            throw new Error('未找到车辆ID');
+          }
+          
+          // 2. 使用vehicleId获取车辆状况信息
+          const conditionResponse = await request.getVehicleInfo({ vehicleId });
+          console.log('车辆状况响应:', conditionResponse);
+          
+          if (conditionResponse && conditionResponse.data) {
+            const conditionData = conditionResponse.data;
+            
+            // 更新车辆基本信息
+            setCarType(conditionData.vehicleModel || "未知车型");
+            setBatteryPercent(conditionData.batteryPercent || 0);
+            setMilesToGo(conditionData.milesToGo || "0公里");
+            
+            // 更新车辆状态信息 - 数据库状态: 1=正常, 2=注意, 3=危险
+            setBodyState(state[conditionData.bodyState - 1] || "未知状态");
+            setTirePressure(state[conditionData.tirePressure - 1] || "未知状态");
+            setBrakeState(state[conditionData.brakeState - 1] || "未知状态");
+            setPowerState(state[conditionData.powerState - 1] || "未知状态");
+          } else {
+            console.warn('车辆状况数据为空，使用默认数据');
+          }
+        } else {
+          console.warn('车主信息数据为空，使用默认数据');
+        }
+        
+        // 3. 获取评分数据
+        await fetchRatingData();
+        
+      } catch (error) {
+        console.error('获取车辆数据失败:', error);
+        setError('获取车辆信息失败，请稍后重试');
+      } finally {
+        setLoading(false);
+        
+        applyNightModeClasses();
+      }
+    };
+
+    fetchVehicleData();
+
+  }, []);
 
   // const orderNum = 8;
 
@@ -185,36 +284,153 @@ export default function CarInfo() {
   };
 
 
-  const handleCallBackCar = () => {
+  const handleCallBackCar = async () => {
     console.log("点击了召回车辆")
-    openNotificationOfCallBackCar()
+    try {
+      // 获取vehicleId
+      const profileResponse = await request.getProfile({});
+      if (profileResponse && profileResponse.data) {
+        const vehicleId = profileResponse.data.vehicleId;
+        if (!vehicleId) {
+          api.error({
+            message: "操作失败",
+            description: "未找到车辆ID",
+          });
+          return;
+        }
+        
+        // 调用召回API
+        const recallResponse = await request.recallVehicle({ vehicleId });
+        console.log('召回车辆响应:', recallResponse);
+        
+        if (recallResponse) {
+          openNotificationOfCallBackCar();
+          setIsRunning(false); // 更新车辆状态为未运行
+        } else {
+          api.error({
+            message: "召回失败",
+            description: "召回车辆时发生错误",
+          });
+        }
+      }
+    } catch (error) {
+      console.error('召回车辆失败:', error);
+      api.error({
+        message: "操作失败",
+        description: "召回车辆时发生错误",
+      });
+    }
   }
 
-  const handleCallOutCar = () => {
+  const handleCallOutCar = async () => {
     console.log("点击了派出车辆")
-    openNotificationOfCallOutCar()
+    try {
+      // 获取vehicleId
+      const profileResponse = await request.getProfile({});
+      if (profileResponse && profileResponse.data) {
+        const vehicleId = profileResponse.data.vehicleId;
+        if (!vehicleId) {
+          api.error({
+            message: "操作失败",
+            description: "未找到车辆ID",
+          });
+          return;
+        }
+        
+        // 调用派出API
+        const dispatchResponse = await request.dispatchVehicle({ vehicleId });
+        console.log('派出车辆响应:', dispatchResponse);
+        
+        if (dispatchResponse) {
+          openNotificationOfCallOutCar();
+          setIsRunning(true); // 更新车辆状态为运行中
+        } else {
+          api.error({
+            message: "派出失败",
+            description: "派出车辆时发生错误",
+          });
+        }
+      }
+    } catch (error) {
+      console.error('派出车辆失败:', error);
+      api.error({
+        message: "操作失败",
+        description: "派出车辆时发生错误",
+      });
+    }
   }
 
   const isNightMode = useColorModeStore(state => state.isNightMode);
-  useEffect(() => {
+  
+  // 昼夜模式应用函数
+  const applyNightModeClasses = () => {
     const blockThree = document.querySelectorAll('.block_three');
     const listItemText = document.querySelectorAll('.list-item-text');
     const progressLabel = document.querySelectorAll('.progress-label');
     const mapContainer = document.querySelector('.map-container');
+    
     if (isNightMode) {
       blockThree.forEach(item => item.classList.add('night-mode'));
       listItemText.forEach(item => item.classList.add('night-mode'));
       progressLabel.forEach(item => item.classList.add('night-mode'));
       mapContainer?.classList.add('night-mode');
-
     } else {
       blockThree.forEach(item => item.classList.remove('night-mode'));
       listItemText.forEach(item => item.classList.remove('night-mode'));
       progressLabel.forEach(item => item.classList.remove('night-mode'));
       mapContainer?.classList.remove('night-mode');
-
     }
+  };
+
+  // 主要应用逻辑 - 响应昼夜模式变化
+  useEffect(() => {
+    applyNightModeClasses();
   }, [isNightMode]);
+
+  // 页面加载时强制应用昼夜模式 - 解决初始化问题
+  useEffect(() => {
+    // 立即应用一次
+    applyNightModeClasses();
+    
+    // DOM完全渲染后再次应用
+    const timer1 = setTimeout(applyNightModeClasses, 100);
+    const timer2 = setTimeout(applyNightModeClasses, 300);
+    const timer3 = setTimeout(applyNightModeClasses, 500);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, []);
+
+  if (loading) {
+    return (
+      <ConfigProvider
+        theme={{ algorithm: isNightMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}
+      >
+        <div className="app-container">
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px' }}>
+            <div>正在加载车辆信息...</div>
+          </div>
+        </div>
+      </ConfigProvider>
+    );
+  }
+
+  if (error) {
+    return (
+      <ConfigProvider
+        theme={{ algorithm: isNightMode ? theme.darkAlgorithm : theme.defaultAlgorithm }}
+      >
+        <div className="app-container">
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px', color: '#f5222d' }}>
+            <div>{error}</div>
+          </div>
+        </div>
+      </ConfigProvider>
+    );
+  }
 
   return (
     <ConfigProvider
@@ -237,15 +453,15 @@ export default function CarInfo() {
                 <div className="basic-item">
                   <div className="list-item">
                     <ClockCircleTwoTone className="list-item-icon" />
-                    <span className="list-item-text">上线时间：180天</span>
+                    <span className="list-item-text">上线时间：{onlineDays}天</span>
                   </div>
-                  <div className="list-item">
+                  {/* <div className="list-item">
                     <DashboardTwoTone className="list-item-icon" />
                     <span className="list-item-text">总里程：12800公里</span>
-                  </div>
+                  </div> */}
                   <div className="list-item">
                     <StarTwoTone className="list-item-icon" />
-                    <span className="list-item-text">评分：4.9</span>
+                    <span className="list-item-text">评分：{rating}</span>
                   </div>
                   {/* <div className="basic-label">状态</div>
                 <div
@@ -419,6 +635,7 @@ export default function CarInfo() {
           </div>
           <div className="block_three current-order">
             <p className="block_title">当前订单进度</p>
+            <p style={{ fontSize: '10px' }}>由于网站处于测试阶段，该板块暂时使用硬编码模拟</p>
             <Progress
               percent={50}
               status="active"

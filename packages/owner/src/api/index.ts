@@ -1,7 +1,9 @@
 import { axios } from './methods';
 import {
   service,
-  getVehicleInfoUrl
+  getVehicleInfoUrl,
+  getDispatchVehicleUrl,
+  getRecallVehicleUrl
 } from './service';
 import { notification, message } from 'antd'
 
@@ -25,6 +27,19 @@ const request = {
   // 财务接口
   withdrawFinance: (params: any) => { return axios('post', service.withdrawFinance, params) }, // 提现
   getFinanceInfo: (params: any) => { return axios('get', service.getFinanceInfo, params) }, // 财务记录
+  getWithdrawableBalance: (params: any) => { return axios('get', service.getWithdrawableBalance, params) }, // 获取可提现余额
+  
+  // 订单接口
+  getMonthlyOrderTypeDistribution: (params: any) => { return axios('get', service.getMonthlyOrderTypeDistribution, params) }, // 获取本月订单类型分布
+  getStarDistribution: (params: any) => { return axios('get', service.getStarDistribution, params) }, // 获取评价分布
+  
+  // 车辆管理接口
+  dispatchVehicle: (params: any) => { return axios('put', getDispatchVehicleUrl(params.vehicleId), params) }, // 派出车辆
+  recallVehicle: (params: any) => { return axios('put', getRecallVehicleUrl(params.vehicleId), params) }, // 召回车辆
+  
+  // 用户信息接口
+  getProfile: (params: any) => { return axios('get', service.getProfile, params) }, // 获取用户信息
+  updateProfile: (params: any) => { return axios('put', service.getProfile, params) }, // 更新用户信息（PUT请求）
 
   // 文件
   /** 

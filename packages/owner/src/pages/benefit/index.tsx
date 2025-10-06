@@ -126,6 +126,15 @@ export default function benefit() {
     { month: '2025/07', value: 0 },
   ]);
 
+  const [current_order, setCurrent_order] = useState([
+    { type: '网约车', value: 0 },
+    { type: '同城配送', value: 0 },
+    { type: '紧急医疗', value: 0 },
+    { type: '路况监控', value: 0 },
+    { type: '移动零售', value: 0 },
+    { type: '能源交易', value: 0 }
+  ]);
+
   const [loading, setLoading] = useState(false);
 
   // 获取API数据
@@ -133,16 +142,19 @@ export default function benefit() {
     try {
       setLoading(true);
       
-      // 并行调用三个API
-      const [turnoverResponse, balanceResponse, financeResponse] = await Promise.all([
+      // 并行调用五个API
+      const [turnoverResponse, balanceResponse, financeResponse, orderDistributionResponse, withdrawableBalanceResponse] = await Promise.all([
         request.getTurnoverDays({}),
         request.getTurnoverMonths({}),
-        request.getFinanceInfo({})
+        request.getFinanceInfo({}),
+        request.getMonthlyOrderTypeDistribution({}),
+        request.getWithdrawableBalance({})
       ]);
 
       console.log('API响应 - 营业额数据:', turnoverResponse);
       console.log('API响应 - 收入数据:', balanceResponse);
       console.log('API响应 - 财务记录数据:', financeResponse);
+      console.log('API响应 - 订单分布数据:', orderDistributionResponse);
 
       // 根据API响应格式更新数据
       if (turnoverResponse) {
@@ -154,7 +166,16 @@ export default function benefit() {
       if (balanceResponse) {
         // 根据实际API响应结构调整
         const balanceData = balanceResponse.data || balanceResponse;
-        setCurrent_balance(Array.isArray(balanceData) ? balanceData : []);
+        if (Array.isArray(balanceData)) {
+          // 转换API返回的数据格式：将day字段转换为month字段
+          const convertedBalanceData = balanceData.map(item => ({
+            month: item.day.replace('-', '/'), // 将"2025-04"转换为"2025/04"
+            value: item.value
+          }));
+          setCurrent_balance(convertedBalanceData);
+        } else {
+          setCurrent_balance([]);
+        }
       }
 
       // 处理财务记录数据
@@ -168,38 +189,75 @@ export default function benefit() {
         }
       }
 
+      // 处理订单类型分布数据
+      if (orderDistributionResponse) {
+        const orderData = orderDistributionResponse.data || orderDistributionResponse;
+        if (Array.isArray(orderData)) {
+          setCurrent_order(orderData);
+        } else {
+          setCurrent_order([]);
+        }
+      }
+
+      // 处理可提现余额数据
+      if (withdrawableBalanceResponse) {
+        const balanceData = withdrawableBalanceResponse.data || withdrawableBalanceResponse;
+        if (balanceData && balanceData.withdrawableBalance !== undefined) {
+          set_balance_to_withdraw(balanceData.withdrawableBalance);
+        } else {
+          set_balance_to_withdraw(0);
+        }
+      }
+
     } catch (error) {
       console.error('API调用失败:', error);
       // API失败时设置为空数组
       setCurrent_turnover([]);
       setCurrent_balance([]);
+      setCurrent_order([]);
       setTableData([]);
     } finally {
       setLoading(false);
     }
   };
 
+  // 获取用户信息（银行卡号）
+  const fetchUserProfile = async () => {
+    try {
+      const response = await request.getProfile({});
+      if (response && response.data) {
+        const bankCard = response.data.bankCard || '';
+        set_bank_card_number(bankCard);
+      }
+    } catch (error) {
+      console.error('获取用户信息失败:', error);
+      set_bank_card_number('');
+    }
+  };
+
   // 组件挂载时获取数据
   useEffect(() => {
     fetchData();
+    fetchUserProfile();
   }, []);
 
-  const current_order = [
-    { type: '网约车', value: 18 },
-    { type: '同城配送', value: 23 },
-    { type: '紧急医疗', value: 12 },
-    { type: '路况监控', value: 29 },
-    { type: '移动零售', value: 15 },
-    { type: '能源交易', value: 21 }
-  ]
+  // 使用API获取的订单类型分布数据
+  // const current_order = [
+  //   { type: '网约车', value: 18 },
+  //   { type: '同城配送', value: 23 },
+  //   { type: '紧急医疗', value: 12 },
+  //   { type: '路况监控', value: 29 },
+  //   { type: '移动零售', value: 15 },
+  //   { type: '能源交易', value: 21 }
+  // ]
 
   // const current_reputation = [
   //   { month: '2025-6', value: 94 },
   //   { month: '2025-7', value: 96 },
   // ];
 
-  const [balance_to_withdraw, set_balance_to_withdraw] = useState(5370);
-  const bank_card_number = '6222026000000000001';
+  const [balance_to_withdraw, set_balance_to_withdraw] = useState(0);
+  const [bank_card_number, set_bank_card_number] = useState('');
 
   // 示例数据（已注释）
   // const [tableData, setTableData] = useState<DataType[]>([
@@ -366,12 +424,27 @@ export default function benefit() {
   const turnover_yesterday = current_turnover.length > 5 ? current_turnover[5]?.value || 0 : 0;
   const turnover_today = current_turnover.length > 6 ? current_turnover[6]?.value || 0 : 0;
   const turnover_change = turnover_yesterday > 0 ? (turnover_today - turnover_yesterday) / turnover_yesterday * 100 : 0;
-  const balance_this_month = current_balance.length > 6 ? current_balance[6]?.value || 0 : 0;
+  
+  // 修复：查找当前月份的数据，而不是依赖固定索引
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
+  const currentMonthStr = `${currentYear}/${currentMonth.toString().padStart(2, '0')}`;
+  
+  // 查找当前月份的数据
+  const currentMonthData = current_balance.find(item => item.month === currentMonthStr);
+  const balance_this_month = currentMonthData ? currentMonthData.value : 0;
+  
+  // 计算及几个月的总值
+  const balance_these_month = current_balance.reduce((acc, cur) => acc + cur.value, 0);
+
+  const balance_change = balance_these_month - balance_these_month
+  
   const order_this_month = current_order.reduce((acc, cur) => acc + cur.value, 0);
 
   // 检查是否有收入数据
   const hasRevenueData = balance_this_month > 0 || turnover_today > 0;
-  const emptyStateMessage = "近期还没有订单，派出车辆来获取收益吧~";
+  const hasRecentMonthData = balance_these_month > 0;
+  const emptyStateMessage = "近期还没有订单\n派出车辆来获取收益吧~";
   // const reputation_last_month = current_reputation[0].value;
   // const reputation_this_month = current_reputation[1].value;
   // const reputation_calculate = (reputation_this_month / 100) * 5;
@@ -496,18 +569,39 @@ export default function benefit() {
   const isNightMode = useColorModeStore(state => state.isNightMode);
   const toggleColorMode = useColorModeStore(state => state.toggleColorMode);
 
-  useEffect(() => {
+  // 昼夜模式应用函数
+  const applyNightModeClasses = () => {
     const rowItems = document.querySelectorAll('.row-item');
     rowItems.forEach(item => {
       if (isNightMode) {
         item.classList.add('night-mode');
-        ;
       } else {
         item.classList.remove('night-mode');
-        ;
       }
     });
+  };
+
+  // 主要应用逻辑 - 响应昼夜模式变化
+  useEffect(() => {
+    applyNightModeClasses();
   }, [isNightMode]);
+
+  // 页面加载时强制应用昼夜模式 - 解决初始化问题
+  useEffect(() => {
+    // 立即应用一次
+    applyNightModeClasses();
+    
+    // DOM完全渲染后多次应用
+    const timer1 = setTimeout(applyNightModeClasses, 100);
+    const timer2 = setTimeout(applyNightModeClasses, 300);
+    const timer3 = setTimeout(applyNightModeClasses, 500);
+    
+    return () => {
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+      clearTimeout(timer3);
+    };
+  }, []);
 
 
   return (
@@ -518,7 +612,7 @@ export default function benefit() {
             <ShopOutlined style={{ marginRight: '5px' }} />
             每日营业额
           </p>
-          {turnover_change > 0 ? (
+          {turnover_change >= 0 ? (
             <p className="change-rate">
               <UpOutlined
                 style={{
@@ -538,55 +632,33 @@ export default function benefit() {
             </p>
           )}
           {hasRevenueData ? (
-            <div
+            <><div
               className="item-number"
               style={{ color: '#4c76f7' }}
-            >￥{current_turnover.length > 4 ? (current_turnover[4]?.value || 0).toFixed(2) : '0.00'}</div>
+            >￥{current_turnover.length > 4 ? (current_turnover[4]?.value || 0).toFixed(2) : '0.00'}</div><LineChart
+                data={current_turnover} /></>
           ) : (
-            <div
-              className="item-number"
-              style={{ 
-                color: '#999', 
-                fontSize: '14px',
-                fontStyle: 'italic',
-                textAlign: 'center',
-                padding: '10px'
-              }}
-            >{emptyStateMessage}</div>
+            <div className="empty-state-container">
+              <div className="empty-state-message">{emptyStateMessage}</div>
+            </div>
           )}
-          <LineChart
-            data={current_turnover}
-          // width={300}
-          // height={120}
-          />
         </div>
         <div className="row-item">
           <p className="item-title">
             <MoneyCollectOutlined style={{ marginRight: '5px' }} />
             本月收入
           </p>
-          {hasRevenueData ? (
-            <span
+          {hasRecentMonthData ? (
+            <><span
               className="item-number"
               style={{ color: '#97c8a0' }}
-            >￥{balance_this_month.toFixed(2)}</span>
+            >￥{balance_this_month.toFixed(2)}</span><BarChart
+                data={current_balance} /></>
           ) : (
-            <div
-              className="item-number"
-              style={{ 
-                color: '#999', 
-                fontSize: '14px',
-                fontStyle: 'italic',
-                textAlign: 'center',
-                padding: '10px'
-              }}
-            >{emptyStateMessage}</div>
+            <div className="empty-state-container">
+              <div className="empty-state-message">{emptyStateMessage}</div>
+            </div>
           )}
-          <BarChart
-            data={current_balance}
-          // width={600}
-          // height={400}
-          />
         </div>
 
         <div className="row-item">
@@ -595,28 +667,23 @@ export default function benefit() {
             本月订单数
           </p>
           {hasRevenueData ? (
-            <span
-              className="item-number"
-              style={{ color: '#ffc658' }}
-            >{order_this_month}单</span>
+            <>
+              <span
+                className="item-number"
+                style={{ color: '#ffc658' }}
+              >{order_this_month}单</span>
+              <PieChart
+                data={current_order}
+              // data1={current_comments}
+              // width={600}
+              // height={400}
+              />
+            </>
           ) : (
-            <div
-              className="item-number"
-              style={{ 
-                color: '#999', 
-                fontSize: '14px',
-                fontStyle: 'italic',
-                textAlign: 'center',
-                padding: '10px'
-              }}
-            >{emptyStateMessage}</div>
+            <div className="empty-state-container">
+              <div className="empty-state-message">{emptyStateMessage}</div>
+            </div>
           )}
-          <PieChart
-            data={current_order}
-          // data1={current_comments}
-          // width={600}
-          // height={400}
-          />
         </div>
         <div className="row-item">
           <p className="item-title">
@@ -633,7 +700,7 @@ export default function benefit() {
               fontSize: '14px',
               marginTop: '10px',
             }}
-          >本月已提现：￥{balance_has_withdrawn}</span>
+          >本轮已提现：￥{balance_has_withdrawn}</span>
           <Button
             // type="primary"
             onClick={clickButton}

@@ -3,6 +3,19 @@
   height: fit-content;
   // background-color: red;
 
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    
+    .loading-text {
+      font-size: 18px;
+      color: #666;
+      font-style: italic;
+    }
+  }
+
   .welcome-title {
     padding: 20px;
     padding-top: 0;

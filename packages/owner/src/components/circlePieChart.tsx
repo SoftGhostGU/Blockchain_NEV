@@ -30,6 +30,29 @@ const CirclePieChart: React.FC<CirclePieChartProps> = ({ data }) => {
     value: item.count
   }));
 
+  // 检查是否所有数据都是0
+  const hasData = chartData.some(item => item.value > 0);
+
+  if (!hasData) {
+    return (
+      <div style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: '#999',
+        fontSize: '14px',
+        fontStyle: 'italic',
+        textAlign: 'center'
+      }}>
+        <div>近期还没有评价</div>
+        <div>完成订单来获取评价吧~</div>
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer>
       <PieChart
@@ -44,7 +67,7 @@ const CirclePieChart: React.FC<CirclePieChartProps> = ({ data }) => {
           outerRadius={80}
           paddingAngle={5}
           dataKey="value"
-          label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+          label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
         >
           {chartData.map((entry, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

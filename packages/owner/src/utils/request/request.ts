@@ -1,6 +1,8 @@
 // src/utils/request.ts
 import axios from "axios";
 import { notification, Modal } from "antd";
+import { encrypt } from '../IBE/encrypt';
+import { decrypt } from '../IBE/decrypt';
 
 // axios 实例
 const request = axios.create({
@@ -25,9 +27,27 @@ const codeMessage: Record<number, string> = {
   504: "网关超时",
 };
 
+// 获取用户身份
+const getUserIdentity = (): string | null => {
+  try {
+    const appInfo = localStorage.getItem("ROOT_APP_INFO");
+    if (appInfo) {
+      const { userInfo } = JSON.parse(appInfo);
+      if (userInfo && userInfo.role && userInfo.driverId) {
+        return `${userInfo.role.toUpperCase()}_${userInfo.driverId}`;
+      }
+    }
+  } catch (error) {
+    console.warn("获取用户身份失败:", error);
+  }
+  return null;
+};
+
 // 请求拦截器
 request.interceptors.request.use(
   (config) => {
+    console.log('API请求开始:', config.url);
+    
     const appInfo = localStorage.getItem("ROOT_APP_INFO");
     if (appInfo) {
       try {
@@ -39,6 +59,24 @@ request.interceptors.request.use(
         console.warn("解析 ROOT_APP_INFO 出错:", e);
       }
     }
+    
+    // IBE加密：对请求数据中的敏感字段进行加密
+    if (config.data && typeof config.data === 'object') {
+      const userIdentity = getUserIdentity();
+      console.log('用户身份:', userIdentity);
+      if (userIdentity) {
+        try {
+          // 设置访问策略为当前用户身份
+          const accessPolicy = `(${userIdentity})`;
+          console.log('加密前数据:', config.data);
+          config.data = encrypt(config.data, accessPolicy);
+          console.log('加密后数据:', config.data);
+        } catch (error) {
+          console.warn("IBE加密失败:", error);
+        }
+      }
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)
@@ -47,7 +85,43 @@ request.interceptors.request.use(
 // 响应拦截器
 request.interceptors.response.use(
   (response) => {
+    console.log('API响应收到:', response.config.url);
+    console.log('响应状态:', response.status);
+    console.log('原始响应数据:', response.data);
+    
     const { data } = response;
+    
+    // IBE解密：对响应数据中的敏感字段进行解密
+    if (data && typeof data === 'object') {
+      const userIdentity = getUserIdentity();
+      console.log('解密用户身份:', userIdentity);
+      if (userIdentity) {
+        try {
+          // 尝试解密数组项
+          if (Array.isArray(data.content)) {
+            data.content = data.content.map((item: any) => {
+              if (item && typeof item === 'object') {
+                const decrypted = decrypt(item, userIdentity);
+                return decrypted || item;
+              }
+              return item;
+            });
+          } else if (data && typeof data === 'object') {
+            // 解密单个对象
+            const decrypted = decrypt(data, userIdentity);
+            console.log('解密后数据:', decrypted);
+            if (decrypted) {
+              Object.assign(data, decrypted);
+            }
+          }
+        } catch (error) {
+          console.warn("IBE解密失败:", error);
+        }
+      }
+    }
+    
+    console.log('最终返回数据:', data);
+    
     // 按后端约定：0 或 200 才算成功
     if (data && data.code !== 0 && data.code !== 200) {
       const errorText = data.message || codeMessage[data.code] || "未知错误";
@@ -59,6 +133,8 @@ request.interceptors.response.use(
     return data;
   },
   (error) => {
+    console.error('API请求错误:', error);
+    
     if (error.message.includes("timeout")) {
       notification.error({
         message: "请求超时",
