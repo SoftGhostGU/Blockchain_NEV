@@ -7,9 +7,11 @@ import com.autocrowd.backend.dto.driver.DriverRegisterRequest;
 import com.autocrowd.backend.dto.driver.UpdateBankCardRequest;
 import com.autocrowd.backend.entity.Driver;
 import com.autocrowd.backend.entity.Financial;
+import com.autocrowd.backend.entity.Vehicle;
 import com.autocrowd.backend.exception.ExceptionCodeEnum;
 import com.autocrowd.backend.exception.BusinessException;
 import com.autocrowd.backend.repository.DriverRepository;
+import com.autocrowd.backend.repository.VehicleRepository;
 import com.autocrowd.backend.service.BlockchainService;
 import com.autocrowd.backend.service.DriverService;
 import com.autocrowd.backend.util.PasswordEncoderUtil;
@@ -35,6 +37,9 @@ public class DriverServiceImpl implements DriverService {
     private DriverRepository driverRepository;
     
     @Autowired
+    private VehicleRepository vehicleRepository;
+    
+    @Autowired
     private BlockchainService blockchainService;
     
     /**
@@ -52,6 +57,13 @@ public class DriverServiceImpl implements DriverService {
         profileDTO.setBankCard(driver.getBankCard());
         profileDTO.setCreatedAt(driver.getCreatedAt());
         profileDTO.setUpdatedAt(driver.getUpdatedAt());
+        
+        // 查找司机关联的车辆
+        List<Vehicle> vehicles = vehicleRepository.findByDriverId(driver.getDriverId());
+        if (!vehicles.isEmpty()) {
+            profileDTO.setVehicleId(vehicles.get(0).getVehicleId());
+        }
+        
         return profileDTO;
     }
     
@@ -216,69 +228,55 @@ public class DriverServiceImpl implements DriverService {
             // 验证密码强度
             PasswordValidatorUtil.validatePassword(registerRequest.getPassword());
 
-            // 创建新司机
+            // 创建新车主
+            logger.info("[DriverServiceImpl] 创建新车主");
             Driver driver = new Driver();
             driver.setUsername(registerRequest.getUsername());
             driver.setPhone(registerRequest.getPhone());
-            driver.setPassword(PasswordEncoderUtil.encode(registerRequest.getPassword())); // 加密密码
-            driver.setCreditScore(100); // 默认信用分
-            driver.setWalletBalance(BigDecimal.ZERO); // 默认余额为0
-            driver.setBankCard(registerRequest.getBankCard());
+            driver.setPassword(PasswordEncoderUtil.encode(registerRequest.getPassword()));
+            driver.setCreditScore(100); // 默认信用分为100
+            driver.setWalletBalance(BigDecimal.ZERO); // 默认钱包余额为0
             driver.setCreatedAt(LocalDateTime.now());
             driver.setUpdatedAt(LocalDateTime.now());
 
-            // 保存到数据库
             Driver savedDriver = driverRepository.save(driver);
             logger.info("[DriverServiceImpl] 车主注册成功: {}", savedDriver.getUsername());
 
-            // 转换为DTO并返回
-            DriverProfileDTO profileDTO = new DriverProfileDTO();
-            profileDTO.setUserId(savedDriver.getDriverId());
-            profileDTO.setUsername(savedDriver.getUsername());
-            profileDTO.setCreditScore(savedDriver.getCreditScore());
-            profileDTO.setWalletBalance(savedDriver.getWalletBalance());
-            profileDTO.setPhone(savedDriver.getPhone());
-            profileDTO.setBankCard(savedDriver.getBankCard());
-            return profileDTO;
+            return convertToDTO(savedDriver);
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            throw new BusinessException(ExceptionCodeEnum.DRIVER_REGISTER_FAILED, "车主注册异常: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.DRIVER_REGISTER_ERROR, "车主注册异常: " + e.getMessage());
         }
     }
 
+    /**
+     * 更新车主银行卡号业务逻辑实现
+     * @param driverId 车主ID
+     * @param request 银行卡号更新请求
+     * @return 更新后的车主信息
+     */
     @Override
     public DriverProfileDTO updateBankCard(Integer driverId, UpdateBankCardRequest request) {
-        logger.info("[DriverService] 更新车主银行卡号: driverId={}, bankCard={}", driverId, request.getBankCard());
+        logger.info("[DriverServiceImpl] 处理更新车主银行卡号请求: driverId = {}, bankCard = {}", driverId, request.getBankCard());
         try {
-            // 参数验证
-            if (driverId == null) {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_NULL_ERROR, "车主ID不能为空");
-            }
-            
-            if (request == null || request.getBankCard() == null || request.getBankCard().trim().isEmpty()) {
-                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "银行卡号不能为空");
-            }
-            
-            // 查找车主
+            // 获取车主实体
             Driver driver = driverRepository.findById(driverId)
-                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "车主不存在"));
-            
+                    .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.DRIVER_NOT_FOUND, "车主不存在"));
+
             // 更新银行卡号
             driver.setBankCard(request.getBankCard());
             driver.setUpdatedAt(LocalDateTime.now());
-            
-            // 保存更新
+
+            // 保存到数据库
             Driver updatedDriver = driverRepository.save(driver);
-            logger.info("[DriverService] 车主银行卡号更新成功: driverId={}", driverId);
-            
-            // 转换为DTO并返回
+            logger.info("[DriverServiceImpl] 更新车主银行卡号成功: {}", updatedDriver.getUsername());
+
             return convertToDTO(updatedDriver);
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {
-            logger.error("[DriverService] 更新车主银行卡号时发生异常: {}", e.getMessage(), e);
-            throw new BusinessException(ExceptionCodeEnum.DRIVER_UPDATE_ERROR, "更新银行卡号失败: " + e.getMessage());
+            throw new BusinessException(ExceptionCodeEnum.DRIVER_PROFILE_UPDATE_ERROR, "更新车主银行卡号异常: " + e.getMessage());
         }
     }
 }
