@@ -14,4 +14,5 @@ public class DriverProfileDTO {
     private String bankCard;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer vehicleId;
 }
