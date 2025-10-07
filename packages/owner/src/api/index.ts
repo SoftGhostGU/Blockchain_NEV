@@ -23,6 +23,7 @@ const request = {
   getTurnoverMonths: (params: any) => { return axios('get', service.recent7MonTurn, params) }, // 获取月度收入数据
   uploadBankcard: (params: any) => { return axios('post', service.uploadBankcard, params) }, // 上传银行卡
   getVehicleInfo: (params: any) => { return axios('get', getVehicleInfoUrl(params.vehicleId)) }, // 获取车辆信息
+  updateVehicleCondition: (params: any) => { return axios('put', getVehicleInfoUrl(params.vehicleId), params) }, // 更新车辆状况
   
   // 财务接口
   withdrawFinance: (params: any) => { return axios('post', service.withdrawFinance, params) }, // 提现

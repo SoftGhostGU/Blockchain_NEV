@@ -49,7 +49,18 @@ const IconFont = createFromIconfontCN({
 // );
 const CarAuditStatus = {
   Pending: "待审核",
-  Approved: "已通过"
+  Approved: "已通过",
+  Denied: "已拒绝"
+};
+
+// 审核状态映射函数
+const getAuditStatusText = (status: number): string => {
+  switch (status) {
+    case 1: return CarAuditStatus.Pending;   // 待审核
+    case 2: return CarAuditStatus.Approved;   // 已通过
+    case 3: return CarAuditStatus.Denied;    // 已拒绝
+    default: return "未知状态";
+  }
 };
 
 const state = ["正常", "注意", "危险"];
@@ -138,8 +149,10 @@ export default function CarInfo() {
             
             // 更新车辆基本信息
             setCarType(conditionData.vehicleModel || "未知车型");
+            setCarLicense(conditionData.licensePlate || "未知车牌")
             setBatteryPercent(conditionData.batteryPercent || 0);
             setMilesToGo(conditionData.milesToGo || "0公里");
+            setCarAuditStatus(getAuditStatusText(conditionData.auditStatus))
             
             // 更新车辆状态信息 - 数据库状态: 1=正常, 2=注意, 3=危险
             setBodyState(state[conditionData.bodyState - 1] || "未知状态");
