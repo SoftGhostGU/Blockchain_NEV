@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.autocrowd.backend.dto.vehicle.VehicleCreateRequest;
 import com.autocrowd.backend.dto.vehicle.VehicleDTO;
+import com.autocrowd.backend.dto.vehicle.VehicleConditionResponse;
 import com.autocrowd.backend.dto.vehicle.VehicleUpdateRequest;
+import com.autocrowd.backend.dto.vehicle.VehicleConditionUpdateRequest;
 import com.autocrowd.backend.entity.VehicleCondition;
 
 /**
@@ -43,9 +45,9 @@ public interface VehicleService {
     /**
      * 根据车辆ID获取车辆状况信息
      * @param vehicleId 车辆ID
-     * @return 车辆状况实体
+     * @return 车辆状况响应DTO，包含车辆状况信息和来自Vehicle表的相关字段
      */
-    VehicleCondition getVehicleConditionByVehicleId(Integer vehicleId);
+    VehicleConditionResponse getVehicleConditionByVehicleId(Integer vehicleId);
     
     /**
      * 更新车辆状态
@@ -55,4 +57,12 @@ public interface VehicleService {
      * @return 更新后的车辆DTO
      */
     VehicleDTO updateVehicleStatus(Integer driverId, Integer vehicleId, Byte status);
+    
+    /**
+     * 更新车辆状况信息
+     * @param vehicleId 车辆ID
+     * @param request 车辆状况更新请求
+     * @return 更新后的车辆状况响应DTO
+     */
+    VehicleConditionResponse updateVehicleCondition(Integer vehicleId, VehicleConditionUpdateRequest request);
 }

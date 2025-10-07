@@ -231,7 +231,7 @@ public class VehicleController {
             }
 
             // 调用服务层获取车辆状况
-            VehicleCondition vehicleCondition = vehicleService.getVehicleConditionByVehicleId(vehicleId);
+            VehicleConditionResponse vehicleCondition = vehicleService.getVehicleConditionByVehicleId(vehicleId);
             
             Map<String, Object> response = new HashMap<>();
             response.put("code", 200);
@@ -321,6 +321,67 @@ public class VehicleController {
             errorResponse.put("message", e.getMessage());
             return ResponseEntity.ok(errorResponse);
         } catch (Exception e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", 500);
+            errorResponse.put("message", "服务器内部错误: " + e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        }
+    }
+
+    /**
+     * 更新车辆状况信息
+     * @param vehicleId 车辆ID
+     * @param request 车辆状况更新请求
+     * @param httpRequest HTTP请求对象，包含用户身份信息
+     * @return 包含更新结果的响应实体
+     */
+    @PutMapping("/{vehicleId}/condition")
+    public ResponseEntity<Map<String, Object>> updateVehicleCondition(@PathVariable Integer vehicleId,
+                                                                      @RequestBody VehicleConditionUpdateRequest request,
+                                                                      HttpServletRequest httpRequest) {
+        logger.info("[VehicleController] 收到更新车辆状况请求: vehicleId={}", vehicleId);
+        try {
+            // 从请求头获取token
+            String token = httpRequest.getHeader("Authorization");
+            if (token == null || !token.startsWith("Bearer ")) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN);
+            }
+            token = token.substring(7);
+
+            // 解析token获取司机信息
+            Claims claims = jwtUtil.parseToken(token);
+            String driverIdStr = claims.get("driverId", String.class);
+            if (driverIdStr == null || driverIdStr.isEmpty()) {
+                throw new BusinessException(ExceptionCodeEnum.INVALID_TOKEN, "token中未包含司机ID");
+            }
+            Integer driverId;
+            try {
+                driverId = Integer.valueOf(driverIdStr);
+            } catch (NumberFormatException e) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_ERROR, "司机ID格式错误");
+            }
+
+            // 验证车辆是否属于该司机
+            boolean isVehicleBelongsToDriver = vehicleService.isVehicleBelongsToDriver(vehicleId, driverId);
+            if (!isVehicleBelongsToDriver) {
+                throw new BusinessException(ExceptionCodeEnum.PERMISSION_DENIED, "车辆不属于该司机");
+            }
+
+            // 调用服务层更新车辆状况
+            VehicleConditionResponse updatedCondition = vehicleService.updateVehicleCondition(vehicleId, request);
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("code", 200);
+            response.put("message", "更新车辆状况成功");
+            response.put("data", updatedCondition);
+            return ResponseEntity.ok(response);
+        } catch (BusinessException e) {
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("code", e.getCode());
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.ok(errorResponse);
+        } catch (Exception e) {
+            logger.error("[VehicleController] 更新车辆状况时发生异常: {}", e.getMessage(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("code", 500);
             errorResponse.put("message", "服务器内部错误: " + e.getMessage());

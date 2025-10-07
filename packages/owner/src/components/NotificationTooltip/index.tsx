@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import './index.scss';
 import { useColorModeStore } from '../../store/store';
+import { Button } from 'antd';
 
 interface Order {
   orderId: string;
@@ -14,9 +15,11 @@ interface Order {
 
 interface NotificationTooltipProps {
   orders?: Order[];
+  onMarkAsRead?: (orderId: string) => void;
+  onMarkAllAsRead?: () => void;
 }
 
-const NotificationTooltip: React.FC<NotificationTooltipProps> = ({ orders = [] }) => {
+const NotificationTooltip: React.FC<NotificationTooltipProps> = ({ orders = [], onMarkAsRead, onMarkAllAsRead }) => {
   const length = orders.length;
   const maxShow = 3;
   const showOrders = length > maxShow? orders.slice(0, maxShow) : orders;
@@ -42,12 +45,12 @@ const NotificationTooltip: React.FC<NotificationTooltipProps> = ({ orders = [] }
   }, [isNightMode])
 
   if (!orders.length) {
-    return <div className="notif-tooltip">暂无新的通知</div>;
+    return <div className="notif-tooltip">暂无未读通知</div>;
   }
 
   return (
     <div className="notif-tooltip">
-      <div className="notif-title">新订单通知</div>
+      <div className="notif-title">未读订单通知 ({orders.length})</div>
       <div className="notif-list">
         {showOrders.map((o) => (
           <div className="notif-item" key={o.orderId}>
@@ -64,14 +67,38 @@ const NotificationTooltip: React.FC<NotificationTooltipProps> = ({ orders = [] }
               </span>
               <span className="price">{o.balance}</span>
             </div>
+            {onMarkAsRead && (
+              <div className="row actions">
+                <Button 
+                  type="link" 
+                  size="small" 
+                  onClick={() => onMarkAsRead(o.orderId)}
+                  className="mark-read-btn"
+                >
+                  标记已读
+                </Button>
+              </div>
+            )}
           </div>
         ))}
       </div>
       {length > maxShow && (
         <div className="notif-more">
           <span className="notif-more-text">
-            还有{length - maxShow}条通知，请点击订单管理查看
+            还有{length - maxShow}条未读通知
           </span>
+        </div>
+      )}
+      {onMarkAllAsRead && orders.length > 0 && (
+        <div className="notif-footer">
+          <Button 
+            type="link" 
+            size="small" 
+            onClick={onMarkAllAsRead}
+            className="mark-all-read-btn"
+          >
+            全部标记已读
+          </Button>
         </div>
       )}
     </div>

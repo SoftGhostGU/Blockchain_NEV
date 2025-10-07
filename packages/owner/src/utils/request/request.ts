@@ -32,9 +32,19 @@ const getUserIdentity = (): string | null => {
   try {
     const appInfo = localStorage.getItem("ROOT_APP_INFO");
     if (appInfo) {
-      const { userInfo } = JSON.parse(appInfo);
-      if (userInfo && userInfo.role && userInfo.driverId) {
-        return `${userInfo.role.toUpperCase()}_${userInfo.driverId}`;
+      const parsedAppInfo = JSON.parse(appInfo);
+      console.log('ROOT_APP_INFO内容:', parsedAppInfo);
+      
+      // 检查不同的用户信息结构
+      if (parsedAppInfo.userInfo && parsedAppInfo.userInfo.driver_id) {
+        // 新结构：userInfo包含driver_id
+        return `DRIVER_${parsedAppInfo.userInfo.driver_id}`;
+      } else if (parsedAppInfo.driverId) {
+        // 备用结构：直接包含driverId
+        return `DRIVER_${parsedAppInfo.driverId}`;
+      } else if (parsedAppInfo.userInfo && parsedAppInfo.userInfo.driverId) {
+        // 备用结构：userInfo包含driverId
+        return `DRIVER_${parsedAppInfo.userInfo.driverId}`;
       }
     }
   } catch (error) {

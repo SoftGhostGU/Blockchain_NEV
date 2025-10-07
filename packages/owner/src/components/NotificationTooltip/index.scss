@@ -88,4 +88,32 @@
     margin-top: 10px;
     color: #999;
   }
+
+  .notif-footer {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    text-align: center;
+  }
+
+  .notif-footer.night-mode {
+    border-top-color: #333;
+  }
+
+  .row.actions {
+    margin-top: 6px;
+    justify-content: flex-end;
+  }
+
+  .mark-read-btn {
+    font-size: 12px;
+    padding: 2px 6px;
+    height: auto;
+  }
+
+  .mark-all-read-btn {
+    font-size: 12px;
+    padding: 2px 8px;
+    height: auto;
+  }
 }
