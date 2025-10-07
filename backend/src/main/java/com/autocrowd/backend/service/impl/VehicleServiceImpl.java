@@ -2,6 +2,7 @@ package com.autocrowd.backend.service.impl;
 
 import com.autocrowd.backend.dto.vehicle.VehicleCreateRequest;
 import com.autocrowd.backend.dto.vehicle.VehicleDTO;
+import com.autocrowd.backend.dto.vehicle.VehicleConditionResponse;
 import com.autocrowd.backend.dto.vehicle.VehicleUpdateRequest;
 import com.autocrowd.backend.entity.Vehicle;
 import com.autocrowd.backend.entity.VehicleCondition;
@@ -236,7 +237,7 @@ public class VehicleServiceImpl implements VehicleService {
     }
     
     @Override
-    public VehicleCondition getVehicleConditionByVehicleId(Integer vehicleId) {
+    public VehicleConditionResponse getVehicleConditionByVehicleId(Integer vehicleId) {
         logger.info("[VehicleService] 根据车辆ID获取车辆状况: vehicleId={}", vehicleId);
         try {
             // 参数验证
@@ -258,7 +259,24 @@ public class VehicleServiceImpl implements VehicleService {
             VehicleCondition vehicleCondition = vehicleConditionRepository.findById(conditionId)
                 .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "未找到车辆状况信息"));
             
-            return vehicleCondition;
+            // 创建响应对象并填充数据
+            VehicleConditionResponse response = new VehicleConditionResponse();
+            
+            // 填充车辆状况信息
+            response.setConditionId(vehicleCondition.getConditionId());
+            response.setVehicleModel(vehicleCondition.getVehicleModel());
+            response.setBatteryPercent(vehicleCondition.getBatteryPercent());
+            response.setMilesToGo(vehicleCondition.getMilesToGo());
+            response.setBodyState(vehicleCondition.getBodyState());
+            response.setTirePressure(vehicleCondition.getTirePressure());
+            response.setBrakeState(vehicleCondition.getBrakeState());
+            response.setPowerState(vehicleCondition.getPowerState());
+            
+            // 填充来自Vehicle表的字段
+            response.setLicensePlate(vehicle.getLicensePlate());
+            response.setAuditStatus(vehicle.getAuditStatus());
+            
+            return response;
         } catch (BusinessException e) {
             throw e;
         } catch (Exception e) {

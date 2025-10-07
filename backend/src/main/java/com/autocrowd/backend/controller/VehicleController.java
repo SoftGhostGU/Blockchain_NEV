@@ -231,7 +231,7 @@ public class VehicleController {
             }
 
             // 调用服务层获取车辆状况
-            VehicleCondition vehicleCondition = vehicleService.getVehicleConditionByVehicleId(vehicleId);
+            VehicleConditionResponse vehicleCondition = vehicleService.getVehicleConditionByVehicleId(vehicleId);
             
             Map<String, Object> response = new HashMap<>();
             response.put("code", 200);
