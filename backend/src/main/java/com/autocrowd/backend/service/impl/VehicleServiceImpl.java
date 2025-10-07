@@ -4,6 +4,7 @@ import com.autocrowd.backend.dto.vehicle.VehicleCreateRequest;
 import com.autocrowd.backend.dto.vehicle.VehicleDTO;
 import com.autocrowd.backend.dto.vehicle.VehicleConditionResponse;
 import com.autocrowd.backend.dto.vehicle.VehicleUpdateRequest;
+import com.autocrowd.backend.dto.vehicle.VehicleConditionUpdateRequest;
 import com.autocrowd.backend.entity.Vehicle;
 import com.autocrowd.backend.entity.VehicleCondition;
 import com.autocrowd.backend.enums.VehicleStatusEnum;
@@ -332,6 +333,97 @@ public class VehicleServiceImpl implements VehicleService {
         } catch (Exception e) {
             logger.error("[VehicleServiceImpl] 更新车辆状态时发生异常: {}", e.getMessage(), e);
             throw new BusinessException(ExceptionCodeEnum.VEHICLE_UPDATE_ERROR, "更新车辆状态失败: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public VehicleConditionResponse updateVehicleCondition(Integer vehicleId, VehicleConditionUpdateRequest request) {
+        logger.info("[VehicleServiceImpl] 更新车辆状况: vehicleId={}", vehicleId);
+        try {
+            // 参数验证
+            if (vehicleId == null) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_NULL_ERROR, "车辆ID不能为空");
+            }
+            if (request == null) {
+                throw new BusinessException(ExceptionCodeEnum.PARAM_NULL_ERROR, "请求参数不能为空");
+            }
+
+            // 查找车辆
+            Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆不存在"));
+            
+            // 获取车辆状况ID
+            Integer conditionId = vehicle.getConditionId();
+            if (conditionId == null) {
+                throw new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "车辆未关联状况信息");
+            }
+            
+            // 查找车辆状况
+            VehicleCondition vehicleCondition = vehicleConditionRepository.findById(conditionId)
+                .orElseThrow(() -> new BusinessException(ExceptionCodeEnum.VEHICLE_NOT_FOUND, "未找到车辆状况信息"));
+            
+            // 更新车辆状况信息
+            if (request.getVehicleModel() != null) {
+                vehicleCondition.setVehicleModel(request.getVehicleModel());
+            }
+            if (request.getBatteryPercent() != null) {
+                vehicleCondition.setBatteryPercent(request.getBatteryPercent());
+            }
+            if (request.getMilesToGo() != null) {
+                vehicleCondition.setMilesToGo(request.getMilesToGo());
+            }
+            if (request.getBodyState() != null) {
+                vehicleCondition.setBodyState(request.getBodyState());
+            }
+            if (request.getTirePressure() != null) {
+                vehicleCondition.setTirePressure(request.getTirePressure());
+            }
+            if (request.getBrakeState() != null) {
+                vehicleCondition.setBrakeState(request.getBrakeState());
+            }
+            if (request.getPowerState() != null) {
+                vehicleCondition.setPowerState(request.getPowerState());
+            }
+            
+            // 更新车辆信息中的车牌号
+            if (request.getLicensePlate() != null && !request.getLicensePlate().trim().isEmpty()) {
+                // 检查车牌号是否已存在（排除自己）
+                if (!request.getLicensePlate().equalsIgnoreCase(vehicle.getLicensePlate())) {
+                    if (vehicleRepository.existsByLicensePlate(request.getLicensePlate())) {
+                        throw new BusinessException(ExceptionCodeEnum.VEHICLE_LICENSE_PLATE_EXISTS, "车牌号已存在");
+                    }
+                    vehicle.setLicensePlate(request.getLicensePlate().toUpperCase());
+                }
+            }
+            
+            // 保存更新
+            VehicleCondition updatedCondition = vehicleConditionRepository.save(vehicleCondition);
+            vehicle.setUpdatedAt(LocalDateTime.now());
+            vehicleRepository.save(vehicle);
+            
+            // 创建响应对象并填充数据
+            VehicleConditionResponse response = new VehicleConditionResponse();
+            
+            // 填充车辆状况信息
+            response.setConditionId(updatedCondition.getConditionId());
+            response.setVehicleModel(updatedCondition.getVehicleModel());
+            response.setBatteryPercent(updatedCondition.getBatteryPercent());
+            response.setMilesToGo(updatedCondition.getMilesToGo());
+            response.setBodyState(updatedCondition.getBodyState());
+            response.setTirePressure(updatedCondition.getTirePressure());
+            response.setBrakeState(updatedCondition.getBrakeState());
+            response.setPowerState(updatedCondition.getPowerState());
+            
+            // 填充来自Vehicle表的字段
+            response.setLicensePlate(vehicle.getLicensePlate());
+            response.setAuditStatus(vehicle.getAuditStatus());
+            
+            return response;
+        } catch (BusinessException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error("[VehicleServiceImpl] 更新车辆状况时发生异常: {}", e.getMessage(), e);
+            throw new BusinessException(ExceptionCodeEnum.VEHICLE_UPDATE_ERROR, "更新车辆状况失败: " + e.getMessage());
         }
     }
 

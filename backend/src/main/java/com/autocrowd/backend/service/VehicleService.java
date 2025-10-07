@@ -6,6 +6,7 @@ import com.autocrowd.backend.dto.vehicle.VehicleCreateRequest;
 import com.autocrowd.backend.dto.vehicle.VehicleDTO;
 import com.autocrowd.backend.dto.vehicle.VehicleConditionResponse;
 import com.autocrowd.backend.dto.vehicle.VehicleUpdateRequest;
+import com.autocrowd.backend.dto.vehicle.VehicleConditionUpdateRequest;
 import com.autocrowd.backend.entity.VehicleCondition;
 
 /**
@@ -56,4 +57,12 @@ public interface VehicleService {
      * @return 更新后的车辆DTO
      */
     VehicleDTO updateVehicleStatus(Integer driverId, Integer vehicleId, Byte status);
+    
+    /**
+     * 更新车辆状况信息
+     * @param vehicleId 车辆ID
+     * @param request 车辆状况更新请求
+     * @return 更新后的车辆状况响应DTO
+     */
+    VehicleConditionResponse updateVehicleCondition(Integer vehicleId, VehicleConditionUpdateRequest request);
 }
