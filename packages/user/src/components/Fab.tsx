@@ -57,11 +57,30 @@ const Fab = () => {
   };
 
   const handleClick = () => {
-    const currentPagePath: string = (Taro.getCurrentPages?.() || []).slice(-1)[0]?.route ?? '';
+    const pages: any[] = (Taro.getCurrentPages?.() || []) as any[];
+    const currentPagePath: string = pages.slice(-1)[0]?.route ?? '';
 
     if (currentPagePath.includes('order')) {
-      Taro.navigateTo({ url: '/pages/ride/index' });
+      // 优先后退回到栈中的 Ride，避免创建新的 Ride 实例
+      let rideIndex = -1;
+      for (let i = pages.length - 1; i >= 0; i--) {
+        const route = pages[i]?.route || '';
+        if (route.includes('ride/index')) {
+          rideIndex = i;
+          break;
+        }
+      }
+      if (rideIndex !== -1) {
+        const delta = (pages.length - 1) - rideIndex;
+        if (delta > 0) {
+          Taro.navigateBack({ delta });
+          return;
+        }
+      }
+      // 栈中不存在 Ride，则重启到 Ride 保持唯一实例
+      Taro.reLaunch({ url: '/pages/ride/index' });
     } else if (currentPagePath.includes('ride')) {
+      // 从 Ride 进入订单页使用 navigateTo（订单页可多实例），Ride 保持唯一
       Taro.navigateTo({ url: '/pages/order/index' });
     }
   };

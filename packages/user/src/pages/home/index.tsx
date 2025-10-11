@@ -1,3 +1,4 @@
+
 import { View, Text, Image, Button } from '@tarojs/components'
 import { useState, useEffect } from 'react'
 import { useLoad } from '@tarojs/taro'
@@ -36,7 +37,7 @@ const quickActions = [
 // 安全设置选项
 const securityOptions = [
   { id: 'security', name: '安全设置', icon: 'lock', desc: '密码、手机号等' },
-  { id: 'privacy', name: '隐私设置', icon: 'eye-close', desc: '个人信息保护' },
+  { id: 'privacy', name: '隐私设置', icon: 'eye', desc: '个人信息保护' },
   { id: 'help', name: '帮助中心', icon: 'help', desc: '常见问题解答' },
   { id: 'about', name: '关于我们', icon: 'heart', desc: '了解更多信息' }
 ]
@@ -48,15 +49,13 @@ export default function Home() {
   useLoad(() => {
     console.log('Home page loaded.')
     setTimeout(() => setPageLoaded(true), 300)
-    // 这里可以调用API获取真实用户数据
-    // fetchUserProfile()
   })
 
   // 获取信用分颜色
   const getCreditScoreColor = (score: number) => {
-    if (score >= 90) return '#52c41a' // 绿色
-    if (score >= 70) return '#faad14' // 黄色
-    return '#ff4d4f' // 红色
+    if (score >= 90) return '#52c41a'
+    if (score >= 70) return '#faad14'
+    return '#ff4d4f'
   }
 
   // 获取会员等级颜色
@@ -102,97 +101,136 @@ export default function Home() {
     console.log('查看余额详情')
   }
 
+  // 返回到 Ride 页面（保持 Ride 页面唯一实例）：优先后退到历史中的 Ride，否则重启到 Ride
+  const handleBack = () => {
+    try {
+      const pages: any[] = (Taro.getCurrentPages?.() || []) as any[]
+      let rideIndex = -1
+      for (let i = pages.length - 1; i >= 0; i--) {
+        const route = pages[i]?.route || ''
+        if (route.includes('ride/index')) {
+          rideIndex = i
+          break
+        }
+      }
+      if (rideIndex !== -1) {
+        const delta = (pages.length - 1) - rideIndex
+        if (delta > 0) {
+          Taro.navigateBack({ delta })
+          return
+        }
+      }
+      // 栈中没有 Ride 或无法后退，使用 reLaunch 保证唯一实例
+      Taro.reLaunch({ url: '/pages/ride/index' })
+    } catch (err) {
+      console.warn('返回 Ride 页面失败，尝试重启', err)
+      Taro.reLaunch({ url: '/pages/ride/index' })
+    }
+  }
+
+  // 上传头像
+  const handleUploadAvatar = async () => {
+    try {
+      const res = await Taro.chooseImage({
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera']
+      })
+      const path = (res as any).tempFilePaths?.[0] || (res as any).tempFiles?.[0]?.path
+      if (path) {
+        setUserData({ ...userData, avatar: path })
+        Taro.showToast({ title: '头像已更新', icon: 'success' })
+      }
+    } catch (e) {
+      Taro.showToast({ title: '上传失败', icon: 'none' })
+    }
+  }
+
   return (
     <View className={classnames('home-page', { 'page-loaded': pageLoaded })}>
-      {/* 页面标题 */}
-      <View className='page-header'>
-        <Text className='page-title'>个人中心</Text>
+      {/* 顶部标题与返回箭头 */}
+      <View className='home-header'>
+        <View className='header-content'>
+          <View className='header-left' onClick={handleBack}>
+            <AtIcon value='chevron-left' size='20' color='#1F2937' />
+          </View>
+          <Text className='header-title'>个人主页</Text>
+        </View>
       </View>
 
       {/* 用户信息卡片 */}
       <View className='card user-info-card'>
-        <View className='user-info-container'>
-          {/* 左侧：头像 + 用户基础信息 */}
-          <View className='user-left-section'>
-            <UserAvatar 
-              src={userData.avatar} 
-              size='large'
-              onClick={() => handleQuickAction('profile')}
-            />
-            <View className='user-basic-info'>
-              {/* 用户名 */}
-              <Text className='username'>{userData.username}</Text>
-              {/* 手机号和会员信息并排 */}
-              <View className='user-details-row'>
-                <Text className='phone'>{userData.phone}</Text>
-                <View 
-                  className='member-badge'
-                  style={{ backgroundColor: getMemberLevelColor(userData.memberLevel) }}
-                >
-                  <Text className='member-text'>{userData.memberLevel}</Text>
-                </View>
-              </View>
-            </View>
+        {/* 左上角上传头像 */}
+        <View className='card-top-avatar'>
+          <UserAvatar 
+            src={userData.avatar}
+            size='small'
+            onClick={handleUploadAvatar}
+          />
+        </View>
+        <View className='user-header'>
+          <View className='user-info'>
+            <Text className='phone'>{userData.phone}</Text>
           </View>
-          
-          {/* 右侧：信用分独立区域 */}
-          <View className='user-right-section'>
-            <View className='credit-score-container'>
-              <AtIcon 
-                value='check-circle' 
-                size='18' 
-                color={getCreditScoreColor(userData.creditScore)}
-              />
-              <Text 
-                className='credit-score-text'
-                style={{ color: getCreditScoreColor(userData.creditScore) }}
-              >
-                信用分 {userData.creditScore}
-              </Text>
-            </View>
-          </View>
+        </View>
+        
+        <View className='user-credit'>
+          <AtIcon 
+            value='check-circle' 
+            size='16' 
+            color={getCreditScoreColor(userData.creditScore)}
+          />
+          <Text 
+            className='credit-text'
+            style={{ color: getCreditScoreColor(userData.creditScore) }}
+          >
+            信用分 {userData.creditScore}
+          </Text>
         </View>
       </View>
 
       {/* 账户余额卡片 */}
       <View className='card balance-card'>
-        <View className='card-header'>
-          <View className='header-left'>
-            <AtIcon value='credit-card' size='20' className='header-icon' />
-            <Text className='header-title'>账户余额</Text>
+        <View className='balance-header'>
+          <View className='balance-info'>
+            <Text className='balance-label'>账户余额</Text>
+            <Text className='balance-amount'>¥{userData.balance.toFixed(2)}</Text>
           </View>
-          <Button 
-            className='recharge-btn'
-            size='mini'
-            type='primary'
-            onClick={handleRecharge}
-          >
-            充值
-          </Button>
+          <View className='balance-actions'>
+            
+            <Button 
+              className='btn-detail'
+              size='mini'
+              onClick={handleBalanceDetail}
+            >
+              充值
+            </Button>
+          </View>
         </View>
-        
-        <View className='balance-content'>
-          <Text className='balance-amount'>¥{userData.balance.toFixed(2)}</Text>
-          <Button 
-            className='balance-detail-btn'
-            size='mini'
-            plain
-            onClick={handleBalanceDetail}
-          >
-            查看明细
-          </Button>
+      </View>
+
+      {/* 统计数据卡片 */}
+      <View className='card stats-card'>
+        <View className='stats-grid'>
+          <View className='stat-item'>
+            <Text className='stat-value'>{userData.totalTrips}</Text>
+            <Text className='stat-label'>总行程</Text>
+          </View>
+          <View className='stat-divider'></View>
+          <View className='stat-item'>
+            <Text className='stat-value'>{userData.totalDistance}</Text>
+            <Text className='stat-label'>总里程(km)</Text>
+          </View>
+          <View className='stat-divider'></View>
+          <View className='stat-item'>
+            <Text className='stat-value'>{userData.carbonSaved}</Text>
+            <Text className='stat-label'>减碳量(kg)</Text>
+          </View>
         </View>
       </View>
 
       {/* 快捷功能区 */}
       <View className='card quick-actions-card'>
-        <View className='card-header'>
-          <View className='header-left'>
-            <AtIcon value='lightning' size='20' className='header-icon' />
-            <Text className='header-title'>快捷功能</Text>
-          </View>
-        </View>
-        
         <View className='quick-actions-grid'>
           {quickActions.map(action => (
             <View 
@@ -202,9 +240,9 @@ export default function Home() {
             >
               <View 
                 className='action-icon'
-                style={{ backgroundColor: `${action.color}15`, color: action.color }}
+                style={{ backgroundColor: action.color }}
               >
-                <AtIcon value={action.icon} size='24' />
+                <AtIcon value={action.icon} size='22' color={action.color} />
               </View>
               <Text className='action-name'>{action.name}</Text>
             </View>
@@ -212,40 +250,8 @@ export default function Home() {
         </View>
       </View>
 
-      {/* 统计数据卡片 */}
-      <View className='card stats-card'>
-        <View className='card-header'>
-          <View className='header-left'>
-            <AtIcon value='analytics' size='20' className='header-icon' />
-            <Text className='header-title'>我的数据</Text>
-          </View>
-        </View>
-        
-        <View className='stats-grid'>
-          <View className='stat-item'>
-            <Text className='stat-value'>{userData.totalTrips}</Text>
-            <Text className='stat-label'>总行程</Text>
-          </View>
-          <View className='stat-item'>
-            <Text className='stat-value'>{userData.totalDistance}km</Text>
-            <Text className='stat-label'>总里程</Text>
-          </View>
-          <View className='stat-item'>
-            <Text className='stat-value'>{userData.carbonSaved}kg</Text>
-            <Text className='stat-label'>减碳量</Text>
-          </View>
-        </View>
-      </View>
-
       {/* 安全与设置 */}
       <View className='card security-card'>
-        <View className='card-header'>
-          <View className='header-left'>
-            <AtIcon value='shield-check' size='20' className='header-icon' />
-            <Text className='header-title'>安全与设置</Text>
-          </View>
-        </View>
-        
         <View className='security-options'>
           {securityOptions.map(option => (
             <View 
@@ -254,13 +260,15 @@ export default function Home() {
               onClick={() => handleSecurityOption(option.id)}
             >
               <View className='option-left'>
-                <AtIcon value={option.icon} size='20' className='option-icon' />
+                <View className='option-icon-wrapper'>
+                  <AtIcon value={option.icon} size='20' className='option-icon' />
+                </View>
                 <View className='option-content'>
                   <Text className='option-name'>{option.name}</Text>
                   <Text className='option-desc'>{option.desc}</Text>
                 </View>
               </View>
-              <AtIcon value='chevron-right' size='16' className='option-arrow' />
+              <AtIcon value='chevron-right' size='18' className='option-arrow' />
             </View>
           ))}
         </View>
