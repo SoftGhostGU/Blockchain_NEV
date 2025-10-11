@@ -5,6 +5,9 @@
   - npm i @amap/amap-jsapi-loader 
 - （已完成）加密字段确定（/package/owner/src/config/sensitiveFields.ts）
 - 与后端的对接（request函数封装+使用）
+  - （已完成）owner端
+  - （已完成）admin端
+  - user端
 
 ## 后端部分 - hcy
 - （已完成）数据库部分字段修改
@@ -14,7 +17,7 @@
 - （已完成）给数据库里添加一些示例数据
   - （已完成）特别是user、owner、orders，不要随机生成，可以参考/model/data/**里的示例数据（data里的数据我都测过了，没问题）
   - （已完成）可以尝试直接读取csv以后，用字符串拼接的方式写出sql语句，然后执行
-- 等待区块链完成后所有内容做测试
+- （已完成）等待区块链完成后所有内容做测试
 - 测试完毕后尽快部署
 
 ## 模型部分
