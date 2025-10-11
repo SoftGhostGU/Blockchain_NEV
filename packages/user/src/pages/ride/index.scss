@@ -1114,6 +1114,8 @@ $text-secondary-gray: #8c8c8c;
   .main-content {
     opacity: 0;
     animation: page-fade-in 0.8s 0.2s ease-out forwards;
+    // 为左上角固定头像与城市徽标预留空间，避免遮挡内容
+    padding-top: 96rpx;
     
     &.loaded {
       opacity: 1;
@@ -1424,6 +1426,7 @@ $text-secondary-gray: #8c8c8c;
   z-index: 10050;
   display: flex;
   align-items: center;
+  transition: opacity 0.2s ease; // 滚动时平滑淡出
 }
 
 .avatar-circle {

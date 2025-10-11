@@ -1,7 +1,7 @@
 // src/pages/ride/index.tsx  
 import { View, Text, Image, Button, Input } from '@tarojs/components'
 import { useState, useEffect, useRef } from 'react'
-import { useLoad, showToast, showLoading, hideLoading, navigateTo, showModal } from '@tarojs/taro'
+import { useLoad, showToast, showLoading, hideLoading, navigateTo, showModal, usePageScroll, useDidShow, useDidHide } from '@tarojs/taro'
 import { AtIcon, AtActionSheet, AtActionSheetItem } from 'taro-ui'
 import classnames from 'classnames'
 import './index.scss'
@@ -99,8 +99,11 @@ export default function Ride() {
     carTypes: false,
     price: false
   })
-  const [priceData, setPriceData] = useState<any>(null)
-  const [isPriceLoading, setIsPriceLoading] = useState(false)
+const [priceData, setPriceData] = useState<any>(null)
+const [isPriceLoading, setIsPriceLoading] = useState(false)
+// 新增：由高德驾车规划得到的真实里程/时长
+const [routeDistanceKm, setRouteDistanceKm] = useState<number | null>(null)
+const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
   const [isOrderCreating, setIsOrderCreating] = useState(false)
   const [lastPriceUpdate, setLastPriceUpdate] = useState('')
 
@@ -114,6 +117,16 @@ export default function Ride() {
   // 地图展开状态管理
   const [isMapExpanded, setIsMapExpanded] = useState(false)
 
+  // 滚动淡出状态
+  const [scrollTop, setScrollTop] = useState(0)
+  usePageScroll(({ scrollTop }) => {
+    setScrollTop(scrollTop)
+  })
+
+  // 地图可见性与强制重挂载 key（返回页面时重建地图实例）
+  const [mapVisible, setMapVisible] = useState(false)
+  const [mapKey, setMapKey] = useState(0)
+
   // ----- 联想与防抖相关状态 -----
   type Suggestion = { name: string; district?: string; address?: string; adcode?: string; location?: any }
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
@@ -124,6 +137,22 @@ export default function Ride() {
   const placeSearchRef = useRef<any>(null)
   const amapReadyRef = useRef<boolean>(false)
   const [currentCity, setCurrentCity] = useState<string>('')
+
+  // 从地址字符串中尽力提取城市名（例如：江苏省南通市如皋市城北街道 -> 南通市或如皋市）
+  const deriveCityFromAddress = (addr?: string): string => {
+    if (!addr) return ''
+    // 优先匹配“xx市”
+    const cityMatch = addr.match(/([\u4e00-\u9fa5]{2,}市)/)
+    if (cityMatch) {
+      return cityMatch[1]
+    }
+    // 其次匹配“xx区/县”作为退化
+    const districtMatch = addr.match(/([\u4e00-\u9fa5]{2,}(?:区|县))/)
+    if (districtMatch) {
+      return districtMatch[1]
+    }
+    return ''
+  }
 
   // 固定头像点击跳转主页
   const handleAvatarClick = () => {
@@ -145,10 +174,16 @@ export default function Ride() {
             if (placeSearchRef.current) {
               placeSearchRef.current.setCity(result.city)
             }
+          } else {
+            // 回退：从当前定位地址中抽取城市名，避免徽标为空
+            const fallback = deriveCityFromAddress(currentLocation?.address || currentLocation?.landmark)
+            if (fallback) setCurrentCity(fallback)
           }
         })
       } catch (err) {
         console.warn('CitySearch failed:', err)
+        const fallback = deriveCityFromAddress(currentLocation?.address || currentLocation?.landmark)
+        if (fallback) setCurrentCity(fallback)
       }
     })()
   }, [])
@@ -349,6 +384,53 @@ export default function Ride() {
     amapReadyRef.current = true
     return AMap
   }
+
+  // 页面显示时，若经纬度未就绪，主动获取一次定位；同时使地图重新挂载
+  const ensureCurrentLocationReady = async () => {
+    try {
+      const AMap = await ensureAMapReady()
+      ;(AMap as any).plugin('AMap.Geolocation', () => {
+        const geolocation = new (AMap as any).Geolocation({
+          enableHighAccuracy: true,
+          timeout: 10000,
+          zoomToAccuracy: false,
+          position: 'RB'
+        })
+        geolocation.getCurrentPosition((status: string, result: any) => {
+          if (status === 'complete' && result?.position) {
+            const { lng, lat } = result.position
+            if (typeof lng === 'number' && typeof lat === 'number' && !isNaN(lng) && !isNaN(lat)) {
+              const updated: Location = {
+                latitude: lat,
+                longitude: lng,
+                address: currentLocation?.address || '当前位置',
+                landmark: currentLocation?.landmark || '当前位置'
+              }
+              setCurrentLocation(updated)
+            }
+          }
+        })
+      })
+    } catch (e) {
+      console.warn('ensureCurrentLocationReady failed:', e)
+    }
+  }
+
+  const coordsReady = typeof currentLocation?.latitude === 'number' && typeof currentLocation?.longitude === 'number' && !isNaN(currentLocation!.latitude as any) && !isNaN(currentLocation!.longitude as any)
+
+  useDidShow(() => {
+    setMapVisible(true)
+    setMapKey((k) => k + 1) // 强制 Map 组件重新挂载，重建实例
+    if (!coordsReady) {
+      // 返回页面时若没有有效经纬度，先获取一次，避免地图内部出现 NaN
+      ensureCurrentLocationReady()
+    }
+  })
+
+  useDidHide(() => {
+    // 隐藏页面时卸载地图，避免旧实例残留
+    setMapVisible(false)
+  })
 
   // 处理目的地输入（防抖 + 高德联想）
   const handleDestinationInput = (value: string) => {
@@ -630,7 +712,25 @@ export default function Ride() {
         className={classnames('map-container', { 'expanded': isMapExpanded })}
         onTouchMove={!isMapExpanded ? handleMapExpand : undefined}
       >
-        <Map destinationLocation={destinationLocation || undefined} />
+        {mapVisible && coordsReady && (
+          <Map 
+            key={mapKey}
+            destinationLocation={destinationLocation || undefined}
+            startLocation={currentLocation || undefined}
+            onStartLocationChange={setCurrentLocation}
+            onRouteInfo={(info) => {
+              try {
+                const distKm = info.distanceMeters > 0 ? Number((info.distanceMeters / 1000).toFixed(1)) : null
+                const durMin = info.durationSeconds > 0 ? Math.max(1, Math.round(info.durationSeconds / 60)) : null
+                setRouteDistanceKm(distKm)
+                setRouteDurationMin(durMin)
+              } catch (e) {
+                setRouteDistanceKm(null)
+                setRouteDurationMin(null)
+              }
+            }}
+          />
+        )}
         
         {/* 地图展开时的返回箭头 */}
         {isMapExpanded && (
@@ -643,16 +743,14 @@ export default function Ride() {
       <View className={classnames('main-content', { 'loaded': pageLoaded })}>
         {/* 固定用户头像（左上角，地图展开时隐藏） */}
         {!isMapExpanded && (
-          <View className='fixed-user-avatar'>
+          <View className='fixed-user-avatar' style={{ opacity: Math.max(0.3, 1 - Math.min(scrollTop / 200, 0.7)) }}>
             <View className='avatar-circle' onClick={handleAvatarClick}>
               <AtIcon value='user' size='20' className='avatar-icon' />
             </View>
-            {currentCity && (
-              <View className='current-city-badge'>
-                <Text className='city-text'>{currentCity}</Text>
-                <View className='city-dot'></View>
-              </View>
-            )}
+            <View className='current-city-badge'>
+              <Text className='city-text'>{currentCity || '定位中'}</Text>
+              <View className='city-dot'></View>
+            </View>
           </View>
         )}
 
@@ -753,7 +851,7 @@ export default function Ride() {
                 {travelPreference === '' && '未选择'}
                 {travelPreference === 'quiet' && '更安静'}
                 {travelPreference === 'fast' && '速度快'}
-                {travelPreference === 'slow' && '速度慢'}
+                {travelPreference === 'slow' && '更舒缓'}
               </Text>
             </View>
             {showPreferencePopup && (
@@ -778,7 +876,7 @@ export default function Ride() {
                     onClick={() => handlePreferenceSelect('slow')}
                   >
                     <SlowIcon className='option-icon' />
-                    <Text className='option-text'>速度慢</Text>
+                    <Text className='option-text'>更舒缓</Text>
                   </View>
                 </View>
               </View>
@@ -821,7 +919,7 @@ export default function Ride() {
           </View>
 
           <Text className='price-subtext'>
-            预计行程 {priceData?.estimatedDistance || actualDistance} 公里 · 预计时间 {isPriceLoading ? '...' : getDisplayTime(selectedCarType)}
+            预计行程 {routeDistanceKm ?? priceData?.estimatedDistance ?? actualDistance} 公里 · 预计时间 {routeDurationMin != null ? `${routeDurationMin} 分钟` : (isPriceLoading ? '...' : getDisplayTime(selectedCarType))}
             {priceData?.blockchainFee ? ` · 手续费 ¥${priceData.blockchainFee}` : ''}
           </Text>
 

@@ -257,6 +257,13 @@
       transform: scale(0.98);
     }
   }
+
+  // 新增：订单页地图容器（H5）默认高度
+  #orderMapContainer {
+    width: 100%;
+    height: 480rpx;
+    display: block;
+  }
 }
 
 .trip-info-card {
