@@ -19,6 +19,7 @@
   - （已完成）可以尝试直接读取csv以后，用字符串拼接的方式写出sql语句，然后执行
 - （已完成）等待区块链完成后所有内容做测试
 - （已完成）打包
+  - cd backend
   - mvn clean package -DskipTests 
   - java -jar target/backend-0.0.1-SNAPSHOT.jar
 - 测试完毕后尽快部署
