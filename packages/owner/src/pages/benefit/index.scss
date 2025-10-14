@@ -22,6 +22,7 @@
       box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
       max-width: 100%;
       overflow: hidden;
+      transition: all 0.3s ease-in-out;
 
       .item-title {
         font-size: var(--font-size-lg);
@@ -143,21 +144,31 @@
     .table-row {
       margin-bottom: 0;
       overflow: hidden;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .table-row.night-mode {
+      margin-bottom: 0;
+      overflow: hidden;
+      transition: all 0.3s ease-in-out;
     }
 
     .table-row:hover {
       box-shadow: 4px 8px 15px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s ease-in-out;
+    }
+
+    .table-row.night-mode:hover {
+      transform: scale(1.02);
+      box-shadow: 4px 8px 30px rgba(255, 255, 255, 0.3);
     }
   }
 
   .first-row {
-    height: clamp(180px, 28vh, 240px);
-    margin-bottom: clamp(15px, 2.5vh, 25px);
+    height: clamp(200px, 32vh, 275px);
+    margin-bottom: clamp(20px, 3vh, 30px);
 
     .row-item:hover {
       transform: scale(1.05);
-      transition: all 0.3s ease-in-out;
     }
   }
 }

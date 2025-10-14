@@ -48,11 +48,11 @@
       padding: var(--spacing-lg);
       border-radius: var(--border-radius-xl);
       box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease-in-out;
     }
 
     .colomn-item:hover {
       transform: scale(1.05);
-      transition: all 0.3s ease-in-out;
     }
 
     .order-item {
@@ -188,7 +188,7 @@
   border-radius: 15px;
   position: relative;
   margin-top: 20px;
-  // transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 
   .card-header {
     display: flex;
@@ -356,10 +356,9 @@
   border-radius: 15px;
   position: relative;
   margin-top: 20px;
-  // transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 }
 
 .order-card:hover {
   transform: scale(1.01);
-  transition: all 0.3s ease-in-out;
 }

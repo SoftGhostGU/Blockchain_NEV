@@ -246,7 +246,7 @@ const App: React.FC<{ data: DataType[] }> = ({ data }) => {
         dataSource={data}
         onChange={onChange}
         scroll={{ y: 47 * 5 }}
-        style={{ height: '40vh' }}
+        // style={{ height: '40vh' }}
       />
     </ConfigProvider>
   );

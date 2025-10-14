@@ -706,7 +706,8 @@ export default function benefit() {
             onClick={clickButton}
             style={{
               // backgroundColor: '#8a84d3',
-              marginTop: '90px',
+              marginTop: 'auto',
+              marginBottom: '20px',
             }}
             color="purple"
             variant="solid"
@@ -717,7 +718,7 @@ export default function benefit() {
         </div>
       </div>
       <div className="row">
-        <div className="row-item table-row">
+        <div className={`row-item table-row ${isNightMode ? 'night-mode' : ''}`}>
           <div className="table-title">
             <div className="table-title-item">
               收益明细
