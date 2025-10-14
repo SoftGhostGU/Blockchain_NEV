@@ -152,8 +152,8 @@
   }
 
   .first-row {
-    height: clamp(200px, 32vh, 275px);
-    margin-bottom: clamp(20px, 3vh, 30px);
+    height: clamp(180px, 28vh, 240px);
+    margin-bottom: clamp(15px, 2.5vh, 25px);
 
     .row-item:hover {
       transform: scale(1.05);

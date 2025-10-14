@@ -59,18 +59,22 @@
       height: auto;
       display: flex;
       flex-direction: column;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
 
       .info-item {
         height: auto;
         font-size: var(--font-size-sm);
         margin-bottom: var(--spacing-sm);
+        // display: flex;
         flex-direction: row;
+        // justify-content: space-between;
+        // align-items: center;
 
         .info-item-title {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
+          width: 100%;
 
           .title-info {
             color: #555;
