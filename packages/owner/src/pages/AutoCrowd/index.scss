@@ -16,22 +16,22 @@
 .column-auto-crowd {
   width: fit-content;
   height: 100%;
-  min-height: 100px;
+  min-height: 10vh;
   // background-color: red;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   align-items: center;
-  margin: 40px 15px;
+  margin: 4vh 1.5vw;
   flex-wrap: wrap;
 
   .time {
     width: 440px;
     height: 100%;
-    padding: 43px 30px;
+    padding: 4.3vh 30px;
     display: flex;
     flex-direction: row;
-    margin: 20px;
+    margin: 2vh;
     border-radius: 15px;
     background-color: var(--background-light);
     // border-bottom: #e3e3e3 1px solid;
@@ -42,10 +42,10 @@
   .time.night-mode {
     width: 440px;
     height: 100%;
-    padding: 43px 30px;
+    padding: 4.3vh 30px;
     display: flex;
     flex-direction: row;
-    margin: 20px;
+    margin: 2vh;
     border-radius: 15px;
     background-color: var(--background-dark);
     // border-bottom: #e3e3e3 1px solid;
@@ -60,9 +60,9 @@
 
   .calendar {
     width: 460px;
-    min-height: 100px;
-    padding: 20px;
-    margin: 20px;
+    min-height: 10vh;
+    padding: 2vh;
+    margin: 2vh;
     display: flex;
     flex: 1;
     border-radius: 15px;
@@ -74,8 +74,8 @@
 
   .calendar.night-mode {
     width: 460px;
-    min-height: 100px;
-    padding: 20px;
+    min-height: 10vh;
+    padding: 2vh;
     display: flex;
     flex: 1;
     border-radius: 15px;
@@ -93,9 +93,9 @@
   .weather {
     width: 460px;
     height: 100%;
-    min-height: 281.333px;
-    padding: 10px;
-    margin: 20px;
+    min-height: 28vh;
+    padding: 1vh;
+    margin: 2vh;
     border-radius: 15px;
     position: relative;
     // 向左对齐
@@ -112,9 +112,9 @@
   .weather.night-mode {
     width: 460px;
     height: 100%;
-    min-height: 281.333px;
-    padding: 10px;
-    margin: 20px;
+    min-height: 28vh;
+    padding: 1vh;
+    margin: 2vh;
     border-radius: 15px;
     position: relative;
     // 向左对齐
@@ -137,8 +137,8 @@
     // width: calc(100vw - 1175px);
     width: 440px;
     border-radius: 15px;
-    margin: 20px;
-    padding: 20px;
+    margin: 2vh;
+    padding: 2vh;
     background-color: var(--background-light);
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(0, 0, 0, 0.3);
@@ -149,8 +149,8 @@
   .video-container.night-mode {
     width: 440px;
     border-radius: 15px;
-    margin: 20px;
-    padding: 20px;
+    margin: 2vh;
+    padding: 2vh;
     background-color: var(--background-dark);
     // border-bottom: #e3e3e3 1px solid;
     box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.3);
@@ -168,9 +168,9 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: calc(100% - 40px);
-    height: calc(100% - 40px);
-    margin: 20px;
+    width: calc(100% - 4vh);
+    height: calc(100% - 4vh);
+    margin: 2vh;
     // border-radius: 15px;
     background-color: rgba(0, 0, 0, 0.6); // 黑色遮罩
     pointer-events: none; // 确保遮罩不影响内部组件的交互

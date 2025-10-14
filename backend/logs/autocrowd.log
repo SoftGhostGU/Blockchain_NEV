@@ -1,348 +1,46 @@
-2025-10-14 09:42:47.962 [background-preinit] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-14 09:42:48.140 [main] INFO  com.autocrowd.backend.BackendApplication - Starting BackendApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 37576 (D:\Project\Blockchain_NEV\backend\target\backend-0.0.1-SNAPSHOT.jar started by GHOST in D:\Project\Blockchain_NEV\backend)
-2025-10-14 09:42:48.143 [main] INFO  com.autocrowd.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
-2025-10-14 09:42:51.513 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
-2025-10-14 09:42:51.519 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-14 09:42:51.948 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 411 ms. Found 7 JPA repository interfaces.
-2025-10-14 09:42:51.996 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
-2025-10-14 09:42:51.999 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2025-10-14 09:42:52.037 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.DriverRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:42:52.038 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.FinancialRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:42:52.038 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:42:52.040 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:42:52.040 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:42:52.041 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.VehicleConditionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:42:52.042 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.VehicleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:42:52.043 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 21 ms. Found 0 Redis repository interfaces.
-2025-10-14 09:42:54.701 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
-2025-10-14 09:42:54.825 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 6568 ms
-2025-10-14 09:42:56.171 [main] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-14 09:42:56.381 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
-2025-10-14 09:42:56.525 [main] INFO  o.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-10-14 09:42:57.316 [main] INFO  o.s.o.j.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-14 09:42:57.375 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-10-14 09:42:58.165 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@52c27d53
-2025-10-14 09:42:58.172 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-10-14 09:42:58.289 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-10-14 09:43:00.259 [main] INFO  o.h.e.t.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-10-14 09:43:00.271 [main] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-14 09:43:01.158 [main] INFO  o.s.data.jpa.repository.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-14 09:43:02.601 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 初始化区块链连接
-2025-10-14 09:43:02.602 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 区块链配置信息:
-2025-10-14 09:43:02.602 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   MSP ID: Org1MSP
-2025-10-14 09:43:02.602 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Channel Name: mychannel
-2025-10-14 09:43:02.603 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Order Chaincode Name: ordersLedger
-2025-10-14 09:43:02.603 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Financial Chaincode Name: financialsLedger
-2025-10-14 09:43:02.603 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Peer Endpoint: 10.147.17.184:7051
-2025-10-14 09:43:02.605 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Peer Host Alias: peer0.org1.example.com
-2025-10-14 09:43:10.660 [background-preinit] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-14 09:43:10.742 [main] INFO  com.autocrowd.backend.BackendApplication - Starting BackendApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 16488 (D:\Project\Blockchain_NEV\backend\target\backend-0.0.1-SNAPSHOT.jar started by GHOST in D:\Project\Blockchain_NEV\backend)
-2025-10-14 09:43:10.744 [main] INFO  com.autocrowd.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
-2025-10-14 09:43:12.698 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
-2025-10-14 09:43:12.702 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-14 09:43:12.959 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 244 ms. Found 7 JPA repository interfaces.
-2025-10-14 09:43:13.007 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
-2025-10-14 09:43:13.009 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2025-10-14 09:43:13.041 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.DriverRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:43:13.042 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.FinancialRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:43:13.043 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:43:13.044 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:43:13.046 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:43:13.046 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.VehicleConditionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:43:13.047 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.VehicleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 09:43:13.047 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 20 ms. Found 0 Redis repository interfaces.
-2025-10-14 09:43:14.983 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
-2025-10-14 09:43:15.004 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-0.0.0.0-8080"]
-2025-10-14 09:43:15.009 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2025-10-14 09:43:15.010 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.26]
-2025-10-14 09:43:15.083 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2025-10-14 09:43:15.085 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 4247 ms
-2025-10-14 09:43:15.946 [main] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-14 09:43:16.180 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
-2025-10-14 09:43:16.221 [main] INFO  o.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-10-14 09:43:16.543 [main] INFO  o.s.o.j.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-14 09:43:16.565 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-10-14 09:43:17.003 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@299ddfff
-2025-10-14 09:43:17.006 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-10-14 09:43:17.094 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-10-14 09:43:18.297 [main] INFO  o.h.e.t.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-10-14 09:43:18.301 [main] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-14 09:43:18.894 [main] INFO  o.s.data.jpa.repository.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-14 09:43:20.471 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 初始化区块链连接
-2025-10-14 09:43:20.817 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 区块链配置信息:
-2025-10-14 09:43:20.147 [main] ERROR c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 区块链连接初始化失败: io.grpc.StatusRuntimeException: DEADLINE_EXCEEDED: CallOptions deadline exceeded after 14.952284600s. Name resolution delay 0.015503600 seconds. [closed=[], open=[[buffered_nanos=14961206500, waiting_for_connection]]]
-org.hyperledger.fabric.client.EndorseException: io.grpc.StatusRuntimeException: DEADLINE_EXCEEDED: CallOptions deadline exceeded after 14.952284600s. Name resolution delay 0.015503600 seconds. [closed=[], open=[[buffered_nanos=14961206500, waiting_for_connection]]]
-	at org.hyperledger.fabric.client.GatewayClient.endorse(GatewayClient.java:74)
-	at org.hyperledger.fabric.client.ProposalImpl.endorse(ProposalImpl.java:76)
-	at org.hyperledger.fabric.client.Proposal.endorse(Proposal.java:64)
-	at org.hyperledger.fabric.client.ContractImpl.submitTransaction(ContractImpl.java:45)
-	at com.autocrowd.backend.service.impl.BlockchainServiceImpl.init(BlockchainServiceImpl.java:104)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMethod.invoke(InitDestroyAnnotationBeanPostProcessor.java:457)
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:401)
-	at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:219)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.applyBeanPostProcessorsBeforeInitialization(AbstractAutowireCapableBeanFactory.java:422)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.initializeBean(AbstractAutowireCapableBeanFactory.java:1798)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:600)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.resolveFieldValue(AutowiredAnnotationBeanPostProcessor.java:784)
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:767)
-	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:145)
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:508)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1439)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:599)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
-	at org.springframework.beans.factory.config.DependencyDescriptor.resolveCandidate(DependencyDescriptor.java:254)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1443)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1353)
-	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:904)
-	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:782)
-	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:237)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1375)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1212)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:562)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:522)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:337)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:234)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:335)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:200)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:975)
-	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:971)
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:625)
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:146)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:754)
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:456)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:335)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1363)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1352)
-	at com.autocrowd.backend.BackendApplication.main(BackendApplication.java:10)
-	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
-	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
-	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:91)
-	at org.springframework.boot.loader.launch.Launcher.launch(Launcher.java:53)
-	at org.springframework.boot.loader.launch.JarLauncher.main(JarLauncher.java:58)
-Caused by: io.grpc.StatusRuntimeException: DEADLINE_EXCEEDED: CallOptions deadline exceeded after 14.952284600s. Name resolution delay 0.015503600 seconds. [closed=[], open=[[buffered_nanos=14961206500, waiting_for_connection]]]
-	at io.grpc.stub.ClientCalls.toStatusRuntimeException(ClientCalls.java:268)
-	at io.grpc.stub.ClientCalls.getUnchecked(ClientCalls.java:249)
-	at io.grpc.stub.ClientCalls.blockingUnaryCall(ClientCalls.java:167)
-	at org.hyperledger.fabric.protos.gateway.GatewayGrpc$GatewayBlockingStub.endorse(GatewayGrpc.java:455)
-	at org.hyperledger.fabric.client.GatewayClient.endorse(GatewayClient.java:72)
-	... 60 common frames omitted
-2025-10-14 09:43:20.818 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   MSP ID: Org1MSP
-2025-10-14 09:43:20.819 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Channel Name: mychannel
-2025-10-14 09:43:20.820 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Order Chaincode Name: ordersLedger
-2025-10-14 09:43:20.821 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Financial Chaincode Name: financialsLedger
-2025-10-14 09:43:20.822 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Peer Endpoint: 10.147.17.184:7051
-2025-10-14 09:43:20.822 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Peer Host Alias: peer0.org1.example.com
-2025-10-14 09:43:21.014 [main] INFO  c.a.backend.service.PairingBasedCryptosystem - IBE系统参数初始化完成
-2025-10-14 09:43:21.023 [main] INFO  com.autocrowd.backend.service.IbeService - IBE服务初始化完成
-2025-10-14 09:43:21.290 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
-
-Using generated security password: 7ad1aae0-b368-4750-95a1-d0fe4adf3004
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2025-10-14 09:43:21.414 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2025-10-14 09:43:23.861 [main] INFO  o.s.b.actuate.endpoint.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
-2025-10-14 09:43:25.648 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
-2025-10-14 09:43:25.670 [main] INFO  com.autocrowd.backend.BackendApplication - Started BackendApplication in 39.11 seconds (process running for 40.622)
-2025-10-14 09:43:25.783 [SpringApplicationShutdownHook] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 销毁区块链连接
-2025-10-14 09:43:25.785 [SpringApplicationShutdownHook] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-14 09:43:25.792 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
-2025-10-14 09:43:25.833 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
-2025-10-14 09:43:29.824 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 区块链连接初始化成功
-2025-10-14 09:43:29.952 [main] INFO  c.a.backend.service.PairingBasedCryptosystem - IBE系统参数初始化完成
-2025-10-14 09:43:29.955 [main] INFO  com.autocrowd.backend.service.IbeService - IBE服务初始化完成
-2025-10-14 09:43:30.141 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
-
-Using generated security password: b2246acf-4c24-474a-aa01-c4da7198d09b
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2025-10-14 09:43:30.203 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2025-10-14 09:43:31.760 [main] INFO  o.s.b.actuate.endpoint.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
-2025-10-14 09:43:33.254 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-0.0.0.0-8080"]
-2025-10-14 09:43:33.278 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
-2025-10-14 09:43:33.307 [main] INFO  com.autocrowd.backend.BackendApplication - Started BackendApplication in 23.381 seconds (process running for 24.335)
-2025-10-14 09:45:00.457 [http-nio-0.0.0.0-8080-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2025-10-14 09:45:00.458 [http-nio-0.0.0.0-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2025-10-14 09:45:00.459 [http-nio-0.0.0.0-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 1 ms
-2025-10-14 09:45:00.567 [http-nio-0.0.0.0-8080-exec-1] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
-2025-10-14 09:45:00.568 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
-2025-10-14 09:45:00.678 [http-nio-0.0.0.0-8080-exec-1] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
-2025-10-14 09:45:00.741 [http-nio-0.0.0.0-8080-exec-2] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=13900000001, password=Test123456!)
-2025-10-14 09:45:00.741 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: 13900000001
-2025-10-14 09:45:00.744 [http-nio-0.0.0.0-8080-exec-2] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: 13900000001
-2025-10-14 09:46:39.877 [http-nio-0.0.0.0-8080-exec-3] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
-2025-10-14 09:46:39.878 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
-2025-10-14 09:46:39.882 [http-nio-0.0.0.0-8080-exec-3] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
-2025-10-14 09:46:39.917 [http-nio-0.0.0.0-8080-exec-4] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=13700000001, password=Test123456!)
-2025-10-14 09:46:39.917 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: 13700000001
-2025-10-14 09:46:40.003 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录成功 - 司机ID: 2000, 用户名: driver001
-2025-10-14 09:46:40.647 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
-2025-10-14 09:46:40.648 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:46:40.655 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:46:40.667 [http-nio-0.0.0.0-8080-exec-5] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
-2025-10-14 09:46:40.694 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:46:40.701 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:46:40.713 [http-nio-0.0.0.0-8080-exec-9] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
-2025-10-14 09:46:40.719 [http-nio-0.0.0.0-8080-exec-9] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
-2025-10-14 09:48:12.063 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:12.070 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:12.134 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:12.142 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:12.149 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
-2025-10-14 09:48:12.155 [http-nio-0.0.0.0-8080-exec-3] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
-2025-10-14 09:48:12.270 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
-2025-10-14 09:48:12.275 [http-nio-0.0.0.0-8080-exec-4] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
-2025-10-14 09:48:26.422 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:26.431 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:26.502 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:26.508 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:38.908 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:38.915 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:38.960 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:38.964 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:40.285 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:40.291 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:40.380 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
-2025-10-14 09:48:40.383 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:40.389 [http-nio-0.0.0.0-8080-exec-1] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
-2025-10-14 09:48:40.393 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:40.479 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
-2025-10-14 09:48:40.484 [http-nio-0.0.0.0-8080-exec-2] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
-2025-10-14 09:48:45.358 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:45.364 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:45.419 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:45.424 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:46.571 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:46.578 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:46.608 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
-2025-10-14 09:48:46.613 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
-2025-10-14 09:48:46.619 [http-nio-0.0.0.0-8080-exec-9] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
-2025-10-14 09:48:46.624 [http-nio-0.0.0.0-8080-exec-9] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
-2025-10-14 09:48:46.653 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
-2025-10-14 09:48:46.658 [http-nio-0.0.0.0-8080-exec-2] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
-2025-10-14 09:48:59.085 [SpringApplicationShutdownHook] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 销毁区块链连接
-2025-10-14 09:48:59.086 [SpringApplicationShutdownHook] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-14 09:48:59.088 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
-2025-10-14 09:48:59.095 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
-2025-10-14 23:38:43.182 [background-preinit] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
-2025-10-14 23:38:43.289 [main] INFO  com.autocrowd.backend.BackendApplication - Starting BackendApplication v0.0.1-SNAPSHOT using Java 21.0.6 with PID 22848 (D:\Project\Blockchain_NEV\backend\target\backend-0.0.1-SNAPSHOT.jar started by GHOST in D:\Project\Blockchain_NEV\backend)
-2025-10-14 23:38:43.293 [main] INFO  com.autocrowd.backend.BackendApplication - No active profile set, falling back to 1 default profile: "default"
-2025-10-14 23:38:45.047 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
-2025-10-14 23:38:45.049 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2025-10-14 23:38:45.262 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 190 ms. Found 7 JPA repository interfaces.
-2025-10-14 23:38:45.310 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
-2025-10-14 23:38:45.314 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
-2025-10-14 23:38:45.339 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.DriverRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 23:38:45.340 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.FinancialRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 23:38:45.341 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.OrderRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 23:38:45.341 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.ReviewRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 23:38:45.342 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 23:38:45.342 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.VehicleConditionRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 23:38:45.343 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.autocrowd.backend.repository.VehicleRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
-2025-10-14 23:38:45.343 [main] INFO  o.s.d.r.config.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 14 ms. Found 0 Redis repository interfaces.
-2025-10-14 23:38:46.876 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat initialized with port 8080 (http)
-2025-10-14 23:38:46.897 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Initializing ProtocolHandler ["http-nio-0.0.0.0-8080"]
-2025-10-14 23:38:46.900 [main] INFO  org.apache.catalina.core.StandardService - Starting service [Tomcat]
-2025-10-14 23:38:46.900 [main] INFO  org.apache.catalina.core.StandardEngine - Starting Servlet engine: [Apache Tomcat/10.1.26]
-2025-10-14 23:38:46.962 [main] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring embedded WebApplicationContext
-2025-10-14 23:38:46.963 [main] INFO  o.s.b.w.s.c.ServletWebServerApplicationContext - Root WebApplicationContext: initialization completed in 3560 ms
-2025-10-14 23:38:47.678 [main] INFO  org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
-2025-10-14 23:38:47.945 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.2.Final
-2025-10-14 23:38:48.003 [main] INFO  o.hibernate.cache.internal.RegionFactoryInitiator - HHH000026: Second-level cache disabled
-2025-10-14 23:38:48.349 [main] INFO  o.s.o.j.persistenceunit.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
-2025-10-14 23:38:48.398 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
-2025-10-14 23:38:48.971 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5862dda4
-2025-10-14 23:38:48.974 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
-2025-10-14 23:38:49.038 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
-2025-10-14 23:38:50.155 [main] INFO  o.h.e.t.jta.platform.internal.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2025-10-14 23:38:50.157 [main] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
-2025-10-14 23:38:50.681 [main] INFO  o.s.data.jpa.repository.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
-2025-10-14 23:38:51.499 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 初始化区块链连接
-2025-10-14 23:38:51.500 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 区块链配置信息:
-2025-10-14 23:38:51.500 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   MSP ID: Org1MSP
-2025-10-14 23:38:51.500 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Channel Name: mychannel
-2025-10-14 23:38:51.501 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Order Chaincode Name: ordersLedger
-2025-10-14 23:38:51.501 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Financial Chaincode Name: financialsLedger
-2025-10-14 23:38:51.501 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Peer Endpoint: 10.147.17.184:7051
-2025-10-14 23:38:51.501 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl -   Peer Host Alias: peer0.org1.example.com
-2025-10-14 23:38:58.507 [main] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 区块链连接初始化成功
-2025-10-14 23:38:58.686 [main] INFO  c.a.backend.service.PairingBasedCryptosystem - IBE系统参数初始化完成
-2025-10-14 23:38:58.690 [main] INFO  com.autocrowd.backend.service.IbeService - IBE服务初始化完成
-2025-10-14 23:38:59.004 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
-
-Using generated security password: 37eb3c41-b44f-464c-80eb-d090f5d0ee1d
-
-This generated password is for development use only. Your security configuration must be updated before running your application in production.
-
-2025-10-14 23:38:59.056 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2025-10-14 23:39:00.723 [main] INFO  o.s.b.actuate.endpoint.web.EndpointLinksResolver - Exposing 1 endpoint beneath base path '/actuator'
-2025-10-14 23:39:02.683 [main] INFO  org.apache.coyote.http11.Http11NioProtocol - Starting ProtocolHandler ["http-nio-0.0.0.0-8080"]
-2025-10-14 23:39:02.700 [main] INFO  o.s.boot.web.embedded.tomcat.TomcatWebServer - Tomcat started on port 8080 (http) with context path '/'
-2025-10-14 23:39:02.716 [main] INFO  com.autocrowd.backend.BackendApplication - Started BackendApplication in 20.333 seconds (process running for 21.397)
-2025-10-14 23:39:22.230 [http-nio-0.0.0.0-8080-exec-1] INFO  o.a.c.core.ContainerBase.[Tomcat].[localhost].[/] - Initializing Spring DispatcherServlet 'dispatcherServlet'
-2025-10-14 23:39:22.231 [http-nio-0.0.0.0-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Initializing Servlet 'dispatcherServlet'
-2025-10-14 23:39:22.235 [http-nio-0.0.0.0-8080-exec-1] INFO  org.springframework.web.servlet.DispatcherServlet - Completed initialization in 3 ms
-2025-10-14 23:39:22.580 [http-nio-0.0.0.0-8080-exec-1] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
-2025-10-14 23:39:22.582 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
-2025-10-14 23:39:22.890 [http-nio-0.0.0.0-8080-exec-1] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
-2025-10-14 23:39:23.318 [http-nio-0.0.0.0-8080-exec-2] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2, password=Test123456!)
-2025-10-14 23:39:23.319 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:39:23.333 [http-nio-0.0.0.0-8080-exec-2] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:39:32.865 [http-nio-0.0.0.0-8080-exec-3] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
-2025-10-14 23:39:32.865 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
-2025-10-14 23:39:32.870 [http-nio-0.0.0.0-8080-exec-3] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
-2025-10-14 23:39:33.210 [http-nio-0.0.0.0-8080-exec-4] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2, password=Test123456!)
-2025-10-14 23:39:33.211 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:39:33.217 [http-nio-0.0.0.0-8080-exec-4] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:39:54.960 [http-nio-0.0.0.0-8080-exec-5] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
-2025-10-14 23:39:54.961 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
-2025-10-14 23:39:54.970 [http-nio-0.0.0.0-8080-exec-5] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
-2025-10-14 23:39:55.020 [http-nio-0.0.0.0-8080-exec-6] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2, password=Test123456!)
-2025-10-14 23:39:55.021 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:39:55.031 [http-nio-0.0.0.0-8080-exec-6] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:39:57.206 [http-nio-0.0.0.0-8080-exec-7] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
-2025-10-14 23:39:57.207 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
-2025-10-14 23:39:57.215 [http-nio-0.0.0.0-8080-exec-7] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
-2025-10-14 23:39:57.252 [http-nio-0.0.0.0-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2, password=Test123456!)
-2025-10-14 23:39:57.253 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:39:57.260 [http-nio-0.0.0.0-8080-exec-8] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:40:27.478 [http-nio-0.0.0.0-8080-exec-9] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
-2025-10-14 23:40:27.480 [http-nio-0.0.0.0-8080-exec-9] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
-2025-10-14 23:40:27.486 [http-nio-0.0.0.0-8080-exec-9] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
-2025-10-14 23:40:27.842 [http-nio-0.0.0.0-8080-exec-10] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2, password=Test123456!)
-2025-10-14 23:40:27.843 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:40:27.849 [http-nio-0.0.0.0-8080-exec-10] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:41:12.836 [http-nio-0.0.0.0-8080-exec-1] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=13700000001, password=Test123456!)
-2025-10-14 23:41:12.841 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: 13700000001
-2025-10-14 23:41:12.974 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录成功 - 司机ID: 2000, 用户名: driver001
-2025-10-14 23:41:37.354 [http-nio-0.0.0.0-8080-exec-2] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
-2025-10-14 23:41:37.356 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
-2025-10-14 23:41:37.363 [http-nio-0.0.0.0-8080-exec-2] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
-2025-10-14 23:41:37.619 [http-nio-0.0.0.0-8080-exec-3] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2, password=Test123456!)
-2025-10-14 23:41:37.620 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:41:37.629 [http-nio-0.0.0.0-8080-exec-3] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:41:46.143 [http-nio-0.0.0.0-8080-exec-4] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
-2025-10-14 23:41:46.144 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
-2025-10-14 23:41:46.150 [http-nio-0.0.0.0-8080-exec-4] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
-2025-10-14 23:41:46.205 [http-nio-0.0.0.0-8080-exec-5] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2, password=Test123456!)
-2025-10-14 23:41:46.207 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:41:46.217 [http-nio-0.0.0.0-8080-exec-5] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: MTM3MDAwMDAwMDF8KERSSVZFUl8yMDAwKXxURVNUX1BVQkxJQ19LRVlfMTIzNDU2
-2025-10-14 23:42:43.667 [SpringApplicationShutdownHook] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 销毁区块链连接
-2025-10-14 23:42:43.667 [SpringApplicationShutdownHook] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-14 23:42:43.668 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
-2025-10-14 23:42:43.677 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-15 00:14:46.037 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:14:46.040 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:14:46.087 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:14:46.098 [http-nio-0.0.0.0-8080-exec-7] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:14:46.147 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:14:46.147 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:14:46.159 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:14:46.160 [http-nio-0.0.0.0-8080-exec-5] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:07.740 [http-nio-0.0.0.0-8080-exec-3] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
+2025-10-15 00:15:07.741 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
+2025-10-15 00:15:07.749 [http-nio-0.0.0.0-8080-exec-3] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
+2025-10-15 00:15:07.784 [http-nio-0.0.0.0-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=13700000001, password=Test123456!)
+2025-10-15 00:15:07.786 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: 13700000001
+2025-10-15 00:15:07.891 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录成功 - 司机ID: 2000, 用户名: driver001
+2025-10-15 00:15:08.435 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:08.443 [http-nio-0.0.0.0-8080-exec-1] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:08.741 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:08.751 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:08.799 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:08.804 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:08.819 [http-nio-0.0.0.0-8080-exec-6] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:08.824 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:15.426 [http-nio-0.0.0.0-8080-exec-9] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:15.436 [http-nio-0.0.0.0-8080-exec-9] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:15.765 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:15.768 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:15.818 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:15.819 [http-nio-0.0.0.0-8080-exec-3] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:16.186 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:16.197 [http-nio-0.0.0.0-8080-exec-8] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:21.796 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:21.803 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:22.012 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:22.014 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:22.030 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:22.031 [http-nio-0.0.0.0-8080-exec-6] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:22.218 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:22.224 [http-nio-0.0.0.0-8080-exec-7] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:33.505 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:33.514 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:33.573 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:33.580 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:33.592 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:33.597 [http-nio-0.0.0.0-8080-exec-8] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:34.653 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:34.699 [http-nio-0.0.0.0-8080-exec-2] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000

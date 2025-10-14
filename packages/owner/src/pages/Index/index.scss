@@ -4,31 +4,31 @@
   align-items: center;
   height: 100vh;
   background: #f4f6f8;
-  gap: 40px;
+  gap: clamp(20px, 4vw, 40px);
 }
 
 .login-box {
-  width: 300px;
+  width: clamp(280px, 35vw, 300px);
   height: fit-content;
   background: white;
-  border-radius: 12px;
+  border-radius: var(--border-radius-lg);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 30px;
+  padding: clamp(20px, 3vh, 30px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
 
   h2 {
-    margin-bottom: 20px;
-    font-size: 20px;
+    margin-bottom: clamp(15px, 3vh, 20px);
+    font-size: var(--font-size-lg);
     color: #333;
   }
 
   .owner-header {
-    --s: 150px;
+    --s: clamp(120px, 20vh, 150px);
     /* image size */
-    --b: 5px;
+    --b: clamp(3px, 0.5vh, 5px);
     /* border thickness */
     --c: #3e0d9f;
     /* border color */
@@ -60,9 +60,9 @@
   }
 
   .user-header {
-    --s: 150px;
+    --s: clamp(120px, 20vh, 150px);
     /* image size */
-    --b: 5px;
+    --b: clamp(3px, 0.5vh, 5px);
     /* border thickness */
     --c: #C02942;
     /* border color */
@@ -100,14 +100,14 @@
 
   button {
     width: 100%;
-    padding: 10px;
-    margin-top: 12px;
+    padding: clamp(8px, 1.5vh, 10px);
+    margin-top: clamp(10px, 2vh, 12px);
     background: #1890ff;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--border-radius-md);
     cursor: pointer;
-    font-size: 16px;
+    font-size: var(--font-size-md);
     transition: all 0.3s ease-in-out;
 
     &:hover {

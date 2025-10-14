@@ -12,7 +12,31 @@
     --header-height: 68px;
     --content-padding: 10px 20px;
     --base-color: var(--main-color);
-    --primary-color: red
+    --primary-color: red;
+    
+    /* 响应式设计系统 */
+    --spacing-xs: clamp(4px, 1vh, 8px);
+    --spacing-sm: clamp(8px, 1.5vh, 12px);
+    --spacing-md: clamp(12px, 2vh, 16px);
+    --spacing-lg: clamp(16px, 3vh, 24px);
+    --spacing-xl: clamp(24px, 4vh, 32px);
+    --spacing-xxl: clamp(32px, 5vh, 40px);
+    
+    --container-width-sm: min(100%, 480px);
+    --container-width-md: min(100%, 768px);
+    --container-width-lg: min(100%, 1024px);
+    --container-width-xl: min(100%, 1200px);
+    
+    --font-size-sm: clamp(12px, 2vw, 14px);
+    --font-size-md: clamp(14px, 2.5vw, 16px);
+    --font-size-lg: clamp(16px, 3vw, 20px);
+    --font-size-xl: clamp(20px, 4vw, 24px);
+    --font-size-xxl: clamp(24px, 5vw, 32px);
+    
+    --border-radius-sm: clamp(4px, 0.5vh, 6px);
+    --border-radius-md: clamp(6px, 1vh, 8px);
+    --border-radius-lg: clamp(8px, 1.5vh, 12px);
+    --border-radius-xl: clamp(12px, 2vh, 16px);
 }
 
 /* 弹出框头部 */

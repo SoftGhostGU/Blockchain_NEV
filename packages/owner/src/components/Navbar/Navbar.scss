@@ -16,67 +16,61 @@ body.night-mode {
 
 .top-navbar {
   width: 100%;
-  height: 72px;
+  height: clamp(60px, 8vh, 72px);
   display: flex;
   position: relative;
   top: 0;
   left: 0;
   background-color: var(--background-light);
-  // border-bottom: #e3e3e3 1px solid;
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
   transition: all 0.1s ease-in-out;
 
   .left-bar {
-    // width: 80%;
     display: flex;
 
     .logo-image {
-      // width: 60px;
-      height: 60px;
-      margin: 6px 0 0 20px;
-      // background-color: blue;
+      height: clamp(50px, 7vh, 60px);
+      margin: clamp(4px, 0.5vh, 6px) 0 0 clamp(15px, 2vw, 20px);
     }
 
     .title {
-      margin-left: 15px;
-      font-size: 20px;
+      margin-left: clamp(10px, 1.5vw, 15px);
+      font-size: clamp(16px, 2vw, 20px);
       font-weight: bold;
-      line-height: 64px;
+      line-height: clamp(54px, 7.5vh, 64px);
     }
   }
 
   .right-bar {
-    // width: 20%;
     display: flex;
     float: right;
     position: absolute;
-    right: 20px;
+    right: clamp(15px, 2vw, 20px);
 
     .icon {
-      margin: 24px 0px;
-      margin-right: 20px;
-      font-size: 24px;
+      margin: clamp(20px, 3vh, 24px) 0px;
+      margin-right: clamp(15px, 2vw, 20px);
+      font-size: clamp(20px, 3vw, 24px);
       cursor: pointer;
     }
 
     .owner-name {
-      font-size: 20px;
+      font-size: clamp(16px, 2vw, 20px);
       font-weight: bold;
-      line-height: 72px;
-      margin-right: 20px;
+      line-height: clamp(60px, 8vh, 72px);
+      margin-right: clamp(15px, 2vw, 20px);
     }
   }
 }
 
 .top-navbar.night-mode {
   width: 100%;
-  height: 72px;
+  height: clamp(60px, 8vh, 72px);
   display: flex;
   position: relative;
   top: 0;
   left: 0;
   background-color: var(--background-dark);
-  // border-bottom: #e3e3e3 1px solid;
   box-shadow: 2px 4px 10px rgba(255, 255, 255, 0.1);
   color: var(--color-dark);
   transition: all 0.1s ease-in-out;
@@ -87,43 +81,43 @@ body.night-mode {
 }
 
 .left-navbar {
-  width: 15%;
-  height: calc(100vh - 73px);
+  width: clamp(200px, 15%, 250px);
+  height: calc(100vh - clamp(61px, 8.1vh, 73px));
   background-color: var(--background-light);
   border-right: #e3e3e3 1px solid;
-  padding-left: 10px;
+  padding-left: clamp(8px, 1vw, 10px);
   position: absolute;
   float: left;
   box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.1);
 
   .button {
-    margin: 7px 0;
-    height: 40px;
+    margin: clamp(5px, 0.7vh, 7px) 0;
+    height: clamp(35px, 5vh, 40px);
   }
 
   .navbar-menu {
     border-right: none;
 
     .ant-menu-item {
-      height: 50px !important;
-      line-height: 50px !important;
-      margin: 15px 0;
+      height: clamp(45px, 6vh, 50px) !important;
+      line-height: clamp(45px, 6vh, 50px) !important;
+      margin: clamp(12px, 2vh, 15px) 0;
     }
 
     .ant-menu-submenu-title {
-      height: 50px !important;
-      line-height: 50px !important;
-      margin: 15px 0;
+      height: clamp(45px, 6vh, 50px) !important;
+      line-height: clamp(45px, 6vh, 50px) !important;
+      margin: clamp(12px, 2vh, 15px) 0;
     }
   }
 }
 
 .left-navbar.night-mode {
-  width: 15%;
-  height: calc(100vh - 73px);
+  width: clamp(200px, 15%, 250px);
+  height: calc(100vh - clamp(61px, 8.1vh, 73px));
   background-color: var(--background-dark);
   border-right: #1c1c1c 1px solid;
-  padding-left: 10px;
+  padding-left: clamp(8px, 1vw, 10px);
   position: absolute;
   float: left;
   box-shadow: 2px 4px 10px rgba(255, 255, 255, 0.1);

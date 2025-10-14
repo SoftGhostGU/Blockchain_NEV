@@ -1,27 +1,25 @@
 .user-info-container {
-  margin: 45px;
+  margin: clamp(30px, 5vh, 45px);
   height: fit-content;
-  // background-color: red;
 
   .loading-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 200px;
+    height: clamp(150px, 25vh, 200px);
     
     .loading-text {
-      font-size: 18px;
+      font-size: var(--font-size-lg);
       color: #666;
       font-style: italic;
     }
   }
 
   .welcome-title {
-    padding: 20px;
+    padding: var(--spacing-lg);
     padding-top: 0;
-    font-size: 36px;
+    font-size: clamp(28px, 5vw, 36px);
     display: flex;
-    // font-weight: bold;
 
     .user-name {
       font-weight: bold;
@@ -29,45 +27,45 @@
   }
 
   .user-info-item {
-    width: 400px;
-    padding: 20px;
-    border-radius: 15px;
+    width: clamp(350px, 40vw, 400px);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-xl);
     background-color: var(--background-light);
     box-shadow: 2px 4px 30px rgba(0, 0, 0, 0.3);
     transition: all 0.1s ease-in-out;
 
     .user-info-title {
-      font-size: 18px;
+      font-size: var(--font-size-lg);
       font-weight: bold;
-      margin-bottom: 20px;
+      margin-bottom: var(--spacing-lg);
       color: #333;
-      padding-bottom: 10px;
+      padding-bottom: var(--spacing-sm);
       border-bottom: 1px solid #eee;
     }
 
     .user-info-title.night-mode {
-      font-size: 18px;
+      font-size: var(--font-size-lg);
       font-weight: bold;
-      margin-bottom: 20px;
+      margin-bottom: var(--spacing-lg);
       color: #ccc;
-      padding-bottom: 10px;
+      padding-bottom: var(--spacing-sm);
       border-bottom: 1px solid #111;
     }
 
     .user-info-field {
       display: flex;
       align-items: center;
-      margin-bottom: 15px;
-      padding: 8px 0;
+      margin-bottom: var(--spacing-md);
+      padding: var(--spacing-xs) 0;
 
       .field-label {
-        width: 100px;
+        width: clamp(80px, 10vw, 100px);
         font-weight: bold;
         color: #666;
       }
 
       .field-label.night-mode {
-        width: 100px;
+        width: clamp(80px, 10vw, 100px);
         font-weight: bold;
         color: #999;
       }
@@ -95,13 +93,13 @@
       background-color: #1890ff;
       color: white;
       border: none;
-      padding: 5px 15px;
-      border-radius: 4px;
-      margin-top: 8px;
+      padding: var(--spacing-xs) var(--spacing-md);
+      border-radius: var(--border-radius-sm);
+      margin-top: var(--spacing-xs);
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--font-size-sm);
       transition: background-color 0.3s;
-      margin-right: 10px;
+      margin-right: var(--spacing-sm);
 
       &:hover {
         background-color: #40a9ff;
@@ -112,11 +110,11 @@
       background-color: #d4504a;
       color: white;
       border: none;
-      padding: 5px 15px;
-      border-radius: 4px;
-      margin-top: 8px;
+      padding: var(--spacing-xs) var(--spacing-md);
+      border-radius: var(--border-radius-sm);
+      margin-top: var(--spacing-xs);
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--font-size-sm);
       transition: background-color 0.3s;
 
       &:hover {
@@ -125,16 +123,16 @@
     }
 
     .log-out-button {
-      margin-top: 8px;
+      margin-top: var(--spacing-xs);
       background-color: #f44336;
       color: white;
       border: none;
-      padding: 5px 15px;
-      border-radius: 4px;
+      padding: var(--spacing-xs) var(--spacing-md);
+      border-radius: var(--border-radius-sm);
       cursor: pointer;
-      font-size: 14px;
+      font-size: var(--font-size-sm);
       transition: background-color 0.3s;
-      margin-right: 10px;
+      margin-right: var(--spacing-sm);
 
       &:hover {
         background-color: #d32f2f;
@@ -143,12 +141,12 @@
   }
 
   .user-info-item.night-mode {
-    width: 400px;
-    padding: 20px;
-    border-radius: 15px;
+    width: clamp(350px, 40vw, 400px);
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius-xl);
     background-color: var(--background-dark);
     box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.3);
-    transition: all 0.1 s ease-in-out;
+    transition: all 0.1s ease-in-out;
   }
 
   .user-info-item:hover {

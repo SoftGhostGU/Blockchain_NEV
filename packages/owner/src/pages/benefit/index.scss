@@ -2,53 +2,48 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  margin: 25px 15px;
+  margin: var(--spacing-xl) var(--spacing-md);
   
   .row {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    gap: var(--spacing-md);
     
     .row-item {
       display: flex;
       flex: 1;
       flex-direction: column;
-      margin: 0 15px;
-      // margin-bottom: 24px;
+      margin: 0 var(--spacing-md);
       background-color: var(--background-light);
-      border-radius: 15px;
-      padding: 20px;
+      border-radius: var(--border-radius-xl);
+      padding: var(--spacing-lg);
       position: relative;
-      // border: #c5c5c5 solid 1px;
       box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
-      max-width: 100%; // 限制最大宽度
-      overflow: hidden; // 防止内容溢出
-      // background: linear-gradient(to bottom, #f5f5f5, #fff);
-      // background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
-      // transition: all 0.3s ease-in-out;
+      max-width: 100%;
+      overflow: hidden;
 
       .item-title {
-        font-size: 18px;
-        // font-weight: bold;
+        font-size: var(--font-size-lg);
         color: #555;
         margin: 0;
-        margin-bottom: 5px;
+        margin-bottom: var(--spacing-xs);
       }
 
       .item-number {
-        font-size: 28px;
+        font-size: var(--font-size-xxl);
         font-weight: bold;
       }
 
       .change-rate {
-        font-size: 18px;
+        font-size: var(--font-size-lg);
         font-weight: bold;
         position: absolute;
-        top: 20px;
-        right: 30px;
+        top: var(--spacing-lg);
+        right: var(--spacing-xl);
 
         .change-number {
-          margin-left: 3px;
+          margin-left: var(--spacing-xs);
         }
 
         .green {
@@ -61,19 +56,19 @@
       }
 
       .withdraw-btn {
-        margin: 20px 0px;
+        margin: var(--spacing-lg) 0;
       }
 
       .reputation-star {
-        margin: 25px 5px;
+        margin: var(--spacing-xl) var(--spacing-xs);
         margin-bottom: 0;
       }
 
       .change-reputation {
-        margin-left: 5px;
+        margin-left: var(--spacing-xs);
 
         .change-number {
-          margin-left: 5px;
+          margin-left: var(--spacing-xs);
           font-weight: bold;
         }
 
@@ -93,12 +88,12 @@
         justify-content: center;
         align-items: center;
         height: 100%;
-        min-height: 200px;
+        min-height: clamp(150px, 25vh, 200px);
         text-align: center;
         
         .empty-state-message {
           color: #999;
-          font-size: 14px;
+          font-size: var(--font-size-sm);
           font-style: italic;
           line-height: 1.5;
           white-space: pre-line;
@@ -111,22 +106,21 @@
         flex-direction: row;
 
         .table-title-item {
-          font-size: 18px;
+          font-size: var(--font-size-lg);
           font-weight: bold;
           color: #555;
           margin: 0;
-          margin-bottom: 15px;
+          margin-bottom: var(--spacing-md);
         }
 
         .table-search-item {
           display: flex;
-          margin-right: 30px;
+          margin-right: var(--spacing-xl);
           flex-direction: row;
 
           .search-icon {
-            margin: 0 10px;
-            line-height: 40px;
-            // text-align: center;
+            margin: 0 var(--spacing-sm);
+            line-height: clamp(35px, 6vh, 40px);
             align-items: center;
             justify-content: center;
           }
@@ -138,36 +132,28 @@
       display: flex;
       flex: 1;
       flex-direction: column;
-      margin: 0 15px;
-      // margin-bottom: 24px;
+      margin: 0 var(--spacing-md);
       background-color: var(--background-dark);
-      border-radius: 15px;
-      padding: 20px;
+      border-radius: var(--border-radius-xl);
+      padding: var(--spacing-lg);
       position: relative;
-      // border: #c5c5c5 solid 1px;
       box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.2);
-      // background: linear-gradient(to bottom, #f5f5f5, #fff);
-      // background-image: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
-      // transition: all 0.3s ease-in-out;
     }
 
     .table-row {
       margin-bottom: 0;
-      overflow: hidden; // 防止内容溢出
+      overflow: hidden;
     }
 
     .table-row:hover {
-      // 移除可能导致无限放大的transform
-      // transform: scale(1.02);
       box-shadow: 4px 8px 15px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease-in-out;
     }
   }
 
   .first-row {
-    // height: 275px;
-    height: 32vh;
-    margin-bottom: 3vh;
+    height: clamp(200px, 32vh, 275px);
+    margin-bottom: clamp(20px, 3vh, 30px);
 
     .row-item:hover {
       transform: scale(1.05);

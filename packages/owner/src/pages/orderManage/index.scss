@@ -9,46 +9,45 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  margin: 15px 25px;
+  margin: var(--spacing-md) var(--spacing-xl);
   display: flex;
   flex-direction: row;
+  gap: var(--spacing-lg);
 
   .colomn-container {
-    width: calc(30% - 50px);
+    width: clamp(280px, 30%, 320px);
     display: flex;
     flex-direction: column;
-    // justify-content: space-between;
+    gap: var(--spacing-sm);
 
     .colomn-item {
-      height: calc((100vh - 162px) / 5 * 2 - 40px);
+      height: clamp(180px, 25vh, 220px);
       background-color: #fff;
-      margin: 10px 0;
-      padding: 20px;
-      border-radius: 15px;
+      margin: var(--spacing-sm) 0;
+      padding: var(--spacing-lg);
+      border-radius: var(--border-radius-xl);
       box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
-      // transition: all 0.3s ease-in-out;
 
       .colomn-title {
         color: #555;
-        font-size: 18px;
+        font-size: var(--font-size-lg);
         height: 0;
       }
 
       .colomn-title.night-mode {
         color: #aaa;
-        font-size: 18px;
+        font-size: var(--font-size-lg);
         height: 0;
       }
     }
 
     .colomn-item.night-mode {
-      height: calc((100vh - 162px) / 5 * 2 - 40px);
+      height: clamp(180px, 25vh, 220px);
       background-color: var(--background-dark);
-      margin: 10px 0;
-      padding: 20px;
-      border-radius: 15px;
+      margin: var(--spacing-sm) 0;
+      padding: var(--spacing-lg);
+      border-radius: var(--border-radius-xl);
       box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.2);
-      // transition: all 0.3s ease-in-out;
     }
 
     .colomn-item:hover {
@@ -64,8 +63,8 @@
 
       .info-item {
         height: auto;
-        font-size: 14px;
-        margin-bottom: 10px;
+        font-size: var(--font-size-sm);
+        margin-bottom: var(--spacing-sm);
         flex-direction: row;
 
         .info-item-title {
@@ -108,38 +107,33 @@
   }
 
   .orders-container {
-    width: 70%;
+    width: clamp(600px, 68%, 800px);
     height: calc(100vh - 162px);
     background-color: #fff;
     display: flex;
     flex-direction: column;
-    border-radius: 15px;
-    margin: 10px 25px;
+    border-radius: var(--border-radius-xl);
+    margin: var(--spacing-sm) var(--spacing-xl);
     margin-right: 0;
-    padding: 20px;
+    padding: var(--spacing-lg);
     box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2);
-    // transition: all 0.3s ease-in-out;
 
     .order-title {
       position: absolute;
       background-color: #fff;
-      padding-bottom: 20px;
+      padding-bottom: var(--spacing-lg);
       display: flex;
-      // transition: all 0.3s ease-in-out;
-      // z-index: 100;
     }
 
     .order-title.night-mode {
       position: absolute;
       background-color: var(--background-dark);
-      padding-bottom: 20px;
+      padding-bottom: var(--spacing-lg);
       display: flex;
-      // transition: all 0.3s ease-in-out;
-      // z-index: 100;
     }
 
     .order-card-list {
-      margin-top: 35px;
+      margin-top: clamp(25px, 4vh, 35px);
       padding-left: 1%;
       padding-bottom: 1%;
       overflow: auto;
@@ -149,12 +143,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 200px;
+        height: clamp(150px, 25vh, 200px);
         flex-direction: column;
         
         .empty-state-message {
           color: #999;
-          font-size: 16px;
+          font-size: var(--font-size-md);
           font-style: italic;
           text-align: center;
           line-height: 1.8;
@@ -165,21 +159,19 @@
   }
 
   .orders-container.night-mode {
-    width: 70%;
+    width: clamp(600px, 68%, 800px);
     height: calc(100vh - 162px);
     background-color: var(--background-dark);
     display: flex;
     flex-direction: column;
-    border-radius: 15px;
-    margin: 10px 25px;
+    border-radius: var(--border-radius-xl);
+    margin: var(--spacing-sm) var(--spacing-xl);
     margin-right: 0;
-    padding: 20px;
+    padding: var(--spacing-lg);
     box-shadow: 2px 4px 30px rgba(255, 255, 255, 0.2);
-    // transition: all 0.3s ease-in-out;
   }
 
   .order-container:hover {
-    // transform: scale(1.01);
     transition: all 0.3s ease-in-out;
   }
 }
