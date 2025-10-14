@@ -12,35 +12,35 @@
 }
 
 .date {
-    font-size: 20px;
+    font-size: clamp(16px, 2vw, 20px);
     font-weight: bold;
 }
 
 
 /* #region时钟start */
 .clock {
-    height: 9.8vh;
+    height: clamp(8vh, 9.8vh, 12vh);
     color: var(--color-light);
-    font-size: 7.8vh;
+    font-size: clamp(6vh, 7.8vh, 10vh);
     font-weight: bold;
     font-family: FangSong; 
-    line-height: 9.8vh;
+    line-height: clamp(8vh, 9.8vh, 12vh);
     display: flex;
-    margin-left: 20px;
+    margin-left: clamp(15px, 2vw, 20px);
     // position: absolute;
     bottom: 89%;
     left: 40%;
     overflow: hidden;
 }
 .clock.night-mode {
-    height: 9.8vh;
+    height: clamp(8vh, 9.8vh, 12vh);
     color: var(--color-dark);
-    font-size: 7.8vh;
+    font-size: clamp(6vh, 7.8vh, 10vh);
     font-weight: bold;
     font-family: FangSong; 
-    line-height: 9.8vh;
+    line-height: clamp(8vh, 9.8vh, 12vh);
     display: flex;
-    margin-left: 20px;
+    margin-left: clamp(15px, 2vw, 20px);
     // position: absolute;
     bottom: 89%;
     left: 40%;
@@ -50,7 +50,7 @@
     display: flex;
 }
 .tick {
-    line-height: 7vh;
+    line-height: clamp(6vh, 7vh, 9vh);
 }
 .tick-hidden {
     opacity: 0;

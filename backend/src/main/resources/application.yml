@@ -23,6 +23,7 @@ spring:
       database: 0
 server:
   port: 8080
+  address: 0.0.0.0
 
 jwt:
   secret: bbe0ac1a5b8a113b4568d55c76fe887a1cd99b01acfad7957156945688e03e20

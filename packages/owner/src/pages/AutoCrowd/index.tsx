@@ -88,7 +88,7 @@ export default function AutoCrowd() {
           </div>
           <div className="weather">
             <Suspense fallback={<div>加载中...</div>}>
-              {/* <WeatherLazy /> */}
+              <WeatherLazy />
             </Suspense>
           </div>
         </div>
