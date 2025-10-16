@@ -40,6 +40,8 @@ export interface Order {
   driver: DriverInfo | null
   vehicle: VehicleInfo | null
   rating?: number // 用户评分
+  reviewText?: string // 用户文字评价
+  reviewSubmittedAt?: string // 提交时间戳（ISO）
   completedAt?: string
   cancelledAt?: string
   cancelReason?: string
@@ -164,6 +166,9 @@ export const useRideStore = create<RideState>()(
           price: order.price ?? null,
           driver: order.driver ?? null,
           vehicle: order.vehicle ?? null,
+          rating: order.rating,
+          reviewText: order.reviewText,
+          reviewSubmittedAt: order.reviewSubmittedAt,
           completedAt: order.completedAt,
           cancelledAt: order.cancelledAt,
           cancelReason: order.cancelReason,
