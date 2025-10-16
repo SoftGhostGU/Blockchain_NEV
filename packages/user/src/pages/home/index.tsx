@@ -8,7 +8,7 @@ import classnames from 'classnames'
 import './index.scss'
 
 // 导入组件
-import Fab from '../../components/Fab'
+// 悬浮球仅在打车页面显示，此处不再引入
 
 // 模拟用户数据
 const mockUserData = {
@@ -223,8 +223,7 @@ export default function Home() {
         </View>
       </View>
 
-      {/* 悬浮按钮 */}
-      <Fab />
+      {/* 悬浮球仅在打车页面显示，此处不渲染 */}
     </View>
   )
 }

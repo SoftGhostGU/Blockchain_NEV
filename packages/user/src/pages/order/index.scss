@@ -7,6 +7,48 @@
   min-height: 100vh;
 }
 
+/* 顶部标题与返回箭头（与主页风格保持一致） */
+.order-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 12rpx 24rpx;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: saturate(180%) blur(8px);
+  border-bottom: 1rpx solid rgba(16, 24, 40, 0.06);
+  border-radius: 16rpx;
+  overflow: hidden;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 标题居中 */
+    position: relative;
+    height: 72rpx;
+  }
+
+  .header-left {
+    width: 56rpx;
+    height: 56rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14rpx;
+    background: rgba(245, 247, 250, 0.9);
+    position: absolute;
+    left: 0;
+    transition: background 180ms;
+    &:active { background: rgba(0,0,0,0.04); }
+  }
+
+  .header-title {
+    font-size: 34rpx;
+    font-weight: 700;
+    color: $text-primary;
+    letter-spacing: -0.5rpx;
+  }
+}
+
 .card {
   background: $card-background;
   border-radius: 32rpx;
@@ -370,18 +412,148 @@
   .card-header {
     margin-bottom: 32rpx;
     
-    .complaint-link {
+    .complaint-tag {
       margin-left: auto;
-      color: $text-secondary;
-      font-size: 28rpx;
-      padding: 8rpx 16rpx;
-      border-radius: 20rpx;
-      transition: all 0.2s ease;
-      
-      &:active {
-        background: rgba(0, 0, 0, 0.04);
-        color: $text-primary;
-      }
+      color: #D32F2F;
+      font-size: 26rpx;
+      padding: 6rpx 12rpx;
+      border: 1rpx solid #F44336;
+      border-radius: 16rpx;
+      background: rgba(244, 67, 54, 0.04);
+    }
+  }
+
+  &.success {
+    background-color: #F6FFFA; // 轻绿调
+    border-color: rgba(76, 175, 80, 0.18);
+    box-shadow: 0 12rpx 32rpx rgba(76, 175, 80, 0.08);
+  }
+  &.warm {
+    border-color: rgba(245, 158, 11, 0.18);
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.06) 0%, rgba(251, 191, 36, 0.03) 100%);
+    box-shadow: 0 12rpx 32rpx rgba(245, 158, 11, 0.06);
+    .card-header .header-title { color: #D97706; }
+  }
+  &.cool {
+    border-color: rgba(59, 130, 246, 0.18);
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0.02) 100%);
+    box-shadow: 0 12rpx 32rpx rgba(59, 130, 246, 0.06);
+    .card-header .header-title { color: #1D4ED8; }
+  }
+
+  .rating-row {
+    display: flex;
+    align-items: center;
+    gap: 16rpx;
+    margin-bottom: 24rpx;
+  }
+
+  .rating-hint {
+    color: $text-secondary;
+    font-size: 26rpx;
+  }
+
+  .review-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 16rpx;
+    align-items: center; // 居中编辑区域内容
+  }
+
+  .review-textarea {
+    background: #fff;
+    border: 1rpx solid rgba(16, 24, 40, 0.08);
+    border-radius: 20rpx;
+    padding: 20rpx;
+    font-size: 28rpx;
+    min-height: 160rpx;
+    max-height: 260rpx;
+    display: block;
+    width: 92%;
+    margin: 0 auto;
+    line-height: 44rpx; // 增加行距，提升可读性
+    overflow-y: auto; // 限制最大高度 + 自动滚动
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: break-word;
+  }
+
+  // 冷暖色调下的输入与展示背景，保持较低对比度
+  &.warm {
+    .review-textarea,
+    .review-content {
+      background: rgba(251, 191, 36, 0.08);
+      border-color: rgba(245, 158, 11, 0.16);
+    }
+  }
+  &.cool {
+    .review-textarea,
+    .review-content {
+      background: rgba(59, 130, 246, 0.08);
+      border-color: rgba(59, 130, 246, 0.14);
+    }
+  }
+
+  .submit-time {
+    color: $text-secondary;
+    font-size: 24rpx;
+  }
+
+  .submit-btn {
+    background: linear-gradient(135deg, #E8F0FE 0%, #F3F7FF 100%);
+    color: $primary-blue;
+    border: 1rpx solid rgba(24, 119, 242, 0.1);
+    border-radius: 24rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    font-size: 28rpx;
+  }
+
+  .review-display {
+    display: flex;
+    flex-direction: column;
+    gap: 12rpx;
+    align-items: center; // 居中展示区域内容
+  }
+
+  .review-content {
+    font-size: 28rpx;
+    color: $text-primary;
+    background: #fff;
+    border: 1rpx solid rgba(16, 24, 40, 0.08);
+    border-radius: 20rpx;
+    padding: 20rpx;
+    white-space: pre-wrap;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    display: block;
+    width: 92%;
+    margin: 0 auto;
+    max-height: 300rpx;
+    overflow-y: auto; // 限制最大高度 + 自动滚动
+    overflow-x: hidden;
+    line-height: 44rpx; // 增加行距
+  }
+
+  .edit-btn {
+    background: linear-gradient(135deg, #F8FAFF 0%, #F0F5FF 100%);
+    color: $primary-blue;
+    border: 1rpx solid rgba(24, 119, 242, 0.12);
+    border-radius: 24rpx;
+    height: 88rpx;
+    line-height: 88rpx;
+    font-size: 28rpx;
+    box-shadow: 0 6rpx 14rpx rgba(24, 119, 242, 0.10);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    &:hover {
+      transform: translateY(-2rpx);
+      box-shadow: 0 10rpx 20rpx rgba(24, 119, 242, 0.16);
+      background: linear-gradient(135deg, #EDF2FF 0%, #E6EEFF 100%);
+    }
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 4rpx 10rpx rgba(24, 119, 242, 0.12);
     }
   }
 }

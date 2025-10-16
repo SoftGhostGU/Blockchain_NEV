@@ -88,12 +88,6 @@ export default function VehicleDetailModal({ visible, onClose }: VehicleDetailMo
             </View>
             <View className='range-info-header'>
               <Text className='range-label'>预计续航</Text>
-              <Text 
-                className='range-value-header' 
-                style={{ color: getRangeColor(vehicleData.range) }}
-              >
-                {vehicleData.range}km
-              </Text>
             </View>
           </View>
           
@@ -136,8 +130,13 @@ export default function VehicleDetailModal({ visible, onClose }: VehicleDetailMo
             </View>
 
             <View className='range-info'>
-            {/* 续航数值已移至标题下方 */}
-          </View>
+              <Text
+                className='range-value'
+                style={{ color: getRangeColor(vehicleData.range) }}
+              >
+                {vehicleData.range}km
+              </Text>
+            </View>
           </View>
         </View>
 

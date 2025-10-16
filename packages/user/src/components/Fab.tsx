@@ -3,13 +3,18 @@ import { View } from '@tarojs/components';
 import Taro from '@tarojs/taro';
 import './Fab.scss';
 import { useFabStore } from '../store/fab';
+import { useRideStore } from '../store/ride';
 
-const FAB_SIZE = 72; // 与样式中保持一致
+const FAB_SIZE = 84; // 与样式中保持一致（稍微放大）
 const sysInfo = Taro.getSystemInfoSync?.() || { windowWidth: 375, windowHeight: 667 };
 
 const Fab = () => {
   const { position, dragging, setPosition, setDragging } = useFabStore();
   const fabRef = useRef(null);
+  const getActiveOrder = useRideStore((s) => s.getActiveOrder);
+  const activeOrder = useRideStore((s) => s.orders.find((o) => o.orderId === s.activeOrderId) || null);
+  const isOngoing = !!activeOrder && activeOrder.status !== 'completed' && activeOrder.status !== 'cancelled';
+  const labelText = isOngoing ? '进行中' : '暂无订单';
 
   const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(value, max));
 
@@ -57,31 +62,16 @@ const Fab = () => {
   };
 
   const handleClick = () => {
-    const pages: any[] = (Taro.getCurrentPages?.() || []) as any[];
-    const currentPagePath: string = pages.slice(-1)[0]?.route ?? '';
-
-    if (currentPagePath.includes('order')) {
-      // 优先后退回到栈中的 Ride，避免创建新的 Ride 实例
-      let rideIndex = -1;
-      for (let i = pages.length - 1; i >= 0; i--) {
-        const route = pages[i]?.route || '';
-        if (route.includes('ride/index')) {
-          rideIndex = i;
-          break;
-        }
+    // 悬浮球仅在打车页出现，这里统一跳转当前进行的订单
+    try {
+      const activeOrder = getActiveOrder();
+      if (!activeOrder) {
+        Taro.showToast({ title: '暂无进行中的订单', icon: 'none' });
+        return;
       }
-      if (rideIndex !== -1) {
-        const delta = (pages.length - 1) - rideIndex;
-        if (delta > 0) {
-          Taro.navigateBack({ delta });
-          return;
-        }
-      }
-      // 栈中不存在 Ride，则重启到 Ride 保持唯一实例
-      Taro.reLaunch({ url: '/pages/ride/index' });
-    } else if (currentPagePath.includes('ride')) {
-      // 从 Ride 进入订单页使用 navigateTo（订单页可多实例），Ride 保持唯一
-      Taro.navigateTo({ url: '/pages/order/index' });
+      Taro.navigateTo({ url: `/pages/order/index?orderId=${activeOrder.orderId}` });
+    } catch (err) {
+      Taro.showToast({ title: '跳转失败，请稍后重试', icon: 'none' });
     }
   };
 
@@ -95,6 +85,7 @@ const Fab = () => {
       onTouchEnd={handleTouchEnd}
       onClick={handleClick}
     >
+      <View className={`fab-label ${isOngoing ? 'ongoing' : ''}`}>{labelText}</View>
     </View>
   );
 };

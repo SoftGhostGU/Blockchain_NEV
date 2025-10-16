@@ -942,7 +942,7 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
       <View className='footer'>
         <View className='footer-bar'>
           <View className='info-section'>
-            <AtIcon value='wifi' size='16' className='info-icon' />
+            <AtIcon value='check-circle' size='16' color='#22c55e' className='info-icon connection-icon' />
             <Text className='info-text'>节点已连接</Text>
           </View>
           <View className='info-section'>

@@ -1,10 +1,9 @@
 .fab {
-  --size: 72px;
-  --shadow: calc(var(--size) * 0.07) calc(var(--size) * 0.1);
+  --size: 84px; /* 稍微放大 */
   position: fixed;
   width: var(--size);
   height: var(--size);
-  background: linear-gradient(43deg, #87CEEB 0%, #B0E0E6 46%, #E0F6FF 100%); /* 天蓝色浅色渐变 */
+  background: rgba(255, 255, 255, 0.92); /* 白底稍微透明 */
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -12,40 +11,28 @@
   cursor: pointer;
   z-index: 1000;
   transition: left 0.25s ease, top 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-  box-shadow: 0 var(--shadow) #B0E0E6;
-  opacity: 0.9;
-  overflow: hidden;
+  box-shadow: 0 0 0 4px #1677FF, 0 8px 18px rgba(22, 119, 255, 0.12); /* 外圈蓝色点缀 + 轻微阴影 */
+  opacity: 1; /* 使用背景透明度，不影响文本可读性 */
 
-  &:before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: 0;
-    left: 0;
-    width: calc(var(--size) * 0.7);
-    height: calc(var(--size) * 0.7);
-    margin: 0 auto;
-    background-color: #fff;
-    transform: translateY(-50%);
-    border-radius: 50%;
-    box-shadow: inset 0 var(--shadow) #B0E0E6;
-    transition: 0.2s ease width, 0.2s ease height;
+  .fab-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1677FF; /* 与外圈一致的蓝色 */
+    pointer-events: none;
+    user-select: none;
   }
 
-  &:hover:before {
-    width: calc(var(--size) * 0.55);
-    height: calc(var(--size) * 0.55);
-    box-shadow: inset 0 var(--shadow) #87CEEB;
+  .fab-label.ongoing {
+    font-size: 18px; /* 进行中更显眼 */
   }
 
   &:active {
-    transform: scale(0.9);
+    transform: scale(0.95);
   }
 }
 
 .fab.dragging {
-  transform: scale(1.1);
-  background: linear-gradient(43deg, #B0E0E6 0%, #87CEEB 46%, #E0F6FF 100%);
-  box-shadow: 0 calc(var(--size) * 0.14) calc(var(--size) * 0.2) rgba(0, 0, 0, 0.28);
+  transform: scale(1.05);
+  box-shadow: 0 0 0 4px #1677FF, 0 12px 24px rgba(22, 119, 255, 0.18);
   opacity: 1;
 }

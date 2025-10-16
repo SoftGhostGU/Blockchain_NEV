@@ -718,12 +718,14 @@ $text-secondary-gray: #8c8c8c;
   background-color: $background-light-gray;
   padding: 20rpx 0;
   margin-top: auto;
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 .footer-bar {
   display: flex;
   justify-content: space-between;
   padding: 24rpx 40rpx;
+  transition: opacity 0.25s ease, transform 0.25s ease;
   
   .info-section {
     display: flex;
@@ -1284,6 +1286,17 @@ $text-secondary-gray: #8c8c8c;
       display: none;
     }
   }
+  
+  // 地图展开时隐藏底部状态栏
+  .footer,
+  .footer-bar {
+    opacity: 0;
+    transform: translateY(16rpx);
+    pointer-events: none;
+    height: 0;
+    padding: 0;
+    margin: 0;
+  }
 }
 
 // 动画过渡效果
@@ -1307,6 +1320,14 @@ $text-secondary-gray: #8c8c8c;
 
 .map-back-arrow {
   animation: fadeInScale 0.3s ease;
+  display: grid;           // 确保图标在圆形中居中
+  place-items: center;
+  line-height: 1;
+  
+  .at-icon {
+    margin: 0;
+    line-height: 1;
+  }
 }
 
 @keyframes fadeInScale {
