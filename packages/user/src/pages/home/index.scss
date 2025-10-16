@@ -404,3 +404,123 @@ $border-color: #e8e8e8;
     transform: translateY(0);
   }
 }
+
+// ============ 新增：个人信息卡片重排样式 ============
+.user-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  padding-top: 32rpx;
+  background: linear-gradient(135deg, rgba(22, 119, 255, 0.08) 0%, #ffffff 55%);
+  border: 1rpx solid #e6f4ff;
+}
+
+.user-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-info-left {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.avatar-container {
+  flex-shrink: 0;
+}
+
+// 与 ride 页左上角头像风格一致
+.avatar-circle {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2rpx solid #e6f4ff; // 淡蓝描边
+  box-shadow: 0 0 0 6rpx rgba(22, 119, 255, 0.08), 0 8rpx 24rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-icon {
+  color: #555;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: $text-primary-black;
+  margin-bottom: 8rpx;
+}
+
+.user-phone {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: $text-primary-black;
+  opacity: 0.9;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: $text-primary-black;
+}
+
+.stat-label {
+  font-size: 22rpx;
+  color: $text-secondary-gray;
+  margin-top: 6rpx;
+}
+
+.user-info-right {
+  display: flex;
+  align-items: flex-start;
+}
+
+.credit-score-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 8rpx 16rpx;
+  background: #f6ffed;
+  border-radius: 16rpx;
+  border: 1rpx solid #b7eb8f;
+}
+
+.credit-score-text {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: #52c41a;
+  margin-left: 8rpx;
+}
+
+// 底部统计行
+.user-stats-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20rpx;
+  margin-top: 8rpx;
+  border-top: 1rpx solid $border-color;
+}
+
+.user-stats-row .stat-item {
+  flex: 1;
+  align-items: center;
+  text-align: center;
+}
+
+.user-stats-row .stat-value {
+  font-size: 34rpx;
+}

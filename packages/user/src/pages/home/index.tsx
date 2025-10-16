@@ -5,7 +5,6 @@ import { useLoad } from '@tarojs/taro'
 import Taro from '@tarojs/taro'
 import { AtIcon } from 'taro-ui'
 import classnames from 'classnames'
-import UserAvatar from './components/UserAvatar'
 import './index.scss'
 
 // 导入组件
@@ -23,6 +22,7 @@ const mockUserData = {
   totalTrips: 156,
   totalDistance: 2840,
   carbonSaved: 142.5,
+  citiesLit: 18,
   joinDate: '2023-06-15'
 }
 
@@ -86,15 +86,10 @@ export default function Home() {
     }
   }
 
-  // 处理安全设置点击
-  const handleSecurityOption = (optionId: string) => {
-    console.log('点击安全选项:', optionId)
-  }
-
-  // 处理充值
-  const handleRecharge = () => {
-    console.log('充值')
-  }
+ // 处理安全设置点击
+ const handleSecurityOption = (optionId: string) => {
+   console.log('点击安全选项:', optionId)
+ }
 
   // 处理余额详情
   const handleBalanceDetail = () => {
@@ -124,26 +119,8 @@ export default function Home() {
       Taro.reLaunch({ url: '/pages/ride/index' })
     } catch (err) {
       console.warn('返回 Ride 页面失败，尝试重启', err)
-      Taro.reLaunch({ url: '/pages/ride/index' })
-    }
-  }
-
-  // 上传头像
-  const handleUploadAvatar = async () => {
-    try {
-      const res = await Taro.chooseImage({
-        count: 1,
-        sizeType: ['compressed'],
-        sourceType: ['album', 'camera']
-      })
-      const path = (res as any).tempFilePaths?.[0] || (res as any).tempFiles?.[0]?.path
-      if (path) {
-        setUserData({ ...userData, avatar: path })
-        Taro.showToast({ title: '头像已更新', icon: 'success' })
-      }
-    } catch (e) {
-      Taro.showToast({ title: '上传失败', icon: 'none' })
-    }
+     Taro.reLaunch({ url: '/pages/ride/index' })
+   }
   }
 
   return (
@@ -158,73 +135,45 @@ export default function Home() {
         </View>
       </View>
 
-      {/* 用户信息卡片 */}
       <View className='card user-info-card'>
-        {/* 左上角上传头像 */}
-        <View className='card-top-avatar'>
-          <UserAvatar 
-            src={userData.avatar}
-            size='small'
-            onClick={handleUploadAvatar}
-          />
-        </View>
-        <View className='user-header'>
-          <View className='user-info'>
-            <Text className='phone'>{userData.phone}</Text>
+        {/* 顶部：头像 + 用户名/手机号 与右侧信用分 */}
+        <View className='user-top-row'>
+          <View className='user-info-left'>
+            <View className='avatar-container'>
+              <View className='avatar-circle'>
+                <AtIcon value='user' size='24' className='avatar-icon' />
+              </View>
+            </View>
+            <View className='user-details'>
+              <Text className='user-name'>{userData.username}</Text>
+              <Text className='user-phone'>{userData.phone}</Text>
+            </View>
+          </View>
+          <View className='user-info-right'>
+            <View className='credit-score-badge'>
+              <AtIcon value='check-circle' size='14' color={getCreditScoreColor(userData.creditScore)} />
+              <Text className='credit-score-text' style={{ color: getCreditScoreColor(userData.creditScore) }}>信用分 {userData.creditScore}</Text>
+            </View>
           </View>
         </View>
-        
-        <View className='user-credit'>
-          <AtIcon 
-            value='check-circle' 
-            size='16' 
-            color={getCreditScoreColor(userData.creditScore)}
-          />
-          <Text 
-            className='credit-text'
-            style={{ color: getCreditScoreColor(userData.creditScore) }}
-          >
-            信用分 {userData.creditScore}
-          </Text>
-        </View>
-      </View>
 
-      {/* 账户余额卡片 */}
-      <View className='card balance-card'>
-        <View className='balance-header'>
-          <View className='balance-info'>
-            <Text className='balance-label'>账户余额</Text>
-            <Text className='balance-amount'>¥{userData.balance.toFixed(2)}</Text>
-          </View>
-          <View className='balance-actions'>
-            
-            <Button 
-              className='btn-detail'
-              size='mini'
-              onClick={handleBalanceDetail}
-            >
-              充值
-            </Button>
-          </View>
-        </View>
-      </View>
-
-      {/* 统计数据卡片 */}
-      <View className='card stats-card'>
-        <View className='stats-grid'>
+        {/* 底部：三项统计一排显示 */}
+        <View className='user-stats-row'>
           <View className='stat-item'>
             <Text className='stat-value'>{userData.totalTrips}</Text>
             <Text className='stat-label'>总行程</Text>
           </View>
-          <View className='stat-divider'></View>
           <View className='stat-item'>
             <Text className='stat-value'>{userData.totalDistance}</Text>
-            <Text className='stat-label'>总里程(km)</Text>
+            <Text className='stat-label'>总里程 (km)</Text>
           </View>
-          <View className='stat-divider'></View>
           <View className='stat-item'>
             <Text className='stat-value'>{userData.carbonSaved}</Text>
-            <Text className='stat-label'>减碳量(kg)</Text>
+            <Text className='stat-label'>减碳量 (kg)</Text>
+          </View>
+          <View className='stat-item'>
+            <Text className='stat-value'>{userData.citiesLit}</Text>
+            <Text className='stat-label'>点亮城市</Text>
           </View>
         </View>
       </View>
