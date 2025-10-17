@@ -1,0 +1,130 @@
+2025-10-15 00:14:46.037 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:14:46.040 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:14:46.087 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:14:46.098 [http-nio-0.0.0.0-8080-exec-7] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:14:46.147 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:14:46.147 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:14:46.159 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:14:46.160 [http-nio-0.0.0.0-8080-exec-5] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:07.740 [http-nio-0.0.0.0-8080-exec-3] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=test, password=test)
+2025-10-15 00:15:07.741 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: test
+2025-10-15 00:15:07.749 [http-nio-0.0.0.0-8080-exec-3] WARN  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录失败 - 手机号不存在: test
+2025-10-15 00:15:07.784 [http-nio-0.0.0.0-8080-exec-8] INFO  com.autocrowd.backend.controller.DriverController - [DriverController] 车主登录接口 - 接收到登录请求: DriverLoginRequest(phone=13700000001, password=Test123456!)
+2025-10-15 00:15:07.786 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录 - 手机号: 13700000001
+2025-10-15 00:15:07.891 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverService] 车主登录成功 - 司机ID: 2000, 用户名: driver001
+2025-10-15 00:15:08.435 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:08.443 [http-nio-0.0.0.0-8080-exec-1] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:08.741 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:08.751 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:08.799 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:08.804 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:08.819 [http-nio-0.0.0.0-8080-exec-6] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:08.824 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:15.426 [http-nio-0.0.0.0-8080-exec-9] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:15.436 [http-nio-0.0.0.0-8080-exec-9] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:15.765 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:15.768 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:15.818 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:15.819 [http-nio-0.0.0.0-8080-exec-3] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:16.186 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:16.197 [http-nio-0.0.0.0-8080-exec-8] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:21.796 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:21.803 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:22.012 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:22.014 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:22.030 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:22.031 [http-nio-0.0.0.0-8080-exec-6] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:22.218 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:22.224 [http-nio-0.0.0.0-8080-exec-7] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:33.505 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:33.514 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:33.573 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:15:33.580 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:33.592 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:15:33.597 [http-nio-0.0.0.0-8080-exec-8] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:15:34.653 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:15:34.699 [http-nio-0.0.0.0-8080-exec-2] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:22:41.283 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:22:41.284 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:22:41.288 [http-nio-0.0.0.0-8080-exec-6] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:22:41.291 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:22:41.329 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:22:41.333 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:22:41.349 [http-nio-0.0.0.0-8080-exec-3] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:22:41.356 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:22:41.389 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:22:41.417 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:22:41.450 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:22:41.456 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:22:41.468 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:22:41.474 [http-nio-0.0.0.0-8080-exec-2] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:22:41.521 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:22:41.525 [http-nio-0.0.0.0-8080-exec-4] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:22:45.801 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:22:45.830 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:22:45.876 [http-nio-0.0.0.0-8080-exec-9] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:22:45.882 [http-nio-0.0.0.0-8080-exec-9] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:28:16.237 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:28:16.246 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:28:16.578 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:28:16.585 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:30:04.170 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:30:04.182 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:30:04.231 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:30:04.242 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:31:57.224 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:31:57.233 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:31:57.267 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:31:57.275 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:33:00.754 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:33:00.764 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:33:00.782 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:33:00.788 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:33:18.539 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:33:18.556 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:33:18.601 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:33:18.605 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:37:25.441 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:37:25.444 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:37:25.448 [http-nio-0.0.0.0-8080-exec-5] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:37:25.453 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:37:25.500 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 00:37:25.517 [http-nio-0.0.0.0-8080-exec-10] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 00:37:25.518 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:37:25.543 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:37:25.587 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:37:25.593 [http-nio-0.0.0.0-8080-exec-8] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:37:25.611 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:37:25.617 [http-nio-0.0.0.0-8080-exec-6] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:39:24.917 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:39:24.927 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:39:24.973 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:39:24.980 [http-nio-0.0.0.0-8080-exec-4] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:40:47.108 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:40:47.126 [http-nio-0.0.0.0-8080-exec-1] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:40:47.168 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:40:47.174 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:47:17.847 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:47:17.862 [http-nio-0.0.0.0-8080-exec-7] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:47:17.899 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:47:17.908 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:50:35.119 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:50:35.129 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 00:50:35.161 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 00:50:35.203 [http-nio-0.0.0.0-8080-exec-2] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 01:13:10.074 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 01:13:10.086 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 01:13:10.116 [http-nio-0.0.0.0-8080-exec-5] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 01:13:10.116 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 01:13:10.123 [http-nio-0.0.0.0-8080-exec-5] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 01:13:10.124 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 01:13:10.159 [http-nio-0.0.0.0-8080-exec-9] INFO  c.autocrowd.backend.controller.VehicleController - [VehicleController] 收到获取车辆状况请求: vehicleId=4000
+2025-10-15 01:13:10.166 [http-nio-0.0.0.0-8080-exec-9] INFO  c.a.backend.service.impl.VehicleServiceImpl - [VehicleService] 根据车辆ID获取车辆状况: vehicleId=4000
+2025-10-15 01:14:52.416 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 01:14:52.426 [http-nio-0.0.0.0-8080-exec-10] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 01:14:52.454 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 处理获取车主资料请求: driverId = 2000
+2025-10-15 01:14:52.463 [http-nio-0.0.0.0-8080-exec-3] INFO  c.autocrowd.backend.service.impl.DriverServiceImpl - [DriverServiceImpl] 获取车主资料成功: driver001
+2025-10-15 01:18:30.157 [SpringApplicationShutdownHook] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 销毁区块链连接
+2025-10-15 01:18:30.159 [SpringApplicationShutdownHook] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-15 01:18:30.161 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-15 01:18:30.172 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
