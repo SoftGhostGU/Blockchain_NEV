@@ -461,7 +461,7 @@
   }
 
   .review-textarea {
-    background: #fff;
+    background-color: #fff;
     border: 1rpx solid rgba(16, 24, 40, 0.08);
     border-radius: 20rpx;
     padding: 20rpx;
@@ -479,21 +479,8 @@
     overflow-wrap: break-word;
   }
 
-  // 冷暖色调下的输入与展示背景，保持较低对比度
-  &.warm {
-    .review-textarea,
-    .review-content {
-      background: rgba(251, 191, 36, 0.08);
-      border-color: rgba(245, 158, 11, 0.16);
-    }
-  }
-  &.cool {
-    .review-textarea,
-    .review-content {
-      background: rgba(59, 130, 246, 0.08);
-      border-color: rgba(59, 130, 246, 0.14);
-    }
-  }
+  // 仅卡片背景随冷暖变化，输入框/展示区保持白色
+  // 移除内部组件的冷暖覆盖，保证一致的白色背景与中性边框
 
   .submit-time {
     color: $text-secondary;

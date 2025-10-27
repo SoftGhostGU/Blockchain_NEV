@@ -1,7 +1,7 @@
 import { View, Input, Button, Text } from '@tarojs/components';
 import { useState, useEffect } from 'react';
 import { login } from '../../../utils/auth';
-import { showToast, navigateTo } from '@tarojs/taro';
+import { showToast, reLaunch } from '@tarojs/taro';
 import '../index.scss';
 import { formErrorToaster } from '../../../utils/error';
 import { EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons';
@@ -24,14 +24,15 @@ const LoginForm = ({ onSwitchToRegister }) => {
     }
     
     setLoading(true);
+    // 将“用户名”字段作为手机号传入后端
     login(username, password)
       .then(() => {
         showToast({
           title: '登录成功',
           icon: 'success'
         });
-        navigateTo({
-          url: 'pages/index/index'
+        reLaunch({
+          url: '/pages/ride/index'
         })
       })
       .catch(formErrorToaster)
@@ -73,11 +74,9 @@ const LoginForm = ({ onSwitchToRegister }) => {
             value={password}
             onInput={(e) => setPassword(e.detail.value)}
           />
-          {/* <View className="password-visible-button" onClick={togglePasswordVisible}>
-            {
-              passwordVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />
-            }
-          </View> */}
+          <View className="password-visible-button" onClick={togglePasswordVisible}>
+            {passwordVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />}
+          </View>
         </View>
       </View>
 
@@ -104,4 +103,4 @@ const LoginForm = ({ onSwitchToRegister }) => {
   );
 };
 
-export default LoginForm; 
+export default LoginForm;

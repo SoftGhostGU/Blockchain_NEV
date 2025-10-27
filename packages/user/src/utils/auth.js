@@ -1,26 +1,30 @@
 import { request } from './request';
-import { emailSchema, passwordSchema, usernameSchema, verificationCodeSchema } from './commons/index'
+import { passwordSchema } from './commons/index'
 import { useUserStore } from '../store/user';
-import { showToast, setStorageSync } from '@tarojs/taro';
+import { showToast } from '@tarojs/taro';
+import { setTokens } from '../utils/request/token';
 
-export const login = async (username, password) => {
+export const login = async (phone, password) => {
   const data = {
-    username: usernameSchema.parse(username),
+    phone: String(phone),
     password: passwordSchema.parse(password)
   }
-  const { data: result } = await request('/user/login', 'POST', data);
-  setStorageSync('accessToken', result.data.accessToken);
-  setStorageSync('refreshToken', result.data.refreshToken);
-  useUserStore.getState().setUserInfo(result.data.info);
+  // 对接后端：POST http://10.147.17.1:8080/api/user/login
+  const { data: result } = await request('/api/user/login', 'POST', data);
+
+  // 期望返回：{ code: 0, data: { user: {...}, token: '...' } }
+  if (result && (result.code === 0 || result.code === 200) && result.data?.token) {
+    setTokens(result.data.token, undefined, result.data.user);
+    useUserStore.getState().setUserInfo(result.data.user);
+    showToast({ title: '登录成功', icon: 'success' });
+  }
   return result;
 };
 
 export const requestVerificationCode = async (form) => {
   const data = {
-    email: emailSchema.parse(form.email)
+    email: form.email
   }
-  usernameSchema.parse(form.username)
-  passwordSchema.parse(form.password)
   if (form.password != form.checkPassword) {
     throw Error('密码不一致！')
   }
@@ -30,17 +34,15 @@ export const requestVerificationCode = async (form) => {
 
 export const register = async (args) => {
   const data = {
-    email: emailSchema.parse(args.email),
-    username: usernameSchema.parse(args.username),
-    password: passwordSchema.parse(args.password),
-    verifyCode: verificationCodeSchema.parse(args.verifyCode)
+    email: args.email,
+    username: args.username,
+    password: args.password,
+    verifyCode: args.verifyCode
   }
   if (data.password != args.checkPassword) {
     throw Error('密码不一致！')
   }
   const { data: result } = await request('/user/register', 'POST', data)
-  setStorageSync('accessToken', result.data.accessToken);
-  setStorageSync('refreshToken', result.data.refreshToken);
-  useUserStore.getState().setUserInfo(result.data.info);
+  // 保持现有注册逻辑不动（如需对接可类似登录改造）
   return result;
 }

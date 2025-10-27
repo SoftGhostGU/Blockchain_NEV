@@ -23,6 +23,7 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
     defineConstants: {
     },
     alias: { // 添加 alias 配置
+      '@': path.resolve(__dirname, '..', 'src'),
       '@/styles': path.resolve(__dirname, '..', 'src/styles'),
     },
     copy: {

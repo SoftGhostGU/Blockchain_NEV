@@ -13,8 +13,8 @@ import QuietIcon from './icons/QuietIcon'
 import FastIcon from './icons/FastIcon'
 import SlowIcon from './icons/SlowIcon'
 
-import rideService from '../../api/rideService'
-import { Location, PriceEstimateRequest, CreateOrderRequest } from '../../api/type'
+import rideService from '@/api/rideService'
+import { Location, PriceEstimateRequest, CreateOrderRequest } from '@/api/type'
 import Fab from '../../components/Fab'
 import Map from '../../components/Map'
 import AMapLoader from '@amap/amap-jsapi-loader'
@@ -270,9 +270,9 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
       const request: PriceEstimateRequest = {
         startLocation: currentLocation,
         endLocation: destinationLocation as Location,
-        carType: carTypeId,
-        departureTime: selectedTimeOption,
-        preference: travelPreference
+        carTypeId: carTypeId,
+        estimatedDistance: routeDistanceKm ?? actualDistance,
+        estimatedDuration: routeDurationMin ?? undefined
       }
 
       const resp = await rideService.estimatePrice(request)
