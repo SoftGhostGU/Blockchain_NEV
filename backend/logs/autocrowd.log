@@ -1,4 +1,4 @@
-2025-10-17 00:29:15.727 [SpringApplicationShutdownHook] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 销毁区块链连接
-2025-10-17 00:29:15.737 [SpringApplicationShutdownHook] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
-2025-10-17 00:29:15.742 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
-2025-10-17 00:29:15.751 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
+2025-10-28 01:09:06.257 [SpringApplicationShutdownHook] INFO  c.a.backend.service.impl.BlockchainServiceImpl - [BlockchainService] 销毁区块链连接
+2025-10-28 01:09:06.261 [SpringApplicationShutdownHook] INFO  o.s.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-10-28 01:09:06.265 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2025-10-28 01:09:06.274 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
