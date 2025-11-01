@@ -6,7 +6,7 @@
 
 ### 概述
 
-🚏 Blockchain_NEV 是一个综合性的去中心化网约车平台，集成了**区块链技术**、**机器学习**和**多平台前端**应用，致力于打造安全、智能且用户友好的交通生态系统。该项目展示了现代网络技术与分布式账本技术的融合，旨在为共享出行服务建立信任和透明度。
+🚏 Blockchain_NEV 是一个综合性的去中心化网约车平台，集成了**区块链技术**、**联邦学习**和**多平台前端**应用，致力于打造安全、智能且用户友好的交通生态系统。该项目展示了现代网络技术与分布式账本技术的融合，旨在为共享出行服务建立信任和透明度。
 
 ✨ 项目使用 `pnpm workspaces` 进行 `monorepo` 管理，实现高效的依赖处理和所有前端应用的一致构建流程 [pnpm-workspace.yaml#L1]。
 
@@ -14,13 +14,8 @@
 
 🎉 该平台采用**微服务架构**，在各层级间实现了清晰的职责分离：
 
-#### 系统架构
 
 ![系统架构](./README_IMG/project_construction.png)
-
-#### 数据流模式
-
-![数据流模式](./README_IMG/data_flow.png)
 
 
 #### 前端应用
@@ -167,9 +162,9 @@ cd test-network
 ./network.sh deployCC -ccn basic -ccp ../asset-transfer-basic/chaincodes/chaincode-typescript/ -ccl typescript
 ```
 
-6. 🧠 启动机器学习服务
+6. 🧠 启动联邦学习服务
 
-启动机器学习推荐服务：
+启动联邦学习推荐服务：
 
 ```bash
 cd model
@@ -177,7 +172,7 @@ pip install -r requirements.txt
 python server.py
 ```
 
-机器学习服务将在 http://localhost:8000 可用
+联邦学习服务将在 http://localhost:8000 可用
 
 7. 🏗️ 运行前端应用
 
