@@ -122,10 +122,10 @@ export const useRideStore = create<RideState>()(
     (set, get) => ({
       // --- 基础行程数据 ---
       currentLocation: {
-        latitude: 22.5431,
-        longitude: 114.0579,
-        address: '深圳市南山区深圳湾科技生态园',
-        landmark: '腾讯滨海大厦'
+        latitude: 31.230093,
+        longitude: 121.404184,
+        address: '上海市普陀区中山北路3663号',
+        landmark: '华东师范大学普陀校区'
       },
       destinationLocation: null,
       startAddressInput: '',
