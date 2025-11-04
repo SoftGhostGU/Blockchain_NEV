@@ -1,11 +1,14 @@
 
 import { View, Text, Image, Button } from '@tarojs/components'
 import { useState, useEffect } from 'react'
-import { useLoad } from '@tarojs/taro'
+import { useLoad, showToast } from '@tarojs/taro'
+import { request } from '@/utils/request'
+import { useUserStore } from '@/store/user'
 import Taro from '@tarojs/taro'
 import { AtIcon } from 'taro-ui'
 import classnames from 'classnames'
 import './index.scss'
+import { getAccessToken } from '@/utils/request/token'
 
 // 导入组件
 // 悬浮球仅在打车页面显示，此处不再引入
@@ -45,6 +48,93 @@ const securityOptions = [
 export default function Home() {
   const [pageLoaded, setPageLoaded] = useState(false)
   const [userData, setUserData] = useState(mockUserData)
+  // 说明：Home 页面初始化后，从后端加载用户个人信息。
+  // - token 在登录/注册成功后已通过 setTokens 写入到存储（键名 accessToken）。
+  // - request 封装会自动读取 token 并在开发环境通过 devServer.proxy 走 /api 代理，规避 CORS。
+  // - 后端返回字段与前端展示字段可能不一致，做一次字段名映射。
+
+  useEffect(() => {
+    // 页面挂载后立即发起个人信息请求
+    fetchUserProfile()
+  }, [])
+
+  /**
+   * 获取用户个人信息（带 Authorization 头）并做字段映射
+   * 后端返回格式示例：
+   * {
+   *   code: 0,
+   *   data: {
+   *     userId: 1008,
+   *     username: 'qjr',
+   *     phone: '13800000011',
+   *     balance: 0.00,
+   *     creditScore: 100
+   *   }
+   * }
+   */
+  const fetchUserProfile = async () => {
+    try {
+      // 中文注释：
+      // 1. 在发起请求前，先校验本地是否存在 accessToken。
+      //    若无 token（未登录或已过期），给出提示并跳转到登录页，避免后端出现 500/401。
+      const token = getAccessToken()
+      if (!token) {
+        showToast({ title: '未登录或登录已过期，请先登录', icon: 'none' })
+        Taro.navigateTo({ url: '/pages/login/index' })
+        return
+      }
+
+      // 使用相对路径 /api/user/profile，开发环境由 Taro/Vite 代理转发到后端，避免浏览器跨域
+      // 中文注释：
+      // 2. 仅在失败时提示；成功时静默不提示。
+      const { data: result } = await request('/api/user/profile', 'GET', {}, { silentSuccess: true })
+
+      // 容错：后端可能返回 0/200 或 success=true 的结构，request 内部已按 code 校验
+      const profile = result?.data || null
+      if (!profile) return
+
+      // 字段映射：将后端字段映射到前端通用 userInfo 结构
+      const mappedUser = {
+        // 统一内部使用下划线命名，兼容注册接口返回：user_id/credit_score
+        user_id: profile.userId,
+        username: profile.username,
+        phone: profile.phone,
+        balance: profile.balance,
+        credit_score: profile.creditScore,
+      }
+
+      // 更新页面展示用的状态（仅覆盖已展示的相关字段）
+      // 中文注释：
+      // 3. 手机号做脱敏处理：保留前三位与后四位，中间四位用 * 替换。
+      const maskPhone = (p?: string) => {
+        const phone = String(p || '')
+        if (!phone) return ''
+        if (phone.includes('*')) return phone // 已经是脱敏格式
+        const len = phone.length
+        if (len < 7) return phone // 太短不处理
+        const head = phone.slice(0, 3)
+        const tail = phone.slice(-4)
+        return `${head}****${tail}`
+      }
+      setUserData((prev) => ({
+        ...prev,
+        username: mappedUser.username ?? prev.username,
+        phone: maskPhone(mappedUser.phone) || prev.phone,
+        balance: typeof mappedUser.balance === 'number' ? mappedUser.balance : prev.balance,
+        creditScore: typeof mappedUser.credit_score === 'number' ? mappedUser.credit_score : prev.creditScore,
+      }))
+
+      // 更新全局用户 store，便于其他页面使用一致的用户数据
+      useUserStore.getState().setUserInfo(mappedUser)
+    } catch (err) {
+      // 中文注释：
+      // 2. 捕获错误，优先展示后端返回的错误信息（若存在），否则给出通用提示。
+      //    同时打印详细错误日志，便于排查（比如 code==500 或网络错误）。
+      const msg = (err && (err.message || err.msg)) || '获取用户信息失败'
+      showToast({ title: String(msg), icon: 'none' })
+      console.error('load user profile error', err)
+    }
+  }
 
   useLoad(() => {
     console.log('Home page loaded.')
