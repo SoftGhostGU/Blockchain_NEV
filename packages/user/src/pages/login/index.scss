@@ -65,6 +65,7 @@ $placeholder-color: #7d7d7d;
       
       .input-field {
         margin-bottom: 0;
+        padding-right: 2.5rem; // 给可见性按钮留出空间
       }
       
       .password-visible-button {
@@ -82,6 +83,7 @@ $placeholder-color: #7d7d7d;
         color: $placeholder-color;
         margin-bottom: 0;
         z-index: 10;
+        cursor: pointer;
       }
     }
   }
@@ -136,7 +138,6 @@ $placeholder-color: #7d7d7d;
     text-align: center;
     font-size: 1.1rem;
     margin-bottom: 2rem;
-    position: relative;
     border: none;
 
     .arrow-icon {
@@ -180,6 +181,29 @@ $placeholder-color: #7d7d7d;
     transition: box-shadow 0.3s ease;
     &:focus-within {
       box-shadow: 0 0 4px 2px $primary-color;
+    }
+  }
+}
+
+/* 禁用 Chrome/Edge 的默认显示密码小眼睛及相关按钮，仅在登录页生效 */
+.login-container {
+  .password-input-container {
+    input::-ms-reveal,
+    input::-ms-clear {
+      display: none;
+    }
+
+    input::-webkit-credentials-auto-fill-button,
+    input::-webkit-textfield-decoration-container,
+    input::-webkit-clear-button,
+    input::-webkit-inner-spin-button,
+    input::-webkit-outer-spin-button {
+      display: none !important;
+    }
+
+    input[type="password"]::-webkit-textfield-decoration-container,
+    input[type="password"]::-webkit-textfield-decoration {
+      display: none !important;
     }
   }
 }

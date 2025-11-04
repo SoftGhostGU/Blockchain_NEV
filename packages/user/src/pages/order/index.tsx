@@ -306,8 +306,8 @@ export default function OrderStatus() {
               onInput={(e) => setCommentText((e?.detail as any)?.value ?? '')}
               placeholder="写下本次行程的感受（服务态度、车辆环境等）"
               maxlength={300}
-              autoHeight={false}
-              style={{ height: '220rpx' }}
+              autoHeight={true}
+              style={{ maxHeight: '80px' }}
             />
             {!!order?.reviewSubmittedAt && (
               <Text className="submit-time">

@@ -9,9 +9,11 @@ type MapProps = {
   onStartLocationChange?: (loc: Location) => void;
   // 新增：路线里程/时长上报回调（单位：米/秒）
   onRouteInfo?: (info: { distanceMeters: number; durationSeconds: number }) => void;
+  // 页面显示时触发的轻量刷新令牌（不重建地图实例）
+  refreshToken?: number;
 };
 
-const Map = ({ destinationLocation, startLocation, onStartLocationChange, onRouteInfo }: MapProps) => {
+const Map = ({ destinationLocation, startLocation, onStartLocationChange, onRouteInfo, refreshToken }: MapProps) => {
   const [position, setPosition] = useState<{ lat: number; lng: number } | null>(null);
   const mapRef = useRef<any>(null);
   const destMarkerRef = useRef<any>(null);
@@ -38,7 +40,7 @@ const Map = ({ destinationLocation, startLocation, onStartLocationChange, onRout
         }
         const amap = new AMap.Map("mapContainer", {
           zoom: 15,
-          center: [121.40942550051864, 31.228483165793406],
+          center: [121.404184, 31.230093],
           pitch: 50,
           viewMode: "3D",
           rotateEnable: true,
@@ -245,6 +247,60 @@ const Map = ({ destinationLocation, startLocation, onStartLocationChange, onRout
       startMarkerRef.current.setPosition(lnglat);
     }
   }, [startLocation]);
+
+  // 轻量刷新：页面返回时仅刷新尺寸/居中与路线，不重建实例
+  useEffect(() => {
+    const AMap = (window as any).AMap;
+    const map = mapRef.current;
+    if (!AMap || !map) return;
+
+    try {
+      if (typeof map.resize === 'function') {
+        map.resize();
+      }
+    } catch {}
+
+    const isValid = (loc?: Location | null) =>
+      !!loc && typeof loc.longitude === 'number' && typeof loc.latitude === 'number';
+
+    if (isValid(destinationLocation)) {
+      const lnglat = new AMap.LngLat(destinationLocation!.longitude, destinationLocation!.latitude);
+      map.setCenter(lnglat);
+      map.setZoom(16);
+    } else if (isValid(startLocation)) {
+      const lnglat = new AMap.LngLat(startLocation!.longitude, startLocation!.latitude);
+      map.setCenter(lnglat);
+    }
+
+    if (
+      drivingRef.current &&
+      isValid(startLocation) &&
+      isValid(destinationLocation)
+    ) {
+      const startLngLat = new AMap.LngLat(startLocation!.longitude, startLocation!.latitude);
+      const destLngLat = new AMap.LngLat(destinationLocation!.longitude, destinationLocation!.latitude);
+      try {
+        drivingRef.current.clear();
+      } catch {}
+      drivingRef.current.search(startLngLat, destLngLat, (status: string, result: any) => {
+        if (status === 'complete') {
+          try {
+            const route = result?.routes?.[0];
+            const distanceMeters = Number(route?.distance) || 0;
+            const durationSeconds = Number(route?.time) || 0;
+            onRouteInfo && onRouteInfo({ distanceMeters, durationSeconds });
+          } catch {}
+        } else {
+          onRouteInfo && onRouteInfo({ distanceMeters: 0, durationSeconds: 0 });
+        }
+      });
+    } else {
+      try {
+        drivingRef.current?.clear();
+      } catch {}
+      onRouteInfo && onRouteInfo({ distanceMeters: 0, durationSeconds: 0 });
+    }
+  }, [refreshToken]);
 
   // 逆地理编码并更新起点回调
   const reverseGeocodeAndUpdate = (lng: number, lat: number) => {

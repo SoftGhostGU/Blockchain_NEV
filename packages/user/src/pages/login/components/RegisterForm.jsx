@@ -1,37 +1,23 @@
 import { View, Input, Button, Text } from '@tarojs/components';
 import { useState } from 'react';
-import { navigateTo } from '@tarojs/taro';
 import '../index.scss';
-import { register, requestVerificationCode } from '../../../utils/auth';
+import { register } from '../../../utils/auth';
 import { formErrorToaster } from '../../../utils/error';
-import { z } from 'zod';
 import { Spin } from 'antd';
 import { EyeOutlined, EyeInvisibleOutlined, LoadingOutlined } from '@ant-design/icons';
 
-// 常量定义
-const STEPS = {
-  REGISTER_FORM: 1,
-  VERIFICATION_CODE: 2
-};
+// 注册页面（简化版）：移除邮箱验证码两步流程，改为一次提交。
+// 表单字段：手机号 + 用户名 + 密码 + 确认密码。
+// 成功后由 auth.register 统一保存 token 与用户信息，并跳转到主页面。
 
-const VERIFICATION_CODE_LENGTH = 6;
-const KEY_CODES = {
-  DELETE: 46,
-  BACKSPACE: 8
-};
-
-const RegisterForm = ({ onBack, onBackToLogin }) => {
-  const [step, setStep] = useState(STEPS.REGISTER_FORM);
-  const [focusIndex, setFocusIndex] = useState(0);
-  const [loadingVerify, setLoadingVerify] = useState(false);
+const RegisterForm = ({ onBackToLogin }) => {
   const [loadingRegister, setLoadingRegister] = useState(false);
   const [formData, setFormData] = useState({
-    email: '',
+    phone: '',
     username: '',
     password: '',
     checkPassword: '',
   });
-  const [verificationCode, setVerificationCode] = useState(Array(VERIFICATION_CODE_LENGTH).fill(''));
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -40,63 +26,24 @@ const RegisterForm = ({ onBack, onBackToLogin }) => {
     }));
   };
 
-  const handleNextStep = async () => {
-    setLoadingVerify(true);
-    try {
-      await requestVerificationCode(formData);
-      setStep(STEPS.VERIFICATION_CODE);
-    } catch (error) {
-      formErrorToaster(error);
-    } finally {
-      setLoadingVerify(false);
+  // 基础本地校验：手机号格式、用户名长度、密码一致性
+  const validateForm = () => {
+    const phoneReg = /^1\d{10}$/;
+    if (!phoneReg.test(formData.phone)) {
+      throw new Error('请输入有效的手机号（11位数字，以1开头）');
+    }
+    if (!formData.username || formData.username.length < 3) {
+      throw new Error('用户名至少需要3个字符');
+    }
+    if (!formData.password || formData.password.length < 6) {
+      throw new Error('密码至少需要6个字符');
+    }
+    if (formData.password !== formData.checkPassword) {
+      throw new Error('密码不一致！');
     }
   };
 
-  const handleCodeInput = (index, value) => {
-    if (!z.coerce.number().safeParse(value).success) return;
-    
-    index = focusIndex;
-    const newCode = [...verificationCode];
-    newCode[index] = value;
-    setVerificationCode(newCode);
-
-    // 输入数字时自动跳转到下一个输入框
-    if (index < VERIFICATION_CODE_LENGTH - 1) {
-      const nextInput = document.querySelectorAll(`.verification-code-inputer`)[index + 1];
-      setFocusIndex(index + 1);
-      nextInput.focus();
-    }
-
-    // 当验证码填写完整时自动提交
-    if (newCode.every(digit => digit) && newCode.length === VERIFICATION_CODE_LENGTH) {
-      handleSubmit(newCode.join(''));
-    }
-  };
-
-  const handleKeyDown = (index, e) => {
-    index = focusIndex;
-    const keyCode = e.detail.keyCode;
-    
-    // 处理删除键
-    if (keyCode === KEY_CODES.DELETE || keyCode === KEY_CODES.BACKSPACE) {
-      e.preventDefault();
-      const newCode = [...verificationCode];
-
-      // 如果当前输入框有值，清空当前输入框
-      if (newCode[index]) {
-        newCode[index] = '';
-        setVerificationCode(newCode);
-      }
-      // 如果当前输入框为空且不是第一个输入框，跳转到前一个输入框
-      else if (index > 0) {
-        const prevInput = document.querySelectorAll(`.verification-code-inputer`)[index - 1];
-        prevInput.focus();
-        newCode[index - 1] = '';
-        setVerificationCode(newCode);
-        setFocusIndex(index - 1);
-      }
-    }
-  };
+  // 已移除验证码输入与键盘处理逻辑（不再需要）
   
   const checkPassword = async () => {
     try {
@@ -112,24 +59,18 @@ const RegisterForm = ({ onBack, onBackToLogin }) => {
     }
   };
 
-  const handleSubmit = async (code) => {
+  const handleSubmit = async () => {
     setLoadingRegister(true);
     try {
+      // 1) 先做本地校验
+      validateForm();
+      // 2) 调用注册接口（内部已处理成功态的保存与跳转）
       await register({
-        ...formData,
-        verifyCode: code
+        phone: formData.phone,
+        username: formData.username,
+        password: formData.password,
+        checkPassword: formData.checkPassword,
       });
-      
-      showToast({
-        title: '注册成功',
-        icon: 'success'
-      });
-      
-      navigateTo({
-        url: 'pages/index/index'
-      });
-      
-      onBackToLogin();
     } catch (error) {
       formErrorToaster(error);
     } finally {
@@ -152,14 +93,15 @@ const RegisterForm = ({ onBack, onBackToLogin }) => {
     <>
       <View className="form-header">
         <Text className="title">创建账号</Text>
+        <Text className="subtitle">请填写手机号、用户名与密码完成注册</Text>
       </View>
       <View className="input-group">
         <Input
           className="input-field"
-          type="text"
-          placeholder="请输入邮箱"
-          value={formData.email}
-          onInput={(e) => handleInputChange('email', e.detail.value)}
+          type="number"
+          placeholder="请输入手机号"
+          value={formData.phone}
+          onInput={(e) => handleInputChange('phone', e.detail.value)}
         />
         <Input
           className="input-field"
@@ -176,9 +118,9 @@ const RegisterForm = ({ onBack, onBackToLogin }) => {
             value={formData.password}
             onInput={(e) => handleInputChange('password', e.detail.value)}
           />
-          {/* <View className="password-visible-button" onClick={togglePasswordVisible}>
+          <View className="password-visible-button" onClick={togglePasswordVisible}>
             {passwordVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-          </View> */}
+          </View>
         </View>
         <View className="password-input-container">
           <Input
@@ -189,53 +131,28 @@ const RegisterForm = ({ onBack, onBackToLogin }) => {
             value={formData.checkPassword}
             onInput={(e) => handleInputChange('checkPassword', e.detail.value)}
           />
-          {/* <View className="password-visible-button" onClick={toggleConfirmPasswordVisible}>
+          <View className="password-visible-button" onClick={toggleConfirmPasswordVisible}>
             {confirmPasswordVisible ? <EyeOutlined /> : <EyeInvisibleOutlined />}
-          </View> */}
+          </View>
         </View>
       </View>
-      <Spin spinning={loadingVerify} indicator={<LoadingOutlined spin />} size="large">
-        <Button className="next-button" onClick={handleNextStep} disabled={loadingVerify}>
-          下一步
+      <Spin spinning={loadingRegister} indicator={<LoadingOutlined spin />} size="large">
+        <Button className="next-button" onClick={handleSubmit} disabled={loadingRegister}>
+          注册
           <View className="arrow-icon">→</View>
         </Button>
       </Spin>
     </>
   );
   
-  const renderVerificationCodeForm = () => (
-    <>
-      <View className="form-header">
-        <Text className="title">验证码</Text>
-        <Text className="subtitle">验证码已发送至{formData.email}</Text>
-      </View>
-
-      <Spin spinning={loadingRegister} indicator={<LoadingOutlined spin />} size="large">
-        <View className="verification-code-container">
-          {verificationCode.map((digit, index) => (
-            <Input
-              key={index}
-              className="code-input verification-code-inputer"
-              type="number"
-              maxlength={1}
-              value={digit}
-              data-index={index}
-              onInput={(e) => handleCodeInput(index, e.detail.value)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
-              disabled={loadingRegister}
-            />
-          ))}
-        </View>
-      </Spin>
-    </>
-  );
+  // 已移除验证码步骤
   
   return (
     <View className="register-form">
-      <View className="back-button" onClick={() => step === STEPS.REGISTER_FORM ? onBackToLogin() : setStep(STEPS.REGISTER_FORM)}>←</View>
-      {step === STEPS.REGISTER_FORM ? renderRegisterForm() : renderVerificationCodeForm()}
+      <View className="back-button" onClick={() => onBackToLogin()}>←</View>
+      {renderRegisterForm()}
     </View>
   );
 };
 
-export default RegisterForm; 
+export default RegisterForm;

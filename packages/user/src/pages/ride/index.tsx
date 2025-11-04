@@ -13,8 +13,8 @@ import QuietIcon from './icons/QuietIcon'
 import FastIcon from './icons/FastIcon'
 import SlowIcon from './icons/SlowIcon'
 
-import rideService from '../../api/rideService'
-import { Location, PriceEstimateRequest, CreateOrderRequest } from '../../api/type'
+import rideService from '@/api/rideService'
+import { Location, PriceEstimateRequest, CreateOrderRequest } from '@/api/type'
 import Fab from '../../components/Fab'
 import Map from '../../components/Map'
 import AMapLoader from '@amap/amap-jsapi-loader'
@@ -270,9 +270,9 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
       const request: PriceEstimateRequest = {
         startLocation: currentLocation,
         endLocation: destinationLocation as Location,
-        carType: carTypeId,
-        departureTime: selectedTimeOption,
-        preference: travelPreference
+        carTypeId: carTypeId,
+        estimatedDistance: routeDistanceKm ?? actualDistance,
+        estimatedDuration: routeDurationMin ?? undefined
       }
 
       const resp = await rideService.estimatePrice(request)
@@ -420,7 +420,7 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
 
   useDidShow(() => {
     setMapVisible(true)
-    setMapKey((k) => k + 1) // 强制 Map 组件重新挂载，重建实例
+    setMapKey((k) => k + 1)
     if (!coordsReady) {
       // 返回页面时若没有有效经纬度，先获取一次，避免地图内部出现 NaN
       ensureCurrentLocationReady()
@@ -428,8 +428,7 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
   })
 
   useDidHide(() => {
-    // 隐藏页面时卸载地图，避免旧实例残留
-    setMapVisible(false)
+    // 保持地图实例，不再卸载，返回时仅刷新
   })
 
   // 处理目的地输入（防抖 + 高德联想）
@@ -714,7 +713,7 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
       >
         {mapVisible && coordsReady && (
           <Map 
-            key={mapKey}
+            refreshToken={mapKey}
             destinationLocation={destinationLocation || undefined}
             startLocation={currentLocation || undefined}
             onStartLocationChange={setCurrentLocation}

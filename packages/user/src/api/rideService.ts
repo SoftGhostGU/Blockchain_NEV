@@ -8,6 +8,7 @@ import {
   Location,
   CarType
 } from './type'; // 修复：改为 types 而不是 type
+import { getAccessToken } from '../utils/request/token'
 
 // 模拟数据配置
 const MOCK_DATA_ENABLED = true; // 开发环境使用模拟数据
@@ -92,13 +93,8 @@ class RideService {
 
   // 获取用户认证token
   private getAuthToken(): string {
-    // 从本地存储获取token
-    try {
-      return Taro.getStorageSync('auth_token') || '';
-    } catch (error) {
-      console.warn('获取认证token失败:', error);
-      return '';
-    }
+    const token = getAccessToken()
+    return token || ''
   }
 
   // 模拟价格预估数据
