@@ -77,7 +77,7 @@ export const request = async (url, method = 'GET', data = {}, opts = {}) => {
       });
       navigateTo({ url: '/pages/login/index' });
     }
-  } else if (res.statusCode >= 300 || res.statusCode < 200 || res.data.code != 0) {
+  } else if (res.statusCode >= 300 || res.statusCode < 200 || (!opts?.acceptPlain && res.data.code != 0)) {
     // 中文注释：
     // 2) 如果后端返回非 2xx 或业务 code != 0，优先展示后端 message，
     //    若无 message，则拼接 HTTP 状态码，便于定位。

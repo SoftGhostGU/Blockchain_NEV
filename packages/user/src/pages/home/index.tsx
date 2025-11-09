@@ -162,7 +162,8 @@ export default function Home() {
   const handleQuickAction = (actionId: string) => {
     switch (actionId) {
       case 'orders':
-        Taro.navigateTo({ url: '/pages/order/index' })
+        // 中文注释：跳转到“我的订单”列表页，而非单个订单详情
+        Taro.navigateTo({ url: '/pages/my-orders/index' })
         break
       case 'trips':
         console.log('查看行程记录')

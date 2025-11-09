@@ -10,6 +10,27 @@ import { useRideStore } from '../../store/ride'
 import './index.scss'
 import OrderMap from './components/OrderMap'
 
+// 中文注释：统一订单详情页时间展示规格
+// 目标格式：YYYY-MM-DDTHH:mm:ss（去掉毫秒与时区后缀），与示例 2025-11-05T01:02:01 一致
+// 说明：该函数会将传入的时间字符串转换为本地时区的上述格式；如果解析失败则进行兜底处理。
+const formatIsoCompact = (iso?: string) => {
+  if (!iso) return '—'
+  try {
+    const d = new Date(iso)
+    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`)
+    const Y = d.getFullYear()
+    const M = pad(d.getMonth() + 1)
+    const D = pad(d.getDate())
+    const h = pad(d.getHours())
+    const m = pad(d.getMinutes())
+    const s = pad(d.getSeconds())
+    return `${Y}-${M}-${D}T${h}:${m}:${s}`
+  } catch (e) {
+    // 兜底：移除毫秒与末尾的 Z，尽可能贴近目标格式
+    return (iso || '').replace(/\.\d+Z?$/, '')
+  }
+}
+
 export default function OrderStatus() {
   const router = useRouter()
   const { orderId } = router.params || {}
@@ -115,18 +136,35 @@ export default function OrderStatus() {
     }, 800)
   }
 
-  // 返回到 Ride 页面（更稳健：优先后退到栈中的 Ride，否则重启到 Ride）
+  // 返回逻辑调整：
+  // - 当从“我的订单”进入历史订单详情时，返回应到“个人主页”（home），且不创建新实例；
+  // - 实现方式：遍历页面栈，若存在 home/index，计算 delta 精确后退到该页；
+  // - 若未找到 home（例如从打车流程进入详情），则回退到已有的 ride/index；
+  // - 两者都不存在时，最后兜底：保持单实例策略，重启到个人主页。
   const handleBack = () => {
     try {
       const pages: any[] = (getCurrentPages?.() || []) as any[]
+
+      // 优先查找个人主页
+      let homeIndex = -1
       let rideIndex = -1
       for (let i = pages.length - 1; i >= 0; i--) {
         const route = pages[i]?.route || ''
-        if (route.includes('ride/index')) {
-          rideIndex = i
-          break
+        if (homeIndex === -1 && route.includes('home/index')) homeIndex = i
+        if (rideIndex === -1 && route.includes('ride/index')) rideIndex = i
+        if (homeIndex !== -1 && rideIndex !== -1) break
+      }
+
+      // 计算并后退到个人主页（不创建新实例）
+      if (homeIndex !== -1) {
+        const delta = (pages.length - 1) - homeIndex
+        if (delta > 0) {
+          navigateBack({ delta })
+          return
         }
       }
+
+      // 若无 home，则退回到已有的打车页（保留原逻辑兼容即时行程）
       if (rideIndex !== -1) {
         const delta = (pages.length - 1) - rideIndex
         if (delta > 0) {
@@ -134,11 +172,12 @@ export default function OrderStatus() {
           return
         }
       }
-      // 栈中没有 Ride 或无法后退，使用 reLaunch 保证唯一实例
-      reLaunch({ url: '/pages/ride/index' })
+
+      // 兜底（极少见：栈中既无 home 也无 ride）
+      reLaunch({ url: '/pages/home/index' })
     } catch (err) {
-      console.warn('返回 Ride 页面失败，尝试重启', err)
-      reLaunch({ url: '/pages/ride/index' })
+      console.warn('返回页面失败，尝试重启个人主页', err)
+      reLaunch({ url: '/pages/home/index' })
     }
   }
 
@@ -199,10 +238,11 @@ export default function OrderStatus() {
       <View className="card order-status-card">
         <View className="order-info-header">
           <View className="order-meta">
+            {/* 中文注释：订单编号直接展示，时间按统一规格格式化 */}
             <Text className="order-number">订单编号：{order.orderNumber}</Text>
-            <Text className="order-time">发起时间：{order.createdAt}</Text>
+            <Text className="order-time">发起时间：{formatIsoCompact(order.createdAt)}</Text>
             <Text className="order-end-time">
-              结束时间：{order.completedAt || '未到达终点'}
+              结束时间：{order.completedAt ? formatIsoCompact(order.completedAt) : '未到达终点'}
             </Text>
           </View>
         </View>
