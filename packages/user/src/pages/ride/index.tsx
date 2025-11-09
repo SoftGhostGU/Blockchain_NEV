@@ -19,6 +19,10 @@ import Fab from '../../components/Fab'
 import Map from '../../components/Map'
 import AMapLoader from '@amap/amap-jsapi-loader'
 import CarSelectionPopup from './components/CarSelectionPopup'
+// 接口请求工具：统一携带 Authorization 并处理 401/超时等
+import { request as httpRequest } from '@/utils/request'
+// 认证工具：读取浏览器中的 token，并提供登录态判断
+import { isAuthenticated } from '@/utils/request/token'
 
 // 根据选择的车型生成 4 辆同类型车辆（含型号、电量、距离）
 const generateMockCars = (carTypeId: string) => {
@@ -90,6 +94,8 @@ export default function Ride() {
   const addLocalOrder = useRideStore((s) => s.addLocalOrder)
   const replaceOrder = useRideStore((s) => s.replaceOrder)
   const updateOrder = useRideStore((s) => s.updateOrder)
+  // 新增：服务端订单写入（用于后端返回 order_id 的场景）
+  const addOrder = useRideStore((s) => s.addOrder)
 
   // ---------- 页面本地 UI 状态（保留本地管理） ----------
   const [pageLoaded, setPageLoaded] = useState(false)
@@ -126,6 +132,24 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
   // 地图可见性与强制重挂载 key（返回页面时重建地图实例）
   const [mapVisible, setMapVisible] = useState(false)
   const [mapKey, setMapKey] = useState(0)
+
+  // ======================= 本地计价常量与函数（按距离计价） =======================
+  // 起步价（单位：元），按车型分别为 12、12、14
+  const START_FARE: Record<string, number> = { economy: 12, comfort: 12, luxury: 14 }
+  // 起步里程（单位：公里）为 3km，在此里程内均收取起步价
+  const BASE_MILEAGE_KM = 3
+  // 超过起步里程后的每公里加价（单位：元/公里），按车型分别为 2、2.5、4
+  const EXTRA_RATE: Record<string, number> = { economy: 2, comfort: 2.5, luxury: 4 }
+
+  // 依据距离与车型计算本地预估价格（四舍五入到整数）
+  const computeLocalPrice = (distanceKm: number | null | undefined, carTypeId: string): number => {
+    // 距离不可用时直接返回对应车型的起步价
+    const start = START_FARE[carTypeId] ?? 12
+    const dist = typeof distanceKm === 'number' && distanceKm > 0 ? distanceKm : 0
+    if (dist <= BASE_MILEAGE_KM) return Math.round(start)
+    const extra = (dist - BASE_MILEAGE_KM) * (EXTRA_RATE[carTypeId] ?? EXTRA_RATE.economy)
+    return Math.round(start + extra)
+  }
 
   // ----- 联想与防抖相关状态 -----
   type Suggestion = { name: string; district?: string; address?: string; adcode?: string; location?: any }
@@ -253,6 +277,18 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
     }
   }, [showCarSelection, selectedCarType])
 
+  // 当路线里程或目的地/起点发生变化时，自动进行价格预估
+  useEffect(() => {
+    if (currentLocation && destinationLocation && showPricing) {
+      // 输入目的地后立即估价，无需手动刷新
+      estimatePrice(selectedCarType)
+    } else {
+      // 未选择目的地时清空价格，避免旧数据残留
+      setPriceData(null)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeDistanceKm, destinationLocation, currentLocation, selectedCarType, showPricing])
+
   // ---------- 价格预估（每次手动或触发时调用） ----------
   const estimatePrice = async (carTypeId: string) => {
     // 防护：必须有起点/终点
@@ -261,36 +297,42 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
       return
     }
 
+    // 开始本地快速计算（去掉延迟，输入目的地后立刻显示）
     setIsPriceLoading(true)
-    
     try {
-      // 模拟异步加载，延迟1-2秒
-      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000))
-      
-      const request: PriceEstimateRequest = {
-        startLocation: currentLocation,
-        endLocation: destinationLocation as Location,
-        carTypeId: carTypeId,
-        estimatedDistance: routeDistanceKm ?? actualDistance,
-        estimatedDuration: routeDurationMin ?? undefined
-      }
+      // 取优先路线规划里程，其次用起止坐标的球面距离
+      const distanceKm = routeDistanceKm ?? actualDistance
 
-      const resp = await rideService.estimatePrice(request)
-      if (resp.success) {
-        setPriceData(resp.data)
-        setLastPriceUpdate(new Date().toLocaleTimeString('zh-CN', {
-          hour: '2-digit',
-          minute: '2-digit'
-        }))
-        
-        // 更新所有车型的价格和时间信息
-        updateAllCarTypesPricing()
-      } else {
-        showToast({ title: resp.error || '获取价格失败', icon: 'none' })
-      }
+      // 本地计价：起步价 + 超出起步里程的里程单价
+      const localPrice = computeLocalPrice(distanceKm, carTypeId)
+
+      // 记录最近一次更新时间，提升用户感知
+      setLastPriceUpdate(new Date().toLocaleTimeString('zh-CN', {
+        hour: '2-digit',
+        minute: '2-digit'
+      }))
+
+      // 写入 priceData，保持与原有 UI 结构兼容
+      // 计算费用明细：起步费 + 里程费（超出部分）
+      const startFare = START_FARE[carTypeId] ?? 12
+      const extraDistance = Math.max(0, (distanceKm || 0) - BASE_MILEAGE_KM)
+      const extraRate = EXTRA_RATE[carTypeId] ?? EXTRA_RATE.economy
+      const mileageFee = Math.round(extraDistance * extraRate)
+
+      setPriceData({
+        estimatedPrice: localPrice,
+        estimatedDistance: distanceKm ?? undefined,
+        priceBreakdown: [
+          { label: '起步费', amount: Math.round(startFare) },
+          { label: '里程费', amount: mileageFee },
+        ]
+      })
+
+      // 同步更新各车型的价格与时间显示（时间用于卡片右侧展示）
+      updateAllCarTypesPricing()
     } catch (err) {
       console.error('estimatePrice error', err)
-      showToast({ title: '网络异常，请稍后重试', icon: 'none' })
+      showToast({ title: '计算失败，请稍后重试', icon: 'none' })
     } finally {
       setIsPriceLoading(false)
     }
@@ -298,38 +340,30 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
 
   // 更新所有车型的价格和时间信息
   const updateAllCarTypesPricing = () => {
-    const basePricing = {
-      economy: { basePrice: 28, baseTime: 15 },
-      comfort: { basePrice: 35, baseTime: 12 },
-      luxury: { basePrice: 45, baseTime: 8 }
-    }
-    
+    // 使用当前已知距离与时间，替换为按距离计算的价格
+    const distanceKm = routeDistanceKm ?? actualDistance
+    const baseTimeMin = routeDurationMin != null ? routeDurationMin : Math.max(5, Math.round((distanceKm || 0) * 3))
+
     const newPricing: {[key: string]: {time: string, price: number}} = {}
-    
-    Object.keys(basePricing).forEach(carType => {
-      const base = basePricing[carType as keyof typeof basePricing]
+
+    ;(['economy','comfort','luxury'] as const).forEach((carType) => {
+      // 根据出行偏好仅调整时间（价格严格按距离公式计算）
       let timeMultiplier = 1
-      let priceMultiplier = 1
-      
-      // 根据出行偏好调整时间（快车/慢车）
       if (travelPreference === 'fast') {
         timeMultiplier = 0.8 // 快车时间减少20%
-        priceMultiplier = 1.2 // 快车价格增加20%
       } else if (travelPreference === 'slow') {
         timeMultiplier = 1.3 // 慢车时间增加30%
-        priceMultiplier = 0.9 // 慢车价格减少10%
       }
-      // quiet选项不影响时间和价格
-      
-      const finalTime = Math.round(base.baseTime * timeMultiplier)
-      const finalPrice = Math.round(base.basePrice * priceMultiplier)
-      
+
+      const finalTime = Math.max(1, Math.round(baseTimeMin * timeMultiplier))
+      const finalPrice = computeLocalPrice(distanceKm, carType)
+
       newPricing[carType] = {
         time: `${finalTime}分钟`,
         price: finalPrice
       }
     })
-    
+
     setCarTypePricing(newPricing)
     setShowPricing(true) // 显示价格信息
   }
@@ -447,6 +481,8 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
       setDestinationLocation(null)
       setShowPricing(false)
       setCarTypePricing({})
+      // 当目的地为空时，清空上一轮的价格估算，避免卡片显示旧数据
+      setPriceData(null)
       return
     }
 
@@ -610,64 +646,103 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
   const createOrder = async (selectedCar?: any) => {
     if (isOrderCreating) return
 
+    // 中文注释：在调用创建订单接口前，显式检查浏览器中是否存在有效 token。
+    // 若缺失或过期，则直接跳转到登录页，避免无意义的接口请求与等待。
+    if (!isAuthenticated()) {
+      showToast({ title: '登录过期或未登录，请先登录', icon: 'none' })
+      navigateTo({ url: '/pages/login/index' })
+      return
+    }
+
     setIsOrderCreating(true)
     showLoading({ title: '正在创建订单...' })
 
     try {
-      // 获取对应车型的mock数据（价格、司机、车辆信息）
-      const mockData = getMockDataByCarType(selectedCarType)
-      
-      // 创建订单数据：用户选择 + mock数据/选中车辆
-      const orderData = {
-        // 用户在页面选择的数据
-        startLocation: currentLocation,
-        endLocation: destinationLocation,
-        carTypeId: selectedCarType,
-        preference: travelPreference,
-        departureTime: selectedTimeOption,
-        
-        // 价格信息
-        price: mockData.price,
-        // 司机与车辆信息以用户选中为准（若存在），否则使用mock
-        driver: selectedCar ? { name: selectedCar.driver, phone: selectedCar.phone || mockData.driver?.phone || '' } : mockData.driver,
-        vehicle: selectedCar
-          ? { type: `${selectedCar.name} · ${selectedCar.model}`, plateNumber: selectedCar.plate, imageUrl: selectedCar.avatar }
-          : mockData.vehicle,
-        
-        // 订单状态
-        status: 'pending' as const,
-        createdAt: new Date().toISOString(),
-        id: `order_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+      // 中文注释：映射接口字段 —— 按后端需求组装请求体
+      const startLocStr = currentLocation?.landmark || currentLocation?.address || ''
+      const destLocStr = destinationLocation?.landmark || destinationLocation?.address || ''
+
+      // 估计时长（分钟）：优先使用地图回传的真实时长，其次解析 UI 文案，最后按距离粗估
+      const parseMinutes = (label?: string) => {
+        if (!label) return 0
+        const m = label.match(/(\d+)/)
+        return m ? parseInt(m[1], 10) : 0
+      }
+      const distanceKm = routeDistanceKm ?? (typeof priceData?.estimatedDistance === 'number' ? priceData?.estimatedDistance : actualDistance)
+      const timeMinutes = (routeDurationMin != null)
+        ? routeDurationMin
+        : (parseMinutes(carTypePricing[selectedCarType]?.time) || Math.max(5, Math.round((distanceKm || 0) * 3)))
+
+      // 估计价格（元）：优先使用价格卡片的数值，若无则用本地计价公式计算
+      const priceYuan = (typeof priceData?.estimatedPrice === 'number')
+        ? priceData.estimatedPrice
+        : computeLocalPrice(distanceKm, selectedCarType)
+
+      const payload = {
+        startLocation: startLocStr,
+        destination: destLocStr,
+        type: '网约车',
+        estimatedTime: timeMinutes,
+        estimatedPrice: priceYuan,
       }
 
-      // 添加到本地订单存储
-      const localId = addLocalOrder(orderData)
-      
+      // 通过统一请求工具发送（自动携带 Authorization），使用 acceptPlain 兼容无业务 code 的返回
+      const res = await httpRequest('/api/order/create', 'POST', payload, { silentSuccess: true, acceptPlain: true })
+
+      // 成功返回结构示例： { data: { order_id: '...' } }
+      const remoteOrderId = res?.data?.data?.order_id
+      if (!remoteOrderId) {
+        // 若后端以 200 返回但结构非预期，则视为业务失败
+        throw new Error(res?.data?.error || '创建订单失败')
+      }
+
       hideLoading()
-      
-      // 显示创建成功提示
-      showToast({ 
-        title: '订单创建成功', 
-        icon: 'success',
-        duration: 1500
+      // 中文注释：将后端返回的订单写入全局 store，确保订单详情页能读取到并展示正确编号
+      // 注意：这里将 orderNumber 显式设置为后端返回的 order_id，以满足“订单编号与后端一致”的需求
+      addOrder({
+        orderId: remoteOrderId,
+        orderNumber: remoteOrderId,
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        startLocation: currentLocation ?? null,
+        endLocation: destinationLocation ?? null,
+        carTypeId: selectedCarType,
+        preference: travelPreference,
+        departureTime: selectedTimeOption || 'now',
+        price: {
+          estimatedPrice: priceYuan,
+          estimatedDistance: distanceKm,
+          estimatedDuration: timeMinutes,
+          priceBreakdown: priceData?.priceBreakdown || []
+        },
+        // 中文注释：从“选择的模拟车辆”注入车辆与司机信息，订单详情页直接读取展示
+        // 车辆类型使用“车型 + 具体型号”，车牌与图片来自弹窗选择数据
+        vehicle: {
+          type: selectedCar ? `${selectedCar.name} ${selectedCar.model}` : (selectedCar?.model || selectedCar?.name || ''),
+          plateNumber: selectedCar?.plate || '',
+          imageUrl: selectedCar?.avatar || ''
+        },
+        // 司机名称与电话同样来源于选择的车辆数据
+        driver: {
+          name: selectedCar?.driver || '未知',
+          phone: selectedCar?.phone || ''
+        }
       })
 
-      // 跳转到订单页面
-      setTimeout(async () => {
-        try {
-          await navigateTo({ url: `/pages/order/index?orderId=${localId}` })
-        } catch (navErr) {
-          console.warn('导航订单页面失败', navErr)
-          showToast({ title: '跳转失败，请在订单列表查看', icon: 'none' })
-        }
-      }, 1500)
+      // 轻提示成功信息
+      showToast({ title: `订单创建成功：${remoteOrderId}`, icon: 'success', duration: 1200 })
+
+      // 中文注释：跳转到订单详情页面，并传递后端返回的 order_id
+      // 订单页读取 router.params.orderId -> 从 store 获取对应订单数据 -> 展示“订单编号”
+      navigateTo({ url: `/pages/order/index?orderId=${remoteOrderId}` })
 
     } catch (err) {
       console.error('创建订单失败', err)
       hideLoading()
       showModal({
         title: '创建订单失败',
-        content: '系统异常，请稍后重试',
+        // 中文注释：展示后端错误或兜底文案，401 的重定向由请求工具处理
+        content: (err?.message || '系统异常，请稍后重试'),
         showCancel: true,
         confirmText: '重试',
         success: (res) => {
@@ -699,6 +774,8 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
   }
 
   const getPriceUpdateText = () => {
+    // 没有目的地时提示用户输入，避免误导
+    if (!showPricing) return '请输入目的地'
     if (isPriceLoading) return '计算中'
     if (lastPriceUpdate) return `${lastPriceUpdate} 更新`
     return '实时更新'
@@ -910,19 +987,26 @@ const [routeDurationMin, setRouteDurationMin] = useState<number | null>(null)
           </View>
 
           <View className='price-body'>
-            <Text className='price-amount'>¥{isPriceLoading ? '...' : (priceData?.estimatedPrice || getDisplayPrice())}</Text>
+            {/* 没有目的地时不显示价格，仅展示占位符 */}
+            <Text className='price-amount'>¥{isPriceLoading ? '...' : (showPricing ? (priceData?.estimatedPrice ?? getDisplayPrice()) : '--')}</Text>
             <View className='payment-method-outline'>
               <AtIcon value='shopping-bag' size='16' className='wallet-icon' />
               <Text>微信支付</Text>
             </View>
           </View>
 
-          <Text className='price-subtext'>
-            预计行程 {routeDistanceKm ?? priceData?.estimatedDistance ?? actualDistance} 公里 · 预计时间 {routeDurationMin != null ? `${routeDurationMin} 分钟` : (isPriceLoading ? '...' : getDisplayTime(selectedCarType))}
-            {priceData?.blockchainFee ? ` · 手续费 ¥${priceData.blockchainFee}` : ''}
-          </Text>
+          {/* 没有目的地时不展示距离与时间提示 */}
+          {showPricing ? (
+            <Text className='price-subtext'>
+              预计行程 {routeDistanceKm ?? priceData?.estimatedDistance ?? actualDistance} 公里 · 预计时间 {routeDurationMin != null ? `${routeDurationMin} 分钟` : (isPriceLoading ? '...' : getDisplayTime(selectedCarType))}
+              {priceData?.blockchainFee ? ` · 手续费 ¥${priceData.blockchainFee}` : ''}
+            </Text>
+          ) : (
+            <Text className='price-subtext'>请输入目的地后显示</Text>
+          )}
 
-          {priceData?.priceBreakdown && (
+          {/* 费用明细在未选择目的地时不显示 */}
+          {showPricing && priceData?.priceBreakdown && (
             <View className='price-breakdown'>
               <Text className='breakdown-title'>费用明细：</Text>
               {priceData.priceBreakdown

@@ -1,0 +1,144 @@
+@import '@/styles/variables';
+
+// 页面容器样式（与个人主页保持风格一致）
+.orders-page {
+  background-color: #f7f8fa;
+  padding: 24rpx;
+  min-height: 100vh;
+}
+
+/* 顶部标题与返回箭头样式 —— 参照个人主页 */
+.orders-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 12rpx 24rpx;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: saturate(180%) blur(8px);
+  border-bottom: 1rpx solid rgba(16, 24, 40, 0.06);
+  border-radius: 16rpx;
+  overflow: hidden;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center; // 标题居中
+    position: relative;
+    height: 72rpx;
+  }
+
+  .header-left {
+    width: 56rpx;
+    height: 56rpx;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14rpx;
+    background: rgba(245, 247, 250, 0.9);
+    position: absolute;
+    left: 0;
+    transition: background 180ms;
+    &:active { background: rgba(0,0,0,0.04); }
+  }
+
+  .header-title {
+    font-size: 34rpx;
+    font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: -0.5rpx;
+  }
+}
+
+// 列表与卡片样式
+.orders-list {
+  margin-top: 24rpx;
+}
+
+.order-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 28rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.04);
+}
+
+.order-card .card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.order-card .left-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.order-card .title-text {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.order-card .right-status {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 16rpx;
+}
+
+.order-card .status-tag {
+  font-size: 24rpx;
+  color: #8c8c8c;
+}
+
+.order-card .price-text {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.order-card .card-body {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  row-gap: 10rpx;
+  column-gap: 12rpx;
+}
+
+.order-card .row {
+  display: contents; // 使用网格行
+}
+
+.order-card .label {
+  font-size: 26rpx;
+  color: #8c8c8c;
+}
+
+.order-card .value {
+  font-size: 26rpx;
+  color: #1a1a1a;
+}
+
+.order-card .card-footer {
+  margin-top: 18rpx;
+}
+
+.order-card .hint-text {
+  font-size: 24rpx;
+  color: #bfbfbf;
+}
+
+// 空状态样式
+.empty-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 48rpx 28rpx;
+  margin-top: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+  color: #8c8c8c;
+}
+
+.empty-text { font-size: 26rpx; }

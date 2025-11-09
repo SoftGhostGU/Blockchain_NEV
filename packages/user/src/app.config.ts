@@ -4,6 +4,7 @@ export default defineAppConfig({
     'pages/index/index',
     'pages/ride/index',
     'pages/order/index',
+    'pages/my-orders/index',
     'pages/home/index',
     'pages/address-select/index',
   ],
